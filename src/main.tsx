@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { ConfigProvider, theme } from 'antd';
+import { ConfigProvider, App as AntApp, theme } from 'antd';
 import { I18nextProvider } from 'react-i18next';
 import App from './App';
 import i18n from './i18n/index';
@@ -20,7 +20,7 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ConfigProvider theme={{ algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
-      {children}
+      <AntApp>{children}</AntApp>
     </ConfigProvider>
   );
 }

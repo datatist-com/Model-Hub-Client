@@ -63,9 +63,10 @@ export default {
     license: 'License',
     dataSources: 'Data Sources',
     featureManagement: 'Feature Management',
-    targetManagement: 'Target Management',
+    userPortrait: 'User Portrait',
+    targetManagement: 'Supervised Learning',
     modelManagement: 'Model Management',
-    scoringGeneration: 'Scoring List Management',
+    scoringGeneration: 'Model List Management',
     operationListOutput: 'Operation List Management',
     logViewer: 'Log Viewer',
     dataSourceOverview: 'Data Source Overview',
@@ -180,8 +181,14 @@ export default {
       statusEnabled: 'Enabled',
       statusDisabled: 'Disabled'
     },
+    userPortrait: {
+      title: 'User Portrait',
+      columns: { id: 'ID', portraitName: 'Portrait Name', userCount: 'User Count', tagCount: 'Tag Count', status: 'Status', updatedAt: 'Updated At' },
+      statusActive: 'Active',
+      statusInactive: 'Inactive'
+    },
     targetManagement: {
-      title: 'Target Management',
+      title: 'Supervised Learning',
       columns: { id: 'ID', targetName: 'Target Name', type: 'Type', description: 'Description', createdAt: 'Created At' },
       typeBinary: 'Binary',
       typeContinuous: 'Continuous'
@@ -194,7 +201,7 @@ export default {
       statusArchived: 'Archived'
     },
     scoringGeneration: {
-      title: 'Scoring List Management',
+      title: 'Model List Management',
       columns: { id: 'ID', model: 'Model', dataset: 'Dataset', scoreCount: 'Score Count', status: 'Status', createdAt: 'Created At' },
       statusPending: 'Pending',
       statusRunning: 'Running',

@@ -62,9 +62,10 @@ export default {
     license: '许可证管理',
     dataSources: '数据源管理',
     featureManagement: '特征管理',
-    targetManagement: '目标管理',
+    userPortrait: '用户画像管理',
+    targetManagement: '监督学习管理',
     modelManagement: '模型管理',
-    scoringGeneration: '评分名单管理',
+    scoringGeneration: '模型名单管理',
     operationListOutput: '运营名单管理',
     logViewer: '日志查看',
     dataSourceOverview: '数据源总览',
@@ -179,8 +180,14 @@ export default {
       statusEnabled: '启用',
       statusDisabled: '停用'
     },
+    userPortrait: {
+      title: '用户画像管理',
+      columns: { id: 'ID', portraitName: '画像名称', userCount: '覆盖用户数', tagCount: '标签数', status: '状态', updatedAt: '更新时间' },
+      statusActive: '生效中',
+      statusInactive: '未生效'
+    },
     targetManagement: {
-      title: '目标管理',
+      title: '监督学习管理',
       columns: { id: 'ID', targetName: '目标名称', type: '类型', description: '描述', createdAt: '创建时间' },
       typeBinary: '二分类',
       typeContinuous: '连续值'
@@ -193,7 +200,7 @@ export default {
       statusArchived: '已归档'
     },
     scoringGeneration: {
-      title: '评分名单管理',
+      title: '模型名单管理',
       columns: { id: 'ID', model: '模型', dataset: '数据集', scoreCount: '评分数量', status: '状态', createdAt: '创建时间' },
       statusPending: '待处理',
       statusRunning: '运行中',

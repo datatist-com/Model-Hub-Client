@@ -8,6 +8,7 @@ import {
   FileSearchOutlined,
   FlagOutlined,
   FunctionOutlined,
+  IdcardOutlined,
   RobotOutlined,
   TeamOutlined
 } from '@ant-design/icons';
@@ -35,6 +36,7 @@ const ROUTE_LABEL_KEY_MAP: Record<string, string> = {
   '/profile': 'pages.profile.title',
   '/data-sources': 'menu.dataSources',
   '/feature-management': 'menu.featureManagement',
+  '/user-portrait': 'menu.userPortrait',
   '/target-management': 'menu.targetManagement',
   '/model-management': 'menu.modelManagement',
   '/scoring-generation': 'menu.scoringGeneration',
@@ -57,6 +59,7 @@ const TAB_IDENTITY_PARAMS_MAP: Record<string, string[]> = {
   '/dashboard': [],
   '/data-sources': [],
   '/feature-management': [],
+  '/user-portrait': [],
   '/target-management': [],
   '/model-management': [],
   '/scoring-generation': [],
@@ -113,6 +116,7 @@ const MENU_ITEMS = [
   { key: '/dashboard', labelKey: 'menu.dashboard', icon: <DashboardOutlined /> },
   { key: '/data-sources', labelKey: 'menu.dataSources', icon: <CloudServerOutlined /> },
   { key: '/feature-management', labelKey: 'menu.featureManagement', icon: <FunctionOutlined /> },
+  { key: '/user-portrait', labelKey: 'menu.userPortrait', icon: <IdcardOutlined /> },
   { key: '/target-management', labelKey: 'menu.targetManagement', icon: <FlagOutlined /> },
   { key: '/model-management', labelKey: 'menu.modelManagement', icon: <RobotOutlined /> },
   { key: '/scoring-generation', labelKey: 'menu.scoringGeneration', icon: <BarChartOutlined /> },

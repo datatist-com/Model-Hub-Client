@@ -10,6 +10,7 @@ const UsersPage = lazy(() => import('../pages/UsersPage'));
 const ProfilePage = lazy(() => import('../pages/ProfilePage'));
 const DataSourcesPage = lazy(() => import('../pages/DataSourcesPage'));
 const FeatureManagementPage = lazy(() => import('../pages/FeatureManagementPage'));
+const UserPortraitPage = lazy(() => import('../pages/UserPortraitPage'));
 const TargetManagementPage = lazy(() => import('../pages/TargetManagementPage'));
 const ModelManagementPage = lazy(() => import('../pages/ModelManagementPage'));
 const ScoringGenerationPage = lazy(() => import('../pages/ScoringGenerationPage'));
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
       { path: '/profile', element: withLoading(<ProfilePage />) },
       { path: '/data-sources', element: withLoading(<DataSourcesPage />) },
       { path: '/feature-management', element: withLoading(<FeatureManagementPage />) },
+      { path: '/user-portrait', element: withLoading(<UserPortraitPage />) },
       { path: '/target-management', element: withLoading(<TargetManagementPage />) },
       { path: '/model-management', element: withLoading(<ModelManagementPage />) },
       { path: '/scoring-generation', element: withLoading(<ScoringGenerationPage />) },

@@ -1232,7 +1232,6 @@ body.environment-guard-active {
 }
 
 .dashboard-model-list-grid {
-  height: 248px;
   overflow: auto;
   display: grid;
   grid-template-columns: 1fr;

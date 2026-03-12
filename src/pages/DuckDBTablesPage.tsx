@@ -1,5 +1,5 @@
 import { Button, Card, Space, Table, Tag, Tooltip, Typography } from 'antd';
-import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
+import { LeftOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -57,7 +57,7 @@ export default function DuckDBTablesPage() {
         <Space>
           {t('pages.duckdbTables.title')}
           <Tooltip title={t('pages.duckdbTables.backToDataSources')}>
-            <ArrowLeftOutlined
+            <LeftOutlined
               style={{ fontSize: 14, cursor: 'pointer', opacity: 0.45 }}
               onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}
             />

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Card, Form, Input, Modal, Select, Space, Table, Tabs, Tooltip, Typography, message } from 'antd';
-import { ArrowLeftOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { LeftOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -92,7 +92,7 @@ export default function HiveTablesPage() {
         <Space>
           {t('pages.hiveTables.title')}
           <Tooltip title={t('pages.hiveTables.backToHiveDatabases')}>
-            <ArrowLeftOutlined
+            <LeftOutlined
               style={{ fontSize: 14, cursor: 'pointer', opacity: 0.45 }}
               onClick={() =>
                 navigate(`/hive-databases?sourceId=${encodeURIComponent(sourceId)}`, {

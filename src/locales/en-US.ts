@@ -70,7 +70,7 @@ export default {
     operationListOutput: 'Operation List Management',
     logViewer: 'Log Viewer',
     dataSourceOverview: 'Data Source Overview',
-    hiveDatabases: 'Hive Databases',
+    hiveDatabases: 'Hive DB',
     hiveTables: 'Hive Tables',
     duckdbTables: 'DuckDB Tables',
     ingestJobs: 'Upload & Ingest Jobs'
@@ -171,11 +171,13 @@ export default {
       columns: { name: 'Source Name', type: 'Type', connectionStatus: 'Connection Status', actions: 'Actions' },
       statusConnected: 'Connected',
       statusDisconnected: 'Disconnected',
-      testConnection: 'Test',
-      hiveDatabases: 'Hive Databases',
-      duckdbTables: 'DuckDB Tables',
+      testConnection: 'Test Connection',
+      viewHiveDatabases: 'View',
+      viewDuckdbTables: 'View',
       createTitle: 'Create Data Source',
-      form: { name: 'Name', type: 'Type', connectionMode: 'Connection Mode' }
+      form: { name: 'Name', type: 'Type', connectionAddress: 'Connection Address' },
+      duckdbExists: 'A DuckDB source already exists. Only one is allowed.',
+      duckdbAutoCreate: 'A DuckDB database will be created automatically.'
     },
     featureManagement: {
       title: 'Feature Management',
@@ -224,19 +226,35 @@ export default {
       levelFilter: 'Level Filter'
     },
     hiveDatabases: {
-      title: 'Hive Databases',
-      columns: { id: 'ID', source: 'Source', database: 'Database', actions: 'Actions' },
-      tableManagement: 'Table Management',
+      title: 'Hive DB',
+      columns: { source: 'Source', database: 'DB Name', tableCount: 'Tables', actions: 'Actions' },
+      executeSql: 'Run SQL',
       backToDataSources: 'Back to Data Sources',
-      sourceLabel: 'Source'
+      sourceLabel: 'Source',
+      createTitle: 'Create Database',
+      form: { databaseName: 'Database Name' },
+      deleteConfirmTitle: 'Confirm Deletion',
+      deleteConfirmContent: 'Are you sure you want to delete this database? This cannot be undone.',
+      passwordRequired: 'Enter your login password to confirm',
+      passwordPlaceholder: 'Enter login password'
     },
     hiveTables: {
       title: 'Hive Tables',
-      columns: { id: 'ID', database: 'Database', table: 'Table', alias: 'Alias', actions: 'Actions' },
-      viewFields: 'View Fields',
-      backToHiveDatabases: 'Back to Hive Databases',
+      columns: { database: 'DB Name', table: 'Table', alias: 'Alias', fieldCount: 'Fields', rowCount: 'Rows', actions: 'Actions' },
+      executeSql: 'Run SQL',
+      backToHiveDatabases: 'Back to Hive DB',
       sourceLabel: 'Source',
-      databaseLabel: 'DB'
+      databaseLabel: 'DB',
+      createTitle: 'Create Table',
+      createBySql: 'Create by SQL',
+      createByFields: 'Create by Fields',
+      form: { tableName: 'Table Name', alias: 'Alias', sql: 'Create Table SQL', fieldName: 'Field Name', fieldType: 'Field Type', addField: 'Add Field' },
+      fieldDetailTitle: 'Field List',
+      fieldDetailColumns: { name: 'Name', type: 'Type', comment: 'Comment' },
+      deleteConfirmTitle: 'Confirm Deletion',
+      deleteConfirmContent: 'Are you sure you want to delete this table? This cannot be undone.',
+      passwordRequired: 'Enter your login password to confirm',
+      passwordPlaceholder: 'Enter login password'
     },
     duckdbTables: {
       title: 'DuckDB Tables',

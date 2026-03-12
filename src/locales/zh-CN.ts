@@ -69,8 +69,8 @@ export default {
     operationListOutput: '运营名单管理',
     logViewer: '日志查看',
     dataSourceOverview: '数据源总览',
-    hiveDatabases: 'Hive 库管理',
-    hiveTables: 'Hive 表管理',
+    hiveDatabases: 'Hive库',
+    hiveTables: 'Hive表',
     duckdbTables: 'DuckDB 表管理',
     ingestJobs: '上传与入表任务'
   },
@@ -171,10 +171,12 @@ export default {
       statusConnected: '已连接',
       statusDisconnected: '未连接',
       testConnection: '测试连接',
-      hiveDatabases: 'Hive 库管理',
-      duckdbTables: 'DuckDB 表管理',
+      viewHiveDatabases: '查看',
+      viewDuckdbTables: '查看',
       createTitle: '新建数据源',
-      form: { name: '名称', type: '类型', connectionMode: '连接方式' }
+      form: { name: '名称', type: '类型', connectionAddress: '连接地址' },
+      duckdbExists: 'DuckDB 数据源已存在，不可重复创建。',
+      duckdbAutoCreate: '选择后将自动创建 DuckDB 数据库。'
     },
     featureManagement: {
       title: '特征管理',
@@ -223,19 +225,35 @@ export default {
       levelFilter: '级别筛选'
     },
     hiveDatabases: {
-      title: 'Hive 库管理',
-      columns: { id: 'ID', source: '数据源', database: '数据库', actions: '操作' },
-      tableManagement: '表管理',
+      title: 'Hive库',
+      columns: { source: '数据源', database: '库名', tableCount: '表数量', actions: '操作' },
+      executeSql: '执行 SQL',
       backToDataSources: '返回数据源',
-      sourceLabel: '数据源'
+      sourceLabel: '数据源',
+      createTitle: '新建数据库',
+      form: { databaseName: '数据库名' },
+      deleteConfirmTitle: '确认删除',
+      deleteConfirmContent: '确定要删除该数据库吗？此操作不可恢复。',
+      passwordRequired: '请输入登录密码以确认删除',
+      passwordPlaceholder: '请输入登录密码'
     },
     hiveTables: {
-      title: 'Hive 表管理',
-      columns: { id: 'ID', database: '数据库', table: '表名', alias: '别名', actions: '操作' },
-      viewFields: '查看字段',
-      backToHiveDatabases: '返回 Hive 库',
+      title: 'Hive表',
+      columns: { database: '库名', table: '表名', alias: '别名', fieldCount: '字段数', rowCount: '数据量', actions: '操作' },
+      executeSql: '执行 SQL',
+      backToHiveDatabases: '返回 Hive库',
       sourceLabel: '数据源',
-      databaseLabel: '数据库'
+      databaseLabel: '数据库',
+      createTitle: '新建表',
+      createBySql: 'SQL 建表',
+      createByFields: '字段定义建表',
+      form: { tableName: '表名', alias: '别名', sql: '建表 SQL', fieldName: '字段名', fieldType: '字段类型', addField: '添加字段' },
+      fieldDetailTitle: '字段列表',
+      fieldDetailColumns: { name: '字段名', type: '字段类型', comment: '备注' },
+      deleteConfirmTitle: '确认删除',
+      deleteConfirmContent: '确定要删除该表吗？此操作不可恢复。',
+      passwordRequired: '请输入登录密码以确认删除',
+      passwordPlaceholder: '请输入登录密码'
     },
     duckdbTables: {
       title: 'DuckDB 表管理',

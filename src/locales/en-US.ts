@@ -168,8 +168,10 @@ export default {
     license: { title: 'License' },
     dataSources: {
       title: 'Data Sources',
-      columns: { id: 'ID', name: 'Name', type: 'Type', connectionMode: 'Connection Mode', actions: 'Actions' },
-      testConnection: 'Test Connection',
+      columns: { name: 'Source Name', type: 'Type', connectionStatus: 'Connection Status', actions: 'Actions' },
+      statusConnected: 'Connected',
+      statusDisconnected: 'Disconnected',
+      testConnection: 'Test',
       hiveDatabases: 'Hive Databases',
       duckdbTables: 'DuckDB Tables',
       createTitle: 'Create Data Source',
@@ -231,6 +233,7 @@ export default {
     hiveTables: {
       title: 'Hive Tables',
       columns: { id: 'ID', database: 'Database', table: 'Table', alias: 'Alias', actions: 'Actions' },
+      viewFields: 'View Fields',
       backToHiveDatabases: 'Back to Hive Databases',
       sourceLabel: 'Source',
       databaseLabel: 'DB'
@@ -239,6 +242,7 @@ export default {
       title: 'DuckDB Tables',
       columns: { id: 'ID', table: 'Table', rowCount: 'Row Count', enabled: 'Enabled', actions: 'Actions' },
       uploadData: 'Upload Data',
+      viewFields: 'View Fields',
       backToDataSources: 'Back to Data Sources',
       enabledTrue: 'Enabled',
       enabledFalse: 'Disabled',

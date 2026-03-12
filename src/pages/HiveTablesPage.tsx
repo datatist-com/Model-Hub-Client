@@ -23,6 +23,7 @@ export default function HiveTablesPage() {
       title: t('pages.hiveTables.columns.actions'),
       render: () => (
         <Space>
+          <Button size="small" type="primary">{t('pages.hiveTables.viewFields')}</Button>
           <Button size="small">{t('common.edit')}</Button>
           <Button size="small" danger>{t('common.delete')}</Button>
         </Space>

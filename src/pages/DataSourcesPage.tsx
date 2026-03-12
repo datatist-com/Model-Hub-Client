@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Button, Card, Form, Input, Modal, Select, Space, Table } from 'antd';
+import { Button, Card, Form, Input, Modal, Select, Space, Table, Tag, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-type Source = { id: string; name: string; type: 'hive' | 'duckdb'; mode: 'external' | 'local' };
+type Source = { id: string; name: string; type: 'hive' | 'duckdb'; mode: 'external' | 'local'; connected: boolean };
 
 const rows: Source[] = [
-  { id: 'src-001', name: 'hive-prod', type: 'hive', mode: 'external' },
-  { id: 'src-002', name: 'duckdb-local-a', type: 'duckdb', mode: 'local' }
+  { id: 'src-001', name: 'hive-prod', type: 'hive', mode: 'external', connected: true },
+  { id: 'src-002', name: 'duckdb-local-a', type: 'duckdb', mode: 'local', connected: false }
 ];
 
 export default function DataSourcesPage() {
@@ -17,15 +17,25 @@ export default function DataSourcesPage() {
   const navigate = useNavigate();
 
   const columns: ColumnsType<Source> = [
-    { title: t('pages.dataSources.columns.id'), dataIndex: 'id' },
     { title: t('pages.dataSources.columns.name'), dataIndex: 'name' },
     { title: t('pages.dataSources.columns.type'), dataIndex: 'type' },
-    { title: t('pages.dataSources.columns.connectionMode'), dataIndex: 'mode' },
+    {
+      title: t('pages.dataSources.columns.connectionStatus'),
+      render: (_, row) => (
+        <Space>
+          {row.connected
+            ? <Tag color="green">{t('pages.dataSources.statusConnected')}</Tag>
+            : <Tag color="red">{t('pages.dataSources.statusDisconnected')}</Tag>}
+          <Button size="small" onClick={() => message.info(t('pages.dataSources.testConnection'))}>
+            {t('pages.dataSources.testConnection')}
+          </Button>
+        </Space>
+      )
+    },
     {
       title: t('pages.dataSources.columns.actions'),
       render: (_, row) => (
         <Space>
-          <Button size="small">{t('pages.dataSources.testConnection')}</Button>
           {row.type === 'hive' ? (
             <Button
               size="small"
@@ -51,6 +61,8 @@ export default function DataSourcesPage() {
               {t('pages.dataSources.duckdbTables')}
             </Button>
           )}
+          <Button size="small">{t('common.edit')}</Button>
+          <Button size="small" danger>{t('common.delete')}</Button>
         </Space>
       )
     }

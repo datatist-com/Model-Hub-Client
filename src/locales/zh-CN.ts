@@ -167,7 +167,9 @@ export default {
     license: { title: '许可证管理' },
     dataSources: {
       title: '数据源管理',
-      columns: { id: 'ID', name: '名称', type: '类型', connectionMode: '连接方式', actions: '操作' },
+      columns: { name: '数据源名称', type: '类型', connectionStatus: '连接状态', actions: '操作' },
+      statusConnected: '已连接',
+      statusDisconnected: '未连接',
       testConnection: '测试连接',
       hiveDatabases: 'Hive 库管理',
       duckdbTables: 'DuckDB 表管理',
@@ -230,6 +232,7 @@ export default {
     hiveTables: {
       title: 'Hive 表管理',
       columns: { id: 'ID', database: '数据库', table: '表名', alias: '别名', actions: '操作' },
+      viewFields: '查看字段',
       backToHiveDatabases: '返回 Hive 库',
       sourceLabel: '数据源',
       databaseLabel: '数据库'
@@ -238,6 +241,7 @@ export default {
       title: 'DuckDB 表管理',
       columns: { id: 'ID', table: '表名', rowCount: '行数', enabled: '启用状态', actions: '操作' },
       uploadData: '上传数据',
+      viewFields: '查看字段',
       backToDataSources: '返回数据源',
       enabledTrue: '已启用',
       enabledFalse: '未启用',

@@ -38,6 +38,7 @@ export default function DuckDBTablesPage() {
           >
             {t('pages.duckdbTables.uploadData')}
           </Button>
+          <Button size="small" type="primary">{t('pages.duckdbTables.viewFields')}</Button>
           <Button size="small">{t('common.edit')}</Button>
           <Button size="small" danger>{t('common.delete')}</Button>
         </Space>

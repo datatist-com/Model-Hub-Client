@@ -90,7 +90,6 @@ export default function HiveTablesPage() {
       className="page-card"
       title={
         <Space>
-          {t('pages.hiveTables.title')}
           <Tooltip title={t('pages.hiveTables.backToHiveDatabases')}>
             <LeftOutlined
               style={{ fontSize: 14, cursor: 'pointer', opacity: 0.45 }}
@@ -101,6 +100,7 @@ export default function HiveTablesPage() {
               }
             />
           </Tooltip>
+          {t('pages.hiveTables.title')}
         </Space>
       }
       extra={

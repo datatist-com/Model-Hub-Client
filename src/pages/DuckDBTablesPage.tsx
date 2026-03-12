@@ -55,13 +55,13 @@ export default function DuckDBTablesPage() {
       className="page-card"
       title={
         <Space>
-          {t('pages.duckdbTables.title')}
           <Tooltip title={t('pages.duckdbTables.backToDataSources')}>
             <LeftOutlined
               style={{ fontSize: 14, cursor: 'pointer', opacity: 0.45 }}
               onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}
             />
           </Tooltip>
+          {t('pages.duckdbTables.title')}
         </Space>
       }
       extra={

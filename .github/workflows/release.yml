@@ -1,0 +1,131 @@
+name: Auto Tag & Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  # ── 1. Resolve / create the semver tag ────────────────────────────────
+  tag:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        id: version
+        run: |
+          # If HEAD already carries a semver tag (manual major/minor bump), reuse it.
+          CURRENT_TAG=$(git tag --points-at HEAD 2>/dev/null \
+            | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
+
+          if [ -n "$CURRENT_TAG" ]; then
+            echo "Using existing tag: $CURRENT_TAG"
+            echo "version=$CURRENT_TAG" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Otherwise auto-increment patch.
+          LATEST_TAG=$(git tag -l 'v*' --sort=-v:refname \
+            | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
+          LATEST_TAG=${LATEST_TAG:-v0.1.0}
+
+          VERSION=${LATEST_TAG#v}
+          MAJOR=$(echo "$VERSION" | cut -d. -f1)
+          MINOR=$(echo "$VERSION" | cut -d. -f2)
+          PATCH=$(echo "$VERSION" | cut -d. -f3)
+          PATCH=$((PATCH + 1))
+          NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+
+          echo "Auto-tagging: $LATEST_TAG → $NEW_TAG"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$NEW_TAG" -m "release $NEW_TAG"
+          git push origin "$NEW_TAG"
+
+          echo "version=$NEW_TAG" >> "$GITHUB_OUTPUT"
+
+  # ── 2. Build frontend + cross-compile Go binaries ─────────────────────
+  build:
+    needs: tag
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            suffix: linux-amd64
+          - goos: linux
+            goarch: arm64
+            suffix: linux-arm64
+          - goos: darwin
+            goarch: amd64
+            suffix: darwin-amd64
+          - goos: darwin
+            goarch: arm64
+            suffix: darwin-arm64
+          - goos: windows
+            goarch: amd64
+            suffix: windows-amd64
+            ext: .exe
+          - goos: windows
+            goarch: arm64
+            suffix: windows-arm64
+            ext: .exe
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install & build frontend
+        run: |
+          npm ci
+          npm run build
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build binary (${{ matrix.suffix }})
+        env:
+          CGO_ENABLED: '0'
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          # Replace placeholder with the real build output
+          rm -rf server/dist
+          cp -r dist server/dist
+          cd server
+          go build -ldflags="-s -w" -trimpath \
+            -o "../model-hub-client-${{ matrix.suffix }}${{ matrix.ext }}" .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model-hub-client-${{ matrix.suffix }}
+          path: model-hub-client-${{ matrix.suffix }}${{ matrix.ext }}
+
+  # ── 3. Publish GitHub Release ─────────────────────────────────────────
+  release:
+    needs: [tag, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.tag.outputs.version }}
+          name: Release ${{ needs.tag.outputs.version }}
+          generate_release_notes: true
+          files: artifacts/**/*

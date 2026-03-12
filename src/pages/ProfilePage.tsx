@@ -74,24 +74,26 @@ export default function ProfilePage() {
   });
 
   const loginColumns: ColumnsType<LoginRecord> = [
-    { title: t('pages.profile.loginTime'), dataIndex: 'time' },
-    { title: 'IP', dataIndex: 'ip' },
-    { title: t('pages.profile.location'), dataIndex: 'location' },
+    { title: t('pages.profile.loginTime'), dataIndex: 'time', width: 180 },
+    { title: 'IP', dataIndex: 'ip', width: 140 },
+    { title: t('pages.profile.location'), dataIndex: 'location', width: 160 },
     {
       title: t('pages.profile.status'),
       dataIndex: 'status',
+      width: 100,
       render: (status) =>
         status === 'success' ? <Tag color="green">{t('pages.profile.success')}</Tag> : <Tag color="red">{t('pages.profile.failed')}</Tag>
     }
   ];
 
   const actionColumns: ColumnsType<ActionRecord> = [
-    { title: t('pages.profile.actionTime'), dataIndex: 'time' },
-    { title: t('pages.profile.module'), dataIndex: 'module' },
-    { title: t('pages.profile.action'), dataIndex: 'action' },
+    { title: t('pages.profile.actionTime'), dataIndex: 'time', width: 180 },
+    { title: t('pages.profile.module'), dataIndex: 'module', width: 140 },
+    { title: t('pages.profile.action'), dataIndex: 'action', width: 200 },
     {
       title: t('pages.profile.status'),
       dataIndex: 'result',
+      width: 100,
       render: (result) =>
         result === 'success' ? <Tag color="green">{t('pages.profile.success')}</Tag> : <Tag color="red">{t('pages.profile.failed')}</Tag>
     }

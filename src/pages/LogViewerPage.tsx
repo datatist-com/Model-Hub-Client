@@ -31,7 +31,7 @@ export default function LogViewerPage() {
       width: 100,
       render: (level) => <Tag color={levelColorMap[level as keyof typeof levelColorMap]}>{level}</Tag>
     },
-    { title: t('pages.logViewer.columns.source'), dataIndex: 'source', width: 160 },
+    { title: t('pages.logViewer.columns.source'), dataIndex: 'source', width: 140 },
     { title: t('pages.logViewer.columns.message'), dataIndex: 'message' }
   ];
 

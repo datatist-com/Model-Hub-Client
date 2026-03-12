@@ -29,11 +29,12 @@ export default function HiveDatabasesPage() {
   };
 
   const columns: ColumnsType<Row> = [
-    { title: t('pages.hiveDatabases.columns.source'), dataIndex: 'sourceId', render: () => sourceName },
-    { title: t('pages.hiveDatabases.columns.database'), dataIndex: 'databaseName' },
+    { title: t('pages.hiveDatabases.columns.source'), dataIndex: 'sourceId', width: 160, render: () => sourceName },
+    { title: t('pages.hiveDatabases.columns.database'), dataIndex: 'databaseName', width: 200 },
     {
       title: t('pages.hiveDatabases.columns.objectCount'),
       dataIndex: 'tableCount',
+      width: 200,
       render: (count: number, row) => (
         <Space>
           <a

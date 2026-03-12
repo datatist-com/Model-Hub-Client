@@ -24,18 +24,20 @@ export default function ModelManagementPage() {
   };
 
   const columns: ColumnsType<ModelRow> = [
-    { title: t('pages.modelManagement.columns.id'), dataIndex: 'id' },
-    { title: t('pages.modelManagement.columns.modelName'), dataIndex: 'modelName' },
-    { title: t('pages.modelManagement.columns.version'), dataIndex: 'version' },
-    { title: t('pages.modelManagement.columns.auc'), dataIndex: 'auc', render: (v) => v.toFixed(2) },
+    { title: t('pages.modelManagement.columns.id'), dataIndex: 'id', width: 100 },
+    { title: t('pages.modelManagement.columns.modelName'), dataIndex: 'modelName', width: 200 },
+    { title: t('pages.modelManagement.columns.version'), dataIndex: 'version', width: 80 },
+    { title: t('pages.modelManagement.columns.auc'), dataIndex: 'auc', width: 80, render: (v) => v.toFixed(2) },
     {
       title: t('pages.modelManagement.columns.status'),
       dataIndex: 'status',
+      width: 100,
       render: (s) => <Tag color={statusColorMap[s as keyof typeof statusColorMap]}>{statusTextMap[s]}</Tag>
     },
-    { title: t('pages.modelManagement.columns.updatedAt'), dataIndex: 'updatedAt' },
+    { title: t('pages.modelManagement.columns.updatedAt'), dataIndex: 'updatedAt', width: 160 },
     {
       title: t('pages.users.columns.actions'),
+      width: 160,
       render: () => (
         <Space>
           <Button size="small">{t('common.edit')}</Button>

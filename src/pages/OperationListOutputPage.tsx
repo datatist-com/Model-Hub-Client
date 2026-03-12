@@ -23,18 +23,20 @@ export default function OperationListOutputPage() {
   };
 
   const columns: ColumnsType<ListRow> = [
-    { title: t('pages.operationListOutput.columns.id'), dataIndex: 'id' },
-    { title: t('pages.operationListOutput.columns.listName'), dataIndex: 'listName' },
-    { title: t('pages.operationListOutput.columns.model'), dataIndex: 'model' },
-    { title: t('pages.operationListOutput.columns.recordCount'), dataIndex: 'recordCount' },
+    { title: t('pages.operationListOutput.columns.id'), dataIndex: 'id', width: 100 },
+    { title: t('pages.operationListOutput.columns.listName'), dataIndex: 'listName', width: 200 },
+    { title: t('pages.operationListOutput.columns.model'), dataIndex: 'model', width: 180 },
+    { title: t('pages.operationListOutput.columns.recordCount'), dataIndex: 'recordCount', width: 100 },
     {
       title: t('pages.operationListOutput.columns.status'),
       dataIndex: 'status',
+      width: 100,
       render: (s) => <Tag color={statusColorMap[s as keyof typeof statusColorMap]}>{statusTextMap[s]}</Tag>
     },
-    { title: t('pages.operationListOutput.columns.createdAt'), dataIndex: 'createdAt' },
+    { title: t('pages.operationListOutput.columns.createdAt'), dataIndex: 'createdAt', width: 160 },
     {
       title: t('pages.users.columns.actions'),
+      width: 160,
       render: () => (
         <Space>
           <Button size="small">{t('common.edit')}</Button>

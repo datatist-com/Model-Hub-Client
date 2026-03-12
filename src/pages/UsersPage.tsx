@@ -16,16 +16,18 @@ export default function UsersPage() {
   const [open, setOpen] = useState(false);
 
   const columns: ColumnsType<UserRow> = [
-    { title: t('pages.users.columns.id'), dataIndex: 'id' },
-    { title: t('pages.users.columns.username'), dataIndex: 'username' },
-    { title: t('pages.users.columns.role'), dataIndex: 'role' },
+    { title: t('pages.users.columns.id'), dataIndex: 'id', width: 100 },
+    { title: t('pages.users.columns.username'), dataIndex: 'username', width: 160 },
+    { title: t('pages.users.columns.role'), dataIndex: 'role', width: 160 },
     {
       title: t('pages.users.columns.status'),
       dataIndex: 'status',
+      width: 100,
       render: (s) => (s === 'active' ? <Tag color="green">{t('pages.users.statusActive')}</Tag> : <Tag color="orange">{t('pages.users.statusFrozen')}</Tag>)
     },
     {
       title: t('pages.users.columns.actions'),
+      width: 160,
       render: () => (
         <Space>
           <Button size="small">{t('common.edit')}</Button>

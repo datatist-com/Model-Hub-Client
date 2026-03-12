@@ -15,20 +15,22 @@ export default function TargetManagementPage() {
   const { t } = useTranslation();
 
   const columns: ColumnsType<TargetRow> = [
-    { title: t('pages.targetManagement.columns.id'), dataIndex: 'id' },
-    { title: t('pages.targetManagement.columns.targetName'), dataIndex: 'targetName' },
+    { title: t('pages.targetManagement.columns.id'), dataIndex: 'id', width: 100 },
+    { title: t('pages.targetManagement.columns.targetName'), dataIndex: 'targetName', width: 180 },
     {
       title: t('pages.targetManagement.columns.type'),
       dataIndex: 'type',
+      width: 120,
       render: (v) =>
         v === 'binary'
           ? <Tag color="blue">{t('pages.targetManagement.typeBinary')}</Tag>
           : <Tag color="purple">{t('pages.targetManagement.typeContinuous')}</Tag>
     },
     { title: t('pages.targetManagement.columns.description'), dataIndex: 'description' },
-    { title: t('pages.targetManagement.columns.createdAt'), dataIndex: 'createdAt' },
+    { title: t('pages.targetManagement.columns.createdAt'), dataIndex: 'createdAt', width: 160 },
     {
       title: t('pages.users.columns.actions'),
+      width: 160,
       render: () => (
         <Space>
           <Button size="small">{t('common.edit')}</Button>

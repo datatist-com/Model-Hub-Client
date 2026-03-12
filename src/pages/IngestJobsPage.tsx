@@ -18,17 +18,18 @@ export default function IngestJobsPage() {
   const tableName = searchParams.get('tableName') ?? 'user_events';
 
   const columns: ColumnsType<JobRow> = [
-    { title: t('pages.ingestJobs.columns.jobId'), dataIndex: 'jobId' },
-    { title: t('pages.ingestJobs.columns.targetTable'), dataIndex: 'tableName' },
+    { title: t('pages.ingestJobs.columns.jobId'), dataIndex: 'jobId', width: 140 },
+    { title: t('pages.ingestJobs.columns.targetTable'), dataIndex: 'tableName', width: 200 },
     {
       title: t('pages.ingestJobs.columns.status'),
       dataIndex: 'status',
+      width: 120,
       render: (s) => {
         const color = s === 'succeeded' ? 'green' : s === 'failed' ? 'red' : s === 'running' ? 'blue' : 'gold';
         return <Tag color={color}>{s}</Tag>;
       }
     },
-    { title: t('pages.ingestJobs.columns.action'), render: () => <Button size="small">{t('pages.ingestJobs.view')}</Button> }
+    { title: t('pages.ingestJobs.columns.action'), width: 100, render: () => <Button size="small">{t('pages.ingestJobs.view')}</Button> }
   ];
 
   return (

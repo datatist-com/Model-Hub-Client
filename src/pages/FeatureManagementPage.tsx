@@ -16,19 +16,21 @@ export default function FeatureManagementPage() {
   const { t } = useTranslation();
 
   const columns: ColumnsType<FeatureRow> = [
-    { title: t('pages.featureManagement.columns.id'), dataIndex: 'id' },
-    { title: t('pages.featureManagement.columns.featureName'), dataIndex: 'featureName' },
-    { title: t('pages.featureManagement.columns.dataType'), dataIndex: 'dataType' },
-    { title: t('pages.featureManagement.columns.sourceTable'), dataIndex: 'sourceTable' },
+    { title: t('pages.featureManagement.columns.id'), dataIndex: 'id', width: 100 },
+    { title: t('pages.featureManagement.columns.featureName'), dataIndex: 'featureName', width: 180 },
+    { title: t('pages.featureManagement.columns.dataType'), dataIndex: 'dataType', width: 120 },
+    { title: t('pages.featureManagement.columns.sourceTable'), dataIndex: 'sourceTable', width: 160 },
     {
       title: t('pages.featureManagement.columns.status'),
       dataIndex: 'status',
+      width: 100,
       render: (s) =>
         s === 'enabled' ? <Tag color="green">{t('pages.featureManagement.statusEnabled')}</Tag> : <Tag>{t('pages.featureManagement.statusDisabled')}</Tag>
     },
-    { title: t('pages.featureManagement.columns.createdAt'), dataIndex: 'createdAt' },
+    { title: t('pages.featureManagement.columns.createdAt'), dataIndex: 'createdAt', width: 160 },
     {
       title: t('pages.users.columns.actions'),
+      width: 160,
       render: () => (
         <Space>
           <Button size="small">{t('common.edit')}</Button>

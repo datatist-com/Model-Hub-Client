@@ -24,11 +24,12 @@ export default function DuckDBTablesPage() {
   };
 
   const columns: ColumnsType<Row> = [
-    { title: t('pages.duckdbTables.columns.id'), dataIndex: 'id' },
-    { title: t('pages.duckdbTables.columns.table'), dataIndex: 'tableName' },
+    { title: t('pages.duckdbTables.columns.id'), dataIndex: 'id', width: 100 },
+    { title: t('pages.duckdbTables.columns.table'), dataIndex: 'tableName', width: 200 },
     {
       title: t('pages.duckdbTables.columns.objectCount'),
       dataIndex: 'rowCount',
+      width: 200,
       render: (count: number, row) => (
         <Space>
           <span>{refreshingIds.has(row.id) ? '-' : t('pages.duckdbTables.containsRecords', { count: count.toLocaleString() })}</span>
@@ -39,10 +40,12 @@ export default function DuckDBTablesPage() {
     {
       title: t('pages.duckdbTables.columns.enabled'),
       dataIndex: 'enabled',
+      width: 100,
       render: (v) => (v ? <Tag color="green">{t('pages.duckdbTables.enabledTrue')}</Tag> : <Tag>{t('pages.duckdbTables.enabledFalse')}</Tag>)
     },
     {
       title: t('pages.duckdbTables.columns.actions'),
+      width: 280,
       render: (_, row) => (
         <Space>
           <Button

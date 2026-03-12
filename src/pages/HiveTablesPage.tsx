@@ -46,18 +46,19 @@ export default function HiveTablesPage() {
   };
 
   const fieldColumns = [
-    { title: t('pages.hiveTables.fieldDetailColumns.name'), dataIndex: 'name' },
-    { title: t('pages.hiveTables.fieldDetailColumns.type'), dataIndex: 'type' },
+    { title: t('pages.hiveTables.fieldDetailColumns.name'), dataIndex: 'name', width: 160 },
+    { title: t('pages.hiveTables.fieldDetailColumns.type'), dataIndex: 'type', width: 120 },
     { title: t('pages.hiveTables.fieldDetailColumns.comment'), dataIndex: 'comment' }
   ];
 
   const columns: ColumnsType<Row> = [
-    { title: t('pages.hiveTables.columns.database'), dataIndex: 'databaseName' },
-    { title: t('pages.hiveTables.columns.table'), dataIndex: 'tableName' },
-    { title: t('pages.hiveTables.columns.alias'), dataIndex: 'alias' },
+    { title: t('pages.hiveTables.columns.database'), dataIndex: 'databaseName', width: 120 },
+    { title: t('pages.hiveTables.columns.table'), dataIndex: 'tableName', width: 200 },
+    { title: t('pages.hiveTables.columns.alias'), dataIndex: 'alias', width: 160 },
     {
       title: t('pages.hiveTables.columns.objectCount'),
       dataIndex: 'fieldCount',
+      width: 180,
       render: (count: number, row) => (
         <Space>
           <a onClick={() => setFieldDetailOpen(true)}>{refreshingIds.has(row.id) ? '-' : t('pages.hiveTables.containsFields', { count })}</a>
@@ -68,6 +69,7 @@ export default function HiveTablesPage() {
     {
       title: t('pages.hiveTables.columns.rowCount'),
       dataIndex: 'rowCount',
+      width: 200,
       render: (v: number, row) => (
         <Space>
           <span>{refreshingRowIds.has(row.id) ? '-' : t('pages.hiveTables.containsRecords', { count: v.toLocaleString() })}</span>

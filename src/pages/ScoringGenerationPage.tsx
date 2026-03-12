@@ -24,18 +24,20 @@ export default function ScoringGenerationPage() {
   };
 
   const columns: ColumnsType<ScoringRow> = [
-    { title: t('pages.scoringGeneration.columns.id'), dataIndex: 'id' },
-    { title: t('pages.scoringGeneration.columns.model'), dataIndex: 'model' },
-    { title: t('pages.scoringGeneration.columns.dataset'), dataIndex: 'dataset' },
-    { title: t('pages.scoringGeneration.columns.scoreCount'), dataIndex: 'scoreCount' },
+    { title: t('pages.scoringGeneration.columns.id'), dataIndex: 'id', width: 100 },
+    { title: t('pages.scoringGeneration.columns.model'), dataIndex: 'model', width: 200 },
+    { title: t('pages.scoringGeneration.columns.dataset'), dataIndex: 'dataset', width: 160 },
+    { title: t('pages.scoringGeneration.columns.scoreCount'), dataIndex: 'scoreCount', width: 120 },
     {
       title: t('pages.scoringGeneration.columns.status'),
       dataIndex: 'status',
+      width: 100,
       render: (s) => <Tag color={statusColorMap[s as keyof typeof statusColorMap]}>{statusTextMap[s]}</Tag>
     },
-    { title: t('pages.scoringGeneration.columns.createdAt'), dataIndex: 'createdAt' },
+    { title: t('pages.scoringGeneration.columns.createdAt'), dataIndex: 'createdAt', width: 160 },
     {
       title: t('pages.users.columns.actions'),
+      width: 100,
       render: () => <Button size="small">{t('common.edit')}</Button>
     }
   ];

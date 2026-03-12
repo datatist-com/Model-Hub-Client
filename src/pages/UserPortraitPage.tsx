@@ -15,19 +15,21 @@ export default function UserPortraitPage() {
   const { t } = useTranslation();
 
   const columns: ColumnsType<PortraitRow> = [
-    { title: t('pages.userPortrait.columns.id'), dataIndex: 'id' },
-    { title: t('pages.userPortrait.columns.portraitName'), dataIndex: 'portraitName' },
-    { title: t('pages.userPortrait.columns.userCount'), dataIndex: 'userCount' },
-    { title: t('pages.userPortrait.columns.tagCount'), dataIndex: 'tagCount' },
+    { title: t('pages.userPortrait.columns.id'), dataIndex: 'id', width: 100 },
+    { title: t('pages.userPortrait.columns.portraitName'), dataIndex: 'portraitName', width: 180 },
+    { title: t('pages.userPortrait.columns.userCount'), dataIndex: 'userCount', width: 120 },
+    { title: t('pages.userPortrait.columns.tagCount'), dataIndex: 'tagCount', width: 100 },
     {
       title: t('pages.userPortrait.columns.status'),
       dataIndex: 'status',
+      width: 100,
       render: (s) =>
         s === 'active' ? <Tag color="green">{t('pages.userPortrait.statusActive')}</Tag> : <Tag>{t('pages.userPortrait.statusInactive')}</Tag>
     },
-    { title: t('pages.userPortrait.columns.updatedAt'), dataIndex: 'updatedAt' },
+    { title: t('pages.userPortrait.columns.updatedAt'), dataIndex: 'updatedAt', width: 160 },
     {
       title: t('pages.users.columns.actions'),
+      width: 160,
       render: () => (
         <Space>
           <Button size="small">{t('common.edit')}</Button>

@@ -42,6 +42,7 @@ export default function DataSourcesPage() {
     {
       title: t('pages.dataSources.columns.name'),
       dataIndex: 'name',
+      width: 200,
       render: (name: string, row) => (
         <Space>
           <span>{name}</span>
@@ -51,9 +52,10 @@ export default function DataSourcesPage() {
         </Space>
       )
     },
-    { title: t('pages.dataSources.columns.type'), dataIndex: 'type' },
+    { title: t('pages.dataSources.columns.type'), dataIndex: 'type', width: 100 },
     {
       title: t('pages.dataSources.columns.connectionStatus'),
+      width: 120,
       render: (_, row) => (
         row.connected
           ? <Tag color="green" style={{ cursor: 'pointer' }} onClick={() => handleConnectionClick(row)}>{t('pages.dataSources.statusConnected')}</Tag>
@@ -62,6 +64,7 @@ export default function DataSourcesPage() {
     },
     {
       title: t('pages.dataSources.columns.objectCount'),
+      width: 180,
       render: (_, row) => (
         <Space>
           <a
@@ -83,6 +86,7 @@ export default function DataSourcesPage() {
     },
     {
       title: t('pages.dataSources.columns.actions'),
+      width: 160,
       render: (_, row) => (
         <Space>
           <Button size="small" onClick={() => { setEditRecord(row); editForm.setFieldsValue({ name: row.name }); setEditOpen(true); }}>{t('common.edit')}</Button>

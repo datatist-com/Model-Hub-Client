@@ -63,7 +63,7 @@ export default function DuckDBTablesPage() {
               onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}
             />
           </Tooltip>
-          {t('pages.duckdbTables.title')} ({t('pages.duckdbTables.sourceLabel')}: {sourceName})
+          <span>{t('pages.duckdbTables.title')} ({t('pages.duckdbTables.sourceLabel')}: {sourceName})</span>
         </Space>
       }
       extra={<Button icon={<PlusOutlined />}>{t('common.create')}</Button>}

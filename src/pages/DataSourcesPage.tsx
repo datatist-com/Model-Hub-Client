@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Card, Form, Input, Modal, Select, Space, Table, Tag, Tooltip, Typography, message } from 'antd';
-import { ApiOutlined, PlusOutlined } from '@ant-design/icons';
+import { ApiOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +20,9 @@ export default function DataSourcesPage() {
   const navigate = useNavigate();
 
   const duckdbExists = rows.some((r) => r.type === 'duckdb');
+  const [editOpen, setEditOpen] = useState(false);
+  const [editRecord, setEditRecord] = useState<Source | null>(null);
+  const [editForm] = Form.useForm();
 
   const columns: ColumnsType<Source> = [
     { title: t('pages.dataSources.columns.name'), dataIndex: 'name' },
@@ -57,10 +60,20 @@ export default function DataSourcesPage() {
     },
     {
       title: t('pages.dataSources.columns.actions'),
-      render: () => (
+      render: (_, row) => (
         <Space>
-          <Button size="small">{t('common.edit')}</Button>
-          <Button size="small" danger>{t('common.delete')}</Button>
+          <Button size="small" onClick={() => { setEditRecord(row); editForm.setFieldsValue({ name: row.name }); setEditOpen(true); }}>{t('common.edit')}</Button>
+          <Button size="small" danger onClick={() => {
+            Modal.confirm({
+              title: t('pages.dataSources.deleteConfirmTitle'),
+              icon: <ExclamationCircleOutlined />,
+              content: t('pages.dataSources.deleteConfirmContent'),
+              okText: t('common.delete'),
+              okButtonProps: { danger: true },
+              cancelText: t('common.cancel'),
+              onOk: () => message.success('Deleted')
+            });
+          }}>{t('common.delete')}</Button>
         </Space>
       )
     }
@@ -106,6 +119,21 @@ export default function DataSourcesPage() {
           )}
           <Form.Item>
             <Button type="primary" htmlType="submit" disabled={formType === 'duckdb' && duckdbExists}>{t('common.save')}</Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal open={editOpen} title={t('pages.dataSources.editTitle')} footer={null} onCancel={() => setEditOpen(false)}>
+        <Form form={editForm} layout="vertical" onFinish={() => setEditOpen(false)}>
+          <Form.Item label={t('pages.dataSources.form.name')} name="name" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          {editRecord?.type === 'hive' && (
+            <Form.Item label={t('pages.dataSources.form.connectionAddress')} name="connectionAddress">
+              <Input placeholder="thrift://host:port" />
+            </Form.Item>
+          )}
+          <Form.Item>
+            <Button type="primary" htmlType="submit">{t('common.save')}</Button>
           </Form.Item>
         </Form>
       </Modal>

@@ -176,7 +176,10 @@ export default {
       createTitle: '新建数据源',
       form: { name: '名称', type: '类型', connectionAddress: '连接地址' },
       duckdbExists: 'DuckDB 数据源已存在，不可重复创建。',
-      duckdbAutoCreate: '选择后将自动创建 DuckDB 数据库。'
+      duckdbAutoCreate: '选择后将自动创建 DuckDB 数据库。',
+      editTitle: '编辑数据源',
+      deleteConfirmTitle: '确认删除',
+      deleteConfirmContent: '确定要删除该数据源吗？此操作不可恢复。'
     },
     featureManagement: {
       title: '特征管理',

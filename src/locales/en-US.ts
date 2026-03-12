@@ -177,7 +177,10 @@ export default {
       createTitle: 'Create Data Source',
       form: { name: 'Name', type: 'Type', connectionAddress: 'Connection Address' },
       duckdbExists: 'A DuckDB source already exists. Only one is allowed.',
-      duckdbAutoCreate: 'A DuckDB database will be created automatically.'
+      duckdbAutoCreate: 'A DuckDB database will be created automatically.',
+      editTitle: 'Edit Data Source',
+      deleteConfirmTitle: 'Confirm Deletion',
+      deleteConfirmContent: 'Are you sure you want to delete this data source? This cannot be undone.'
     },
     featureManagement: {
       title: 'Feature Management',

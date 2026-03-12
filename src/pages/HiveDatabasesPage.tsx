@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Card, Form, Input, Modal, Space, Table, Tooltip, Typography, message } from 'antd';
-import { PlusOutlined, RollbackOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -44,9 +44,6 @@ export default function HiveDatabasesPage() {
       title: t('pages.hiveDatabases.columns.actions'),
       render: (_, row) => (
         <Space>
-          <Button size="small" onClick={() => message.info('SQL console')}>
-            {t('pages.hiveDatabases.executeSql')}
-          </Button>
           <Button
             size="small"
             danger
@@ -79,7 +76,7 @@ export default function HiveDatabasesPage() {
         <Space>
           {t('pages.hiveDatabases.title')}
           <Tooltip title={t('pages.hiveDatabases.backToDataSources')}>
-            <RollbackOutlined
+            <ArrowLeftOutlined
               style={{ fontSize: 14, cursor: 'pointer', opacity: 0.45 }}
               onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}
             />

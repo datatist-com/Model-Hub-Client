@@ -173,6 +173,8 @@ export default {
       statusConnected: 'Connected',
       statusDisconnected: 'Disconnected',
       testConnection: 'Test Connection',
+      connecting: 'Connecting...',
+      reconnecting: 'Reconnecting...',
       containsDatabases: '{{count}} databases',
       containsTables: '{{count}} tables',
       createTitle: 'Create Data Source',

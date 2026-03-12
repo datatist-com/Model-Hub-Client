@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, Card, Form, Input, Modal, Select, Space, Table, Tag, Tooltip, Typography, message } from 'antd';
-import { ApiOutlined, ConsoleSqlOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { ConsoleSqlOutlined, ExclamationCircleOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +23,20 @@ export default function DataSourcesPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<Source | null>(null);
   const [editForm] = Form.useForm();
+  const lastClickTimeRef = useRef(0);
+  const [refreshingIds, setRefreshingIds] = useState<Set<string>>(new Set());
+
+  const handleConnectionClick = (row: Source) => {
+    const now = Date.now();
+    if (now - lastClickTimeRef.current < 1000) return;
+    lastClickTimeRef.current = now;
+    message.info(row.connected ? t('pages.dataSources.reconnecting') : t('pages.dataSources.connecting'));
+  };
+
+  const handleRefreshCount = (id: string) => {
+    setRefreshingIds((prev) => new Set(prev).add(id));
+    setTimeout(() => setRefreshingIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
+  };
 
   const columns: ColumnsType<Source> = [
     {
@@ -41,32 +55,30 @@ export default function DataSourcesPage() {
     {
       title: t('pages.dataSources.columns.connectionStatus'),
       render: (_, row) => (
-        <Space>
-          {row.connected
-            ? <Tag color="green">{t('pages.dataSources.statusConnected')}</Tag>
-            : <Tag color="red">{t('pages.dataSources.statusDisconnected')}</Tag>}
-          <Tooltip title={t('pages.dataSources.testConnection')}>
-            <Button size="small" icon={<ApiOutlined />} onClick={() => message.info(t('pages.dataSources.testConnection'))} />
-          </Tooltip>
-        </Space>
+        row.connected
+          ? <Tag color="green" style={{ cursor: 'pointer' }} onClick={() => handleConnectionClick(row)}>{t('pages.dataSources.statusConnected')}</Tag>
+          : <Tag color="red" style={{ cursor: 'pointer' }} onClick={() => handleConnectionClick(row)}>{t('pages.dataSources.statusDisconnected')}</Tag>
       )
     },
     {
       title: t('pages.dataSources.columns.objectCount'),
       render: (_, row) => (
-        <a
-          onClick={() => {
-            if (row.type === 'hive') {
-              navigate(`/hive-databases?sourceId=${encodeURIComponent(row.id)}`, { state: { sessionTabMode: 'replace' } });
-            } else {
-              navigate(`/duckdb-tables?sourceId=${encodeURIComponent(row.id)}`, { state: { sessionTabMode: 'replace' } });
-            }
-          }}
-        >
-          {row.type === 'hive'
-            ? t('pages.dataSources.containsDatabases', { count: row.objectCount })
-            : t('pages.dataSources.containsTables', { count: row.objectCount })}
-        </a>
+        <Space>
+          <a
+            onClick={() => {
+              if (row.type === 'hive') {
+                navigate(`/hive-databases?sourceId=${encodeURIComponent(row.id)}`, { state: { sessionTabMode: 'replace' } });
+              } else {
+                navigate(`/duckdb-tables?sourceId=${encodeURIComponent(row.id)}`, { state: { sessionTabMode: 'replace' } });
+              }
+            }}
+          >
+            {refreshingIds.has(row.id) ? '-' : (row.type === 'hive'
+              ? t('pages.dataSources.containsDatabases', { count: row.objectCount })
+              : t('pages.dataSources.containsTables', { count: row.objectCount }))}
+          </a>
+          <ReloadOutlined style={{ cursor: 'pointer', fontSize: 12, opacity: 0.45 }} onClick={() => handleRefreshCount(row.id)} />
+        </Space>
       )
     },
     {

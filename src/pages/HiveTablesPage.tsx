@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Card, Form, Input, Modal, Select, Space, Table, Tabs, Tooltip } from 'antd';
-import { LeftOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { LeftOutlined, MinusCircleOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -33,6 +33,17 @@ export default function HiveTablesPage() {
   const sourceName = SOURCE_NAME_MAP[sourceId] ?? sourceId;
   const [createOpen, setCreateOpen] = useState(false);
   const [fieldDetailOpen, setFieldDetailOpen] = useState(false);
+  const [refreshingIds, setRefreshingIds] = useState<Set<string>>(new Set());
+  const [refreshingRowIds, setRefreshingRowIds] = useState<Set<string>>(new Set());
+
+  const handleRefreshField = (id: string) => {
+    setRefreshingIds((prev) => new Set(prev).add(id));
+    setTimeout(() => setRefreshingIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
+  };
+  const handleRefreshRow = (id: string) => {
+    setRefreshingRowIds((prev) => new Set(prev).add(id));
+    setTimeout(() => setRefreshingRowIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
+  };
 
   const fieldColumns = [
     { title: t('pages.hiveTables.fieldDetailColumns.name'), dataIndex: 'name' },
@@ -47,12 +58,22 @@ export default function HiveTablesPage() {
     {
       title: t('pages.hiveTables.columns.objectCount'),
       dataIndex: 'fieldCount',
-      render: (count: number) => <a onClick={() => setFieldDetailOpen(true)}>{t('pages.hiveTables.containsFields', { count })}</a>
+      render: (count: number, row) => (
+        <Space>
+          <a onClick={() => setFieldDetailOpen(true)}>{refreshingIds.has(row.id) ? '-' : t('pages.hiveTables.containsFields', { count })}</a>
+          <ReloadOutlined style={{ cursor: 'pointer', fontSize: 12, opacity: 0.45 }} onClick={() => handleRefreshField(row.id)} />
+        </Space>
+      )
     },
     {
       title: t('pages.hiveTables.columns.rowCount'),
       dataIndex: 'rowCount',
-      render: (v: number) => t('pages.hiveTables.containsRecords', { count: v.toLocaleString() })
+      render: (v: number, row) => (
+        <Space>
+          <span>{refreshingRowIds.has(row.id) ? '-' : t('pages.hiveTables.containsRecords', { count: v.toLocaleString() })}</span>
+          <ReloadOutlined style={{ cursor: 'pointer', fontSize: 12, opacity: 0.45 }} onClick={() => handleRefreshRow(row.id)} />
+        </Space>
+      )
     }
   ];
 

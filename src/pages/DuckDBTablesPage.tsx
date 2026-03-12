@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Button, Card, Space, Table, Tag, Tooltip } from 'antd';
-import { LeftOutlined, PlusOutlined } from '@ant-design/icons';
+import { LeftOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -15,6 +16,12 @@ export default function DuckDBTablesPage() {
   const sourceId = searchParams.get('sourceId') ?? 'src-002';
   const SOURCE_NAME_MAP: Record<string, string> = { 'src-001': 'hive-prod', 'src-002': 'duckdb-local-a' };
   const sourceName = SOURCE_NAME_MAP[sourceId] ?? sourceId;
+  const [refreshingIds, setRefreshingIds] = useState<Set<string>>(new Set());
+
+  const handleRefreshCount = (id: string) => {
+    setRefreshingIds((prev) => new Set(prev).add(id));
+    setTimeout(() => setRefreshingIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
+  };
 
   const columns: ColumnsType<Row> = [
     { title: t('pages.duckdbTables.columns.id'), dataIndex: 'id' },
@@ -22,7 +29,12 @@ export default function DuckDBTablesPage() {
     {
       title: t('pages.duckdbTables.columns.objectCount'),
       dataIndex: 'rowCount',
-      render: (count: number) => t('pages.duckdbTables.containsRecords', { count: count.toLocaleString() })
+      render: (count: number, row) => (
+        <Space>
+          <span>{refreshingIds.has(row.id) ? '-' : t('pages.duckdbTables.containsRecords', { count: count.toLocaleString() })}</span>
+          <ReloadOutlined style={{ cursor: 'pointer', fontSize: 12, opacity: 0.45 }} onClick={() => handleRefreshCount(row.id)} />
+        </Space>
+      )
     },
     {
       title: t('pages.duckdbTables.columns.enabled'),

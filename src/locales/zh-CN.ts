@@ -172,6 +172,8 @@ export default {
       statusConnected: '已连接',
       statusDisconnected: '未连接',
       testConnection: '测试连接',
+      connecting: '正在尝试连接...',
+      reconnecting: '正在尝试重新连接...',
       containsDatabases: '包含 {{count}} 个库',
       containsTables: '包含 {{count}} 个表',
       createTitle: '新建数据源',

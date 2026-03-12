@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Button, Card, Form, Input, Modal, Space, Table, Tooltip, Typography } from 'antd';
-import { LeftOutlined, PlusOutlined } from '@ant-design/icons';
+import { useRef, useState } from 'react';
+import { Button, Card, Form, Input, Modal, Space, Table, Tooltip } from 'antd';
+import { LeftOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -21,24 +21,33 @@ export default function HiveDatabasesPage() {
   const sourceId = searchParams.get('sourceId') ?? 'src-001';
   const sourceName = SOURCE_NAME_MAP[sourceId] ?? sourceId;
   const [createOpen, setCreateOpen] = useState(false);
+  const [refreshingIds, setRefreshingIds] = useState<Set<string>>(new Set());
+
+  const handleRefreshCount = (id: string) => {
+    setRefreshingIds((prev) => new Set(prev).add(id));
+    setTimeout(() => setRefreshingIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
+  };
 
   const columns: ColumnsType<Row> = [
-    { title: t('pages.hiveDatabases.columns.source'), dataIndex: 'sourceId' },
+    { title: t('pages.hiveDatabases.columns.source'), dataIndex: 'sourceId', render: () => sourceName },
     { title: t('pages.hiveDatabases.columns.database'), dataIndex: 'databaseName' },
     {
       title: t('pages.hiveDatabases.columns.objectCount'),
       dataIndex: 'tableCount',
       render: (count: number, row) => (
-        <a
-          onClick={() =>
-            navigate(
-              `/hive-tables?sourceId=${encodeURIComponent(sourceId)}&databaseName=${encodeURIComponent(row.databaseName)}`,
-              { state: { sessionTabMode: 'replace' } }
-            )
-          }
-        >
-          {t('pages.hiveDatabases.containsTables', { count })}
-        </a>
+        <Space>
+          <a
+            onClick={() =>
+              navigate(
+                `/hive-tables?sourceId=${encodeURIComponent(sourceId)}&databaseName=${encodeURIComponent(row.databaseName)}`,
+                { state: { sessionTabMode: 'replace' } }
+              )
+            }
+          >
+            {refreshingIds.has(row.id) ? '-' : t('pages.hiveDatabases.containsTables', { count })}
+          </a>
+          <ReloadOutlined style={{ cursor: 'pointer', fontSize: 12, opacity: 0.45 }} onClick={() => handleRefreshCount(row.id)} />
+        </Space>
       )
     }
   ];

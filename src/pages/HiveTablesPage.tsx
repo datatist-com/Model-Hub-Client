@@ -52,7 +52,7 @@ export default function HiveTablesPage() {
     {
       title: t('pages.hiveTables.columns.rowCount'),
       dataIndex: 'rowCount',
-      render: (v: number) => v.toLocaleString()
+      render: (v: number) => t('pages.hiveTables.containsRecords', { count: v.toLocaleString() })
     }
   ];
 
@@ -71,7 +71,7 @@ export default function HiveTablesPage() {
               }
             />
           </Tooltip>
-          <span>{t('pages.hiveTables.title')} ({t('pages.hiveTables.sourceLabel')}: {sourceName})</span>
+          <span>{t('pages.hiveTables.title')} ({sourceName} / {databaseName})</span>
         </Space>
       }
       extra={<Button icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>{t('common.create')}</Button>}

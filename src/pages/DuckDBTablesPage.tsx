@@ -22,7 +22,7 @@ export default function DuckDBTablesPage() {
     {
       title: t('pages.duckdbTables.columns.objectCount'),
       dataIndex: 'rowCount',
-      render: (count: number) => t('pages.duckdbTables.containsRows', { count: count.toLocaleString() })
+      render: (count: number) => t('pages.duckdbTables.containsRecords', { count: count.toLocaleString() })
     },
     {
       title: t('pages.duckdbTables.columns.enabled'),

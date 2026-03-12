@@ -245,8 +245,9 @@ export default {
     },
     hiveTables: {
       title: 'Hive Table Management',
-      columns: { database: 'DB Name', table: 'Table', alias: 'Alias', objectCount: 'Objects', rowCount: 'Rows', actions: 'Actions' },
+      columns: { database: 'DB Name', table: 'Table', alias: 'Alias', objectCount: 'Objects', rowCount: 'Data Volume', actions: 'Actions' },
       containsFields: '{{count}} fields',
+      containsRecords: '{{count}} records',
       executeSql: 'Run SQL',
       backToHiveDatabases: 'Back to Hive DB',
       sourceLabel: 'Source',
@@ -266,6 +267,7 @@ export default {
       title: 'DuckDB Tables',
       columns: { id: 'ID', table: 'Table', objectCount: 'Data Volume', enabled: 'Enabled', actions: 'Actions' },
       containsRows: '{{count}} rows',
+      containsRecords: '{{count}} records',
       uploadData: 'Upload Data',
       viewFields: 'View Fields',
       backToDataSources: 'Back to Data Sources',

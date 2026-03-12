@@ -20,6 +20,7 @@ const HiveDatabasesPage = lazy(() => import('../pages/HiveDatabasesPage'));
 const HiveTablesPage = lazy(() => import('../pages/HiveTablesPage'));
 const DuckDBTablesPage = lazy(() => import('../pages/DuckDBTablesPage'));
 const IngestJobsPage = lazy(() => import('../pages/IngestJobsPage'));
+const SqlConsolePage = lazy(() => import('../pages/SqlConsolePage'));
 
 const withLoading = (node: React.ReactNode) => <Suspense fallback={<Spin />}>{node}</Suspense>;
 
@@ -52,7 +53,8 @@ export const router = createBrowserRouter([
       { path: '/hive-databases', element: withLoading(<HiveDatabasesPage />) },
       { path: '/hive-tables', element: withLoading(<HiveTablesPage />) },
       { path: '/duckdb-tables', element: withLoading(<DuckDBTablesPage />) },
-      { path: '/ingest-jobs', element: withLoading(<IngestJobsPage />) }
+      { path: '/ingest-jobs', element: withLoading(<IngestJobsPage />) },
+      { path: '/sql-console', element: withLoading(<SqlConsolePage />) }
     ]
   }
 ]);

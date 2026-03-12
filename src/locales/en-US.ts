@@ -73,7 +73,8 @@ export default {
     hiveDatabases: 'Hive DB Management',
     hiveTables: 'Hive Table Management',
     duckdbTables: 'DuckDB Tables',
-    ingestJobs: 'Upload & Ingest Jobs'
+    ingestJobs: 'Upload & Ingest Jobs',
+    sqlConsole: 'SQL Console'
   },
   common: {
     create: 'Create',
@@ -271,6 +272,19 @@ export default {
       enabledTrue: 'Enabled',
       enabledFalse: 'Disabled',
       sourceLabel: 'Source'
+    },
+    sqlConsole: {
+      title: 'SQL Console',
+      backToDataSources: 'Back to Data Sources',
+      placeholder: 'Enter SQL statement...',
+      execute: 'Execute',
+      clear: 'Clear',
+      emptySqlWarning: 'Please enter a SQL statement first',
+      executeSuccess: 'SQL executed successfully',
+      historyTitle: 'Execution History',
+      columns: { executedAt: 'Executed At', sql: 'SQL Statement', status: 'Status', rows: 'Result Rows', duration: 'Duration' },
+      statusSuccess: 'Success',
+      statusError: 'Error'
     },
     ingestJobs: {
       title: 'Upload & Ingest Jobs',

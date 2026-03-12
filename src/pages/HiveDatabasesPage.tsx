@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Button, Card, Form, Input, Modal, Space, Table, Tooltip, Typography, message } from 'antd';
+import { Button, Card, Form, Input, Modal, Space, Table, Tooltip, Typography } from 'antd';
 import { LeftOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 type Row = { id: string; sourceId: string; databaseName: string; tableCount: number };
+
+const SOURCE_NAME_MAP: Record<string, string> = { 'src-001': 'hive-prod', 'src-002': 'duckdb-local-a' };
 
 const data: Row[] = [
   { id: 'hdb-001', sourceId: 'src-001', databaseName: 'dwd', tableCount: 12 },
@@ -17,9 +19,8 @@ export default function HiveDatabasesPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sourceId = searchParams.get('sourceId') ?? 'src-001';
+  const sourceName = SOURCE_NAME_MAP[sourceId] ?? sourceId;
   const [createOpen, setCreateOpen] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
-  const [deletePassword, setDeletePassword] = useState('');
 
   const columns: ColumnsType<Row> = [
     { title: t('pages.hiveDatabases.columns.source'), dataIndex: 'sourceId' },
@@ -39,35 +40,8 @@ export default function HiveDatabasesPage() {
           {t('pages.hiveDatabases.containsTables', { count })}
         </a>
       )
-    },
-    {
-      title: t('pages.hiveDatabases.columns.actions'),
-      render: (_, row) => (
-        <Space>
-          <Button
-            size="small"
-            danger
-            onClick={() => {
-              setDeleteTarget(row);
-              setDeletePassword('');
-            }}
-          >
-            {t('common.delete')}
-          </Button>
-        </Space>
-      )
     }
   ];
-
-  const handleDelete = () => {
-    if (!deletePassword) {
-      message.warning(t('pages.hiveDatabases.passwordRequired'));
-      return;
-    }
-    message.success('Deleted');
-    setDeleteTarget(null);
-    setDeletePassword('');
-  };
 
   return (
     <Card
@@ -80,14 +54,11 @@ export default function HiveDatabasesPage() {
               onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}
             />
           </Tooltip>
-          {t('pages.hiveDatabases.title')}
+          {t('pages.hiveDatabases.title')}（{sourceName}）
         </Space>
       }
       extra={
-        <Space>
-          <Typography.Text type="secondary">{t('pages.hiveDatabases.sourceLabel')}: {sourceId}</Typography.Text>
-          <Button icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>{t('common.create')}</Button>
-        </Space>
+        <Button icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>{t('common.create')}</Button>
       }
     >
       <Table rowKey="id" columns={columns} dataSource={data.map((item) => ({ ...item, sourceId }))} />
@@ -102,22 +73,9 @@ export default function HiveDatabasesPage() {
           </Form.Item>
         </Form>
       </Modal>
-
-      <Modal
-        open={!!deleteTarget}
-        title={t('pages.hiveDatabases.deleteConfirmTitle')}
-        onCancel={() => setDeleteTarget(null)}
-        onOk={handleDelete}
-        okButtonProps={{ danger: true }}
-        okText={t('common.delete')}
-        cancelText={t('common.cancel')}
-      >
-        <p>{t('pages.hiveDatabases.deleteConfirmContent')}</p>
-        <Input.Password
-          placeholder={t('pages.hiveDatabases.passwordPlaceholder')}
-          value={deletePassword}
-          onChange={(e) => setDeletePassword(e.target.value)}
-        />
+    </Card>
+  );
+}
       </Modal>
     </Card>
   );

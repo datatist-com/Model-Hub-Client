@@ -72,7 +72,8 @@ export default {
     hiveDatabases: 'Hive库管理',
     hiveTables: 'Hive表管理',
     duckdbTables: 'DuckDB 表管理',
-    ingestJobs: '上传与入表任务'
+    ingestJobs: '上传与入表任务',
+    sqlConsole: 'SQL 控制台'
   },
   common: {
     create: '新建',
@@ -270,6 +271,19 @@ export default {
       enabledTrue: '已启用',
       enabledFalse: '未启用',
       sourceLabel: '数据源'
+    },
+    sqlConsole: {
+      title: 'SQL 控制台',
+      backToDataSources: '返回数据源',
+      placeholder: '请输入 SQL 语句...',
+      execute: '执行',
+      clear: '清空',
+      emptySqlWarning: '请先输入 SQL 语句',
+      executeSuccess: 'SQL 执行成功',
+      historyTitle: '历史执行记录',
+      columns: { executedAt: '执行时间', sql: 'SQL 语句', status: '状态', rows: '结果行数', duration: '耗时' },
+      statusSuccess: '成功',
+      statusError: '失败'
     },
     ingestJobs: {
       title: '上传与入表任务',

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Card, Form, Input, Modal, Select, Space, Table, Tag, Tooltip, Typography, message } from 'antd';
-import { ApiOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { ApiOutlined, ConsoleSqlOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -62,6 +62,9 @@ export default function DataSourcesPage() {
       title: t('pages.dataSources.columns.actions'),
       render: (_, row) => (
         <Space>
+          <Tooltip title="SQL">
+            <Button size="small" icon={<ConsoleSqlOutlined />} onClick={() => navigate(`/sql-console?sourceId=${encodeURIComponent(row.id)}`, { state: { sessionTabMode: 'replace' } })} />
+          </Tooltip>
           <Button size="small" onClick={() => { setEditRecord(row); editForm.setFieldsValue({ name: row.name }); setEditOpen(true); }}>{t('common.edit')}</Button>
           <Button size="small" danger onClick={() => {
             Modal.confirm({

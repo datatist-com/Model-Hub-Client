@@ -46,7 +46,8 @@ const ROUTE_LABEL_KEY_MAP: Record<string, string> = {
   '/hive-databases': 'menu.hiveDatabases',
   '/hive-tables': 'menu.hiveTables',
   '/duckdb-tables': 'menu.duckdbTables',
-  '/ingest-jobs': 'menu.ingestJobs'
+  '/ingest-jobs': 'menu.ingestJobs',
+  '/sql-console': 'menu.sqlConsole'
 };
 
 const TAB_IDENTITY_PARAMS_MAP: Record<string, string[]> = {
@@ -54,6 +55,7 @@ const TAB_IDENTITY_PARAMS_MAP: Record<string, string[]> = {
   '/hive-tables': ['sourceId', 'databaseName'],
   '/duckdb-tables': ['sourceId'],
   '/ingest-jobs': ['sourceId', 'tableName'],
+  '/sql-console': ['sourceId'],
   '/users': ['id', 'username'],
   '/profile': [],
   '/dashboard': [],
@@ -77,6 +79,7 @@ const ROUTE_TO_MENU_KEY: Record<string, string> = {
   '/hive-tables': '/data-sources',
   '/duckdb-tables': '/data-sources',
   '/ingest-jobs': '/data-sources',
+  '/sql-console': '/data-sources',
   '/profile': '/dashboard'
 };
 

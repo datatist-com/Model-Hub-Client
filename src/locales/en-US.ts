@@ -70,8 +70,8 @@ export default {
     operationListOutput: 'Operation List Management',
     logViewer: 'Log Viewer',
     dataSourceOverview: 'Data Source Overview',
-    hiveDatabases: 'Hive DB',
-    hiveTables: 'Hive Tables',
+    hiveDatabases: 'Hive DB Management',
+    hiveTables: 'Hive Table Management',
     duckdbTables: 'DuckDB Tables',
     ingestJobs: 'Upload & Ingest Jobs'
   },
@@ -168,12 +168,12 @@ export default {
     license: { title: 'License' },
     dataSources: {
       title: 'Data Sources',
-      columns: { name: 'Source Name', type: 'Type', connectionStatus: 'Connection Status', actions: 'Actions' },
+      columns: { name: 'Source Name', type: 'Type', connectionStatus: 'Connection Status', objectCount: 'Objects', actions: 'Actions' },
       statusConnected: 'Connected',
       statusDisconnected: 'Disconnected',
       testConnection: 'Test Connection',
-      viewHiveDatabases: 'View',
-      viewDuckdbTables: 'View',
+      containsDatabases: '{{count}} databases',
+      containsTables: '{{count}} tables',
       createTitle: 'Create Data Source',
       form: { name: 'Name', type: 'Type', connectionAddress: 'Connection Address' },
       duckdbExists: 'A DuckDB source already exists. Only one is allowed.',
@@ -226,7 +226,7 @@ export default {
       levelFilter: 'Level Filter'
     },
     hiveDatabases: {
-      title: 'Hive DB',
+      title: 'Hive DB Management',
       columns: { source: 'Source', database: 'DB Name', tableCount: 'Tables', actions: 'Actions' },
       executeSql: 'Run SQL',
       backToDataSources: 'Back to Data Sources',
@@ -239,7 +239,7 @@ export default {
       passwordPlaceholder: 'Enter login password'
     },
     hiveTables: {
-      title: 'Hive Tables',
+      title: 'Hive Table Management',
       columns: { database: 'DB Name', table: 'Table', alias: 'Alias', fieldCount: 'Fields', rowCount: 'Rows', actions: 'Actions' },
       executeSql: 'Run SQL',
       backToHiveDatabases: 'Back to Hive DB',

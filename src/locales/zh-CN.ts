@@ -69,8 +69,8 @@ export default {
     operationListOutput: '运营名单管理',
     logViewer: '日志查看',
     dataSourceOverview: '数据源总览',
-    hiveDatabases: 'Hive库',
-    hiveTables: 'Hive表',
+    hiveDatabases: 'Hive库管理',
+    hiveTables: 'Hive表管理',
     duckdbTables: 'DuckDB 表管理',
     ingestJobs: '上传与入表任务'
   },
@@ -167,12 +167,12 @@ export default {
     license: { title: '许可证管理' },
     dataSources: {
       title: '数据源管理',
-      columns: { name: '数据源名称', type: '类型', connectionStatus: '连接状态', actions: '操作' },
+      columns: { name: '数据源名称', type: '类型', connectionStatus: '连接状态', objectCount: '对象数量', actions: '操作' },
       statusConnected: '已连接',
       statusDisconnected: '未连接',
       testConnection: '测试连接',
-      viewHiveDatabases: '查看',
-      viewDuckdbTables: '查看',
+      containsDatabases: '包含 {{count}} 个库',
+      containsTables: '包含 {{count}} 个表',
       createTitle: '新建数据源',
       form: { name: '名称', type: '类型', connectionAddress: '连接地址' },
       duckdbExists: 'DuckDB 数据源已存在，不可重复创建。',
@@ -225,7 +225,7 @@ export default {
       levelFilter: '级别筛选'
     },
     hiveDatabases: {
-      title: 'Hive库',
+      title: 'Hive库管理',
       columns: { source: '数据源', database: '库名', tableCount: '表数量', actions: '操作' },
       executeSql: '执行 SQL',
       backToDataSources: '返回数据源',
@@ -238,7 +238,7 @@ export default {
       passwordPlaceholder: '请输入登录密码'
     },
     hiveTables: {
-      title: 'Hive表',
+      title: 'Hive表管理',
       columns: { database: '库名', table: '表名', alias: '别名', fieldCount: '字段数', rowCount: '数据量', actions: '操作' },
       executeSql: '执行 SQL',
       backToHiveDatabases: '返回 Hive库',

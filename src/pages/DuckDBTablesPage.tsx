@@ -1,5 +1,5 @@
-import { Button, Card, Space, Table, Tag, Typography } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Button, Card, Space, Table, Tag, Tooltip, Typography } from 'antd';
+import { PlusOutlined, RollbackOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -49,13 +49,20 @@ export default function DuckDBTablesPage() {
   return (
     <Card
       className="page-card"
-      title={t('pages.duckdbTables.title')}
+      title={
+        <Space>
+          {t('pages.duckdbTables.title')}
+          <Tooltip title={t('pages.duckdbTables.backToDataSources')}>
+            <RollbackOutlined
+              style={{ fontSize: 14, cursor: 'pointer', opacity: 0.45 }}
+              onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}
+            />
+          </Tooltip>
+        </Space>
+      }
       extra={
         <Space>
           <Typography.Text type="secondary">{t('pages.duckdbTables.sourceLabel')}: {sourceId}</Typography.Text>
-          <Button onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}>
-            {t('pages.duckdbTables.backToDataSources')}
-          </Button>
           <Button icon={<PlusOutlined />}>{t('common.create')}</Button>
         </Space>
       }

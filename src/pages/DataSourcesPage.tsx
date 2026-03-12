@@ -5,11 +5,11 @@ import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-type Source = { id: string; name: string; type: 'hive' | 'duckdb'; connected: boolean };
+type Source = { id: string; name: string; type: 'hive' | 'duckdb'; connected: boolean; objectCount: number };
 
 const rows: Source[] = [
-  { id: 'src-001', name: 'hive-prod', type: 'hive', connected: true },
-  { id: 'src-002', name: 'duckdb-local-a', type: 'duckdb', connected: false }
+  { id: 'src-001', name: 'hive-prod', type: 'hive', connected: true, objectCount: 3 },
+  { id: 'src-002', name: 'duckdb-local-a', type: 'duckdb', connected: false, objectCount: 8 }
 ];
 
 export default function DataSourcesPage() {
@@ -38,32 +38,27 @@ export default function DataSourcesPage() {
       )
     },
     {
-      title: t('pages.dataSources.columns.actions'),
+      title: t('pages.dataSources.columns.objectCount'),
       render: (_, row) => (
+        <a
+          onClick={() => {
+            if (row.type === 'hive') {
+              navigate(`/hive-databases?sourceId=${encodeURIComponent(row.id)}`, { state: { sessionTabMode: 'replace' } });
+            } else {
+              navigate(`/duckdb-tables?sourceId=${encodeURIComponent(row.id)}`, { state: { sessionTabMode: 'replace' } });
+            }
+          }}
+        >
+          {row.type === 'hive'
+            ? t('pages.dataSources.containsDatabases', { count: row.objectCount })
+            : t('pages.dataSources.containsTables', { count: row.objectCount })}
+        </a>
+      )
+    },
+    {
+      title: t('pages.dataSources.columns.actions'),
+      render: () => (
         <Space>
-          {row.type === 'hive' ? (
-            <Button
-              size="small"
-              onClick={() =>
-                navigate(`/hive-databases?sourceId=${encodeURIComponent(row.id)}`, {
-                  state: { sessionTabMode: 'replace' }
-                })
-              }
-            >
-              {t('pages.dataSources.viewHiveDatabases')}
-            </Button>
-          ) : (
-            <Button
-              size="small"
-              onClick={() =>
-                navigate(`/duckdb-tables?sourceId=${encodeURIComponent(row.id)}`, {
-                  state: { sessionTabMode: 'replace' }
-                })
-              }
-            >
-              {t('pages.dataSources.viewDuckdbTables')}
-            </Button>
-          )}
           <Button size="small">{t('common.edit')}</Button>
           <Button size="small" danger>{t('common.delete')}</Button>
         </Space>

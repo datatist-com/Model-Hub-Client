@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button, Card, Form, Input, Modal, Space, Table, Typography, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Button, Card, Form, Input, Modal, Space, Table, Tooltip, Typography, message } from 'antd';
+import { PlusOutlined, RollbackOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -75,13 +75,20 @@ export default function HiveDatabasesPage() {
   return (
     <Card
       className="page-card"
-      title={t('pages.hiveDatabases.title')}
+      title={
+        <Space>
+          {t('pages.hiveDatabases.title')}
+          <Tooltip title={t('pages.hiveDatabases.backToDataSources')}>
+            <RollbackOutlined
+              style={{ fontSize: 14, cursor: 'pointer', opacity: 0.45 }}
+              onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}
+            />
+          </Tooltip>
+        </Space>
+      }
       extra={
         <Space>
           <Typography.Text type="secondary">{t('pages.hiveDatabases.sourceLabel')}: {sourceId}</Typography.Text>
-          <Button onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}>
-            {t('pages.hiveDatabases.backToDataSources')}
-          </Button>
           <Button icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>{t('common.create')}</Button>
         </Space>
       }

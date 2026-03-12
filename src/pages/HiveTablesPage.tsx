@@ -44,9 +44,9 @@ export default function HiveTablesPage() {
     { title: t('pages.hiveTables.columns.table'), dataIndex: 'tableName' },
     { title: t('pages.hiveTables.columns.alias'), dataIndex: 'alias' },
     {
-      title: t('pages.hiveTables.columns.fieldCount'),
+      title: t('pages.hiveTables.columns.objectCount'),
       dataIndex: 'fieldCount',
-      render: (count: number) => <a onClick={() => setFieldDetailOpen(true)}>{count}</a>
+      render: (count: number) => <a onClick={() => setFieldDetailOpen(true)}>{t('pages.hiveTables.containsFields', { count })}</a>
     },
     {
       title: t('pages.hiveTables.columns.rowCount'),

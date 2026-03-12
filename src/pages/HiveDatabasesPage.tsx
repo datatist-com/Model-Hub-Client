@@ -25,7 +25,7 @@ export default function HiveDatabasesPage() {
     { title: t('pages.hiveDatabases.columns.source'), dataIndex: 'sourceId' },
     { title: t('pages.hiveDatabases.columns.database'), dataIndex: 'databaseName' },
     {
-      title: t('pages.hiveDatabases.columns.tableCount'),
+      title: t('pages.hiveDatabases.columns.objectCount'),
       dataIndex: 'tableCount',
       render: (count: number, row) => (
         <a
@@ -36,7 +36,7 @@ export default function HiveDatabasesPage() {
             )
           }
         >
-          {count}
+          {t('pages.hiveDatabases.containsTables', { count })}
         </a>
       )
     },

@@ -17,7 +17,11 @@ export default function DuckDBTablesPage() {
   const columns: ColumnsType<Row> = [
     { title: t('pages.duckdbTables.columns.id'), dataIndex: 'id' },
     { title: t('pages.duckdbTables.columns.table'), dataIndex: 'tableName' },
-    { title: t('pages.duckdbTables.columns.rowCount'), dataIndex: 'rowCount' },
+    {
+      title: t('pages.duckdbTables.columns.objectCount'),
+      dataIndex: 'rowCount',
+      render: (count: number) => t('pages.duckdbTables.containsRows', { count: count.toLocaleString() })
+    },
     {
       title: t('pages.duckdbTables.columns.enabled'),
       dataIndex: 'enabled',

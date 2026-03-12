@@ -229,7 +229,8 @@ export default {
     },
     hiveDatabases: {
       title: 'Hive库管理',
-      columns: { source: '数据源', database: '库名', tableCount: '表数量', actions: '操作' },
+      columns: { source: '数据源', database: '库名', objectCount: '对象数量', actions: '操作' },
+      containsTables: '包含 {{count}} 个表',
       executeSql: '执行 SQL',
       backToDataSources: '返回数据源',
       sourceLabel: '数据源',
@@ -242,7 +243,8 @@ export default {
     },
     hiveTables: {
       title: 'Hive表管理',
-      columns: { database: '库名', table: '表名', alias: '别名', fieldCount: '字段数', rowCount: '数据量', actions: '操作' },
+      columns: { database: '库名', table: '表名', alias: '别名', objectCount: '对象数量', rowCount: '数据量', actions: '操作' },
+      containsFields: '包含 {{count}} 个字段',
       executeSql: '执行 SQL',
       backToHiveDatabases: '返回 Hive库',
       sourceLabel: '数据源',
@@ -260,7 +262,8 @@ export default {
     },
     duckdbTables: {
       title: 'DuckDB 表管理',
-      columns: { id: 'ID', table: '表名', rowCount: '行数', enabled: '启用状态', actions: '操作' },
+      columns: { id: 'ID', table: '表名', objectCount: '对象数量', enabled: '启用状态', actions: '操作' },
+      containsRows: '包含 {{count}} 行',
       uploadData: '上传数据',
       viewFields: '查看字段',
       backToDataSources: '返回数据源',

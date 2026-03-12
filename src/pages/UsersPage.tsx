@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button, Card, Form, Input, Modal, Select, Space, Table, Tag } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 
@@ -40,7 +41,7 @@ export default function UsersPage() {
     <Card
       className="page-card"
       title={t('pages.users.title')}
-      extra={<Button onClick={() => setOpen(true)}>{t('common.create')}</Button>}
+      extra={<Button icon={<PlusOutlined />} onClick={() => setOpen(true)}>{t('common.create')}</Button>}
     >
       <Table rowKey="id" columns={columns} dataSource={initialData} pagination={{ pageSize: 10 }} />
       <Modal open={open} title={t('pages.users.createUser')} footer={null} onCancel={() => setOpen(false)}>

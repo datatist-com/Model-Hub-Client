@@ -1,4 +1,5 @@
 import { Button, Card, Table, Tag } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 
@@ -43,7 +44,7 @@ export default function ScoringGenerationPage() {
     <Card
       className="page-card"
       title={t('pages.scoringGeneration.title')}
-      extra={<Button type="primary">{t('common.create')}</Button>}
+      extra={<Button icon={<PlusOutlined />}>{t('common.create')}</Button>}
     >
       <Table rowKey="id" columns={columns} dataSource={data} pagination={{ pageSize: 10 }} />
     </Card>

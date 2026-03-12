@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button, Card, Form, Input, Modal, Space, Table, Typography, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -81,7 +82,7 @@ export default function HiveDatabasesPage() {
           <Button onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}>
             {t('pages.hiveDatabases.backToDataSources')}
           </Button>
-          <Button onClick={() => setCreateOpen(true)}>{t('common.create')}</Button>
+          <Button icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>{t('common.create')}</Button>
         </Space>
       }
     >

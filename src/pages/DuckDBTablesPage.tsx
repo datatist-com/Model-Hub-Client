@@ -1,4 +1,5 @@
 import { Button, Card, Space, Table, Tag, Typography } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -55,7 +56,7 @@ export default function DuckDBTablesPage() {
           <Button onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}>
             {t('pages.duckdbTables.backToDataSources')}
           </Button>
-          <Button type="primary">{t('common.create')}</Button>
+          <Button icon={<PlusOutlined />}>{t('common.create')}</Button>
         </Space>
       }
     >

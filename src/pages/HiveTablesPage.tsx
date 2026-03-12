@@ -103,7 +103,7 @@ export default function HiveTablesPage() {
           >
             {t('pages.hiveTables.backToHiveDatabases')}
           </Button>
-          <Button onClick={() => setCreateOpen(true)}>{t('common.create')}</Button>
+          <Button icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>{t('common.create')}</Button>
         </Space>
       }
     >

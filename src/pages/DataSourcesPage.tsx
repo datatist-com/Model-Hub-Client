@@ -81,7 +81,7 @@ export default function DataSourcesPage() {
     <Card
       className="page-card"
       title={t('pages.dataSources.title')}
-      extra={<Button type="primary" icon={<PlusOutlined />} onClick={handleOpenCreate}>{t('common.create')}</Button>}
+      extra={<Button icon={<PlusOutlined />} onClick={handleOpenCreate}>{t('common.create')}</Button>}
     >
       <Table rowKey="id" columns={columns} dataSource={rows} />
       <Modal open={open} footer={null} onCancel={() => setOpen(false)} title={t('pages.dataSources.createTitle')}>

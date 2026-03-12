@@ -54,7 +54,7 @@ export default function HiveDatabasesPage() {
               onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}
             />
           </Tooltip>
-          {t('pages.hiveDatabases.title')}（{sourceName}）
+          {t('pages.hiveDatabases.title')} ({t('pages.hiveDatabases.sourceLabel')}: {sourceName})
         </Space>
       }
       extra={

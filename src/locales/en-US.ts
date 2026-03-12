@@ -264,7 +264,7 @@ export default {
     },
     duckdbTables: {
       title: 'DuckDB Tables',
-      columns: { id: 'ID', table: 'Table', objectCount: 'Objects', enabled: 'Enabled', actions: 'Actions' },
+      columns: { id: 'ID', table: 'Table', objectCount: 'Data Volume', enabled: 'Enabled', actions: 'Actions' },
       containsRows: '{{count}} rows',
       uploadData: 'Upload Data',
       viewFields: 'View Fields',

@@ -1,4 +1,4 @@
-import { Button, Card, Space, Table, Tag, Tooltip, Typography } from 'antd';
+import { Button, Card, Space, Table, Tag, Tooltip } from 'antd';
 import { LeftOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,8 @@ export default function DuckDBTablesPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sourceId = searchParams.get('sourceId') ?? 'src-002';
+  const SOURCE_NAME_MAP: Record<string, string> = { 'src-001': 'hive-prod', 'src-002': 'duckdb-local-a' };
+  const sourceName = SOURCE_NAME_MAP[sourceId] ?? sourceId;
 
   const columns: ColumnsType<Row> = [
     { title: t('pages.duckdbTables.columns.id'), dataIndex: 'id' },
@@ -61,15 +63,10 @@ export default function DuckDBTablesPage() {
               onClick={() => navigate('/data-sources', { state: { sessionTabMode: 'replace' } })}
             />
           </Tooltip>
-          {t('pages.duckdbTables.title')}
+          {t('pages.duckdbTables.title')} ({t('pages.duckdbTables.sourceLabel')}: {sourceName})
         </Space>
       }
-      extra={
-        <Space>
-          <Typography.Text type="secondary">{t('pages.duckdbTables.sourceLabel')}: {sourceId}</Typography.Text>
-          <Button icon={<PlusOutlined />}>{t('common.create')}</Button>
-        </Space>
-      }
+      extra={<Button icon={<PlusOutlined />}>{t('common.create')}</Button>}
     >
       <Table rowKey="id" columns={columns} dataSource={data} />
     </Card>

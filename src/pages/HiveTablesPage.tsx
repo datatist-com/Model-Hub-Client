@@ -71,7 +71,7 @@ export default function HiveTablesPage() {
               }
             />
           </Tooltip>
-          {t('pages.hiveTables.title')}（{sourceName}）
+          {t('pages.hiveTables.title')} ({t('pages.hiveTables.sourceLabel')}: {sourceName})
         </Space>
       }
       extra={<Button icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>{t('common.create')}</Button>}

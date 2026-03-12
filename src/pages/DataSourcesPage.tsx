@@ -25,7 +25,18 @@ export default function DataSourcesPage() {
   const [editForm] = Form.useForm();
 
   const columns: ColumnsType<Source> = [
-    { title: t('pages.dataSources.columns.name'), dataIndex: 'name' },
+    {
+      title: t('pages.dataSources.columns.name'),
+      dataIndex: 'name',
+      render: (name: string, row) => (
+        <Space>
+          <span>{name}</span>
+          <Tooltip title="SQL">
+            <Button size="small" type="text" icon={<ConsoleSqlOutlined />} onClick={() => navigate(`/sql-console?sourceId=${encodeURIComponent(row.id)}`, { state: { sessionTabMode: 'replace' } })} />
+          </Tooltip>
+        </Space>
+      )
+    },
     { title: t('pages.dataSources.columns.type'), dataIndex: 'type' },
     {
       title: t('pages.dataSources.columns.connectionStatus'),
@@ -62,9 +73,6 @@ export default function DataSourcesPage() {
       title: t('pages.dataSources.columns.actions'),
       render: (_, row) => (
         <Space>
-          <Tooltip title="SQL">
-            <Button size="small" icon={<ConsoleSqlOutlined />} onClick={() => navigate(`/sql-console?sourceId=${encodeURIComponent(row.id)}`, { state: { sessionTabMode: 'replace' } })} />
-          </Tooltip>
           <Button size="small" onClick={() => { setEditRecord(row); editForm.setFieldsValue({ name: row.name }); setEditOpen(true); }}>{t('common.edit')}</Button>
           <Button size="small" danger onClick={() => {
             Modal.confirm({

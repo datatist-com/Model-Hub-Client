@@ -71,7 +71,7 @@ export default {
     dataSourceOverview: '数据源总览',
     hiveDatabases: 'Hive库管理',
     hiveTables: 'Hive表管理',
-    duckdbTables: 'DuckDB 表管理',
+    duckdbTables: 'DuckDB表管理',
     ingestJobs: '上传与入表任务',
     sqlConsole: 'SQL 控制台'
   },
@@ -262,8 +262,8 @@ export default {
       passwordPlaceholder: '请输入登录密码'
     },
     duckdbTables: {
-      title: 'DuckDB 表管理',
-      columns: { id: 'ID', table: '表名', objectCount: '对象数量', enabled: '启用状态', actions: '操作' },
+      title: 'DuckDB表管理',
+      columns: { id: 'ID', table: '表名', objectCount: '数据量', enabled: '启用状态', actions: '操作' },
       containsRows: '包含 {{count}} 行',
       uploadData: '上传数据',
       viewFields: '查看字段',

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Avatar, Button, Card, Input, Modal, Segmented, Select, Space, Table, Tag, Typography, message } from 'antd';
+import { App, Avatar, Button, Card, Input, Modal, Segmented, Select, Space, Table, Tag, Typography } from 'antd';
 import {
   DesktopOutlined,
   LockOutlined,
@@ -61,6 +61,7 @@ const actionRecords: ActionRecord[] = [
 
 export default function ProfilePage() {
   const { t, i18n } = useTranslation();
+  const { message } = App.useApp();
   const [passwordOpen, setPasswordOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');

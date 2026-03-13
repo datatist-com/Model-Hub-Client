@@ -12,7 +12,7 @@ import {
   RobotOutlined,
   TeamOutlined
 } from '@ant-design/icons';
-import { Avatar, Input, Layout, Menu, Modal, Space, Typography, message, Dropdown } from 'antd';
+import { App, Avatar, Input, Layout, Menu, Modal, Space, Typography, Dropdown } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -130,6 +130,7 @@ const MENU_ITEMS = [
 
 export default function AppLayout() {
   const { t, i18n } = useTranslation();
+  const { message } = App.useApp();
   const location = useLocation();
   const navigate = useNavigate();
   const [sessionTabs, setSessionTabs] = useState<SessionTab[]>([]);

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties, MouseEventHandler } from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Space, Typography, message } from 'antd';
+import { Button, Card, Form, Input, Space, Typography, App } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import i18n from '../i18n';
 import { getUserLanguage, setAccessToken, setCurrentUsername, setUserLanguage } from '../auth/token';
@@ -18,6 +18,7 @@ type LicenseInfo = {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const [form] = Form.useForm();
   const pageRef = useRef<HTMLDivElement>(null);
   const [licenseOpen, setLicenseOpen] = useState(false);

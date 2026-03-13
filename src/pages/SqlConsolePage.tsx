@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, Input, Space, Table, Tag, Tooltip, message } from 'antd';
+import { App, Button, Card, Input, Space, Table, Tag, Tooltip } from 'antd';
 import { ClearOutlined, LeftOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ const mockHistory: HistoryRecord[] = [
 
 export default function SqlConsolePage() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sourceId = searchParams.get('sourceId') ?? '';

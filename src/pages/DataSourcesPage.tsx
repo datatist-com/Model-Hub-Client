@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Button, Card, Form, Input, Modal, Select, Space, Table, Tag, Tooltip, Typography, message } from 'antd';
+import { App, Button, Card, Form, Input, Modal, Select, Space, Table, Tag, Tooltip, Typography } from 'antd';
 import { ConsoleSqlOutlined, ExclamationCircleOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ const rows: Source[] = [
 
 export default function DataSourcesPage() {
   const { t } = useTranslation();
+  const { message, modal } = App.useApp();
   const [open, setOpen] = useState(false);
   const [formType, setFormType] = useState<string>();
   const [form] = Form.useForm();
@@ -91,7 +92,7 @@ export default function DataSourcesPage() {
         <Space>
           <Button size="small" onClick={() => { setEditRecord(row); editForm.setFieldsValue({ name: row.name }); setEditOpen(true); }}>{t('common.edit')}</Button>
           <Button size="small" danger onClick={() => {
-            Modal.confirm({
+            modal.confirm({
               title: t('pages.dataSources.deleteConfirmTitle'),
               icon: <ExclamationCircleOutlined />,
               content: t('pages.dataSources.deleteConfirmContent'),

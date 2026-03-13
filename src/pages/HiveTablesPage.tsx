@@ -73,7 +73,7 @@ export default function HiveTablesPage() {
       width: 200,
       render: (v: number, row) => (
         <Space>
-          <span>{refreshingRowIds.has(row.id) ? '-' : t('pages.hiveTables.containsRecords', { count: v.toLocaleString() })}</span>
+          <span>{refreshingRowIds.has(row.id) ? '-' : String(t('pages.hiveTables.containsRecords', { count: v.toLocaleString() }))}</span>
           <ReloadOutlined style={{ cursor: 'pointer', fontSize: 12, opacity: 0.45 }} onClick={() => handleRefreshRow(row.id)} />
         </Space>
       )

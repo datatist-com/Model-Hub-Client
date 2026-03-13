@@ -51,7 +51,6 @@ export default function FeatureManagementPage() {
   const navigate = useNavigate();
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [editRecord, setEditRecord] = useState<FeatureRow | null>(null);
   const [createForm] = Form.useForm();
   const [editForm] = Form.useForm();
   const [createSourceType, setCreateSourceType] = useState<string>();
@@ -128,7 +127,6 @@ export default function FeatureManagementPage() {
         <Space>
           <Button size="small" onClick={() => {
             const source = mockSources.find((s) => s.name === row.sourceName);
-            setEditRecord(row);
             setEditSourceType(source?.type);
             if (source?.type === 'duckdb') {
               setEditDatabases([]);
@@ -207,8 +205,8 @@ export default function FeatureManagementPage() {
         </Form>
       </Modal>
 
-      <Modal open={editOpen} title={t('pages.featureManagement.editTitle')} footer={null} onCancel={() => { setEditOpen(false); setEditRecord(null); }}>
-        <Form form={editForm} layout="vertical" onFinish={() => { message.success(t('pages.featureManagement.editSuccess')); setEditOpen(false); setEditRecord(null); }}>
+      <Modal open={editOpen} title={t('pages.featureManagement.editTitle')} footer={null} onCancel={() => { setEditOpen(false); }}>
+        <Form form={editForm} layout="vertical" onFinish={() => { message.success(t('pages.featureManagement.editSuccess')); setEditOpen(false); }}>
           {renderFormFields('edit')}
           <Form.Item>
             <Button type="primary" htmlType="submit">{t('common.save')}</Button>

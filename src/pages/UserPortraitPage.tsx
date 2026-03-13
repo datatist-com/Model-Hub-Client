@@ -26,7 +26,6 @@ export default function UserPortraitPage() {
   const navigate = useNavigate();
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [editRecord, setEditRecord] = useState<PortraitRow | null>(null);
   const [createForm] = Form.useForm();
   const [editForm] = Form.useForm();
   const [createDataSource, setCreateDataSource] = useState<string>();
@@ -65,7 +64,6 @@ export default function UserPortraitPage() {
       render: (_, row) => (
         <Space>
           <Button size="small" onClick={() => {
-            setEditRecord(row);
             setEditDataSource(row.dataSource);
             editForm.setFieldsValue({ portraitName: row.portraitName, dataSource: row.dataSource, sourceTables: row.sourceTables });
             setEditOpen(true);
@@ -112,8 +110,8 @@ export default function UserPortraitPage() {
         </Form>
       </Modal>
 
-      <Modal open={editOpen} title={t('pages.userPortrait.editTitle')} footer={null} onCancel={() => { setEditOpen(false); setEditRecord(null); }}>
-        <Form form={editForm} layout="vertical" onFinish={() => { message.success(t('pages.userPortrait.editSuccess')); setEditOpen(false); setEditRecord(null); }}>
+      <Modal open={editOpen} title={t('pages.userPortrait.editTitle')} footer={null} onCancel={() => { setEditOpen(false); }}>
+        <Form form={editForm} layout="vertical" onFinish={() => { message.success(t('pages.userPortrait.editSuccess')); setEditOpen(false); }}>
           <Form.Item label={t('pages.userPortrait.form.portraitName')} name="portraitName" rules={[{ required: true }]}>
             <Input />
           </Form.Item>

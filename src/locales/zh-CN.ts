@@ -61,7 +61,7 @@ export default {
     users: '用户管理',
     license: '许可证管理',
     dataSources: '数据源管理',
-    featureManagement: '特征管理',
+    featureManagement: '特征源表管理',
     userPortrait: '用户画像管理',
     targetManagement: '监督学习管理',
     modelManagement: '模型管理',
@@ -185,16 +185,91 @@ export default {
       deleteConfirmContent: '确定要删除该数据源吗？此操作不可恢复。'
     },
     featureManagement: {
-      title: '特征管理',
-      columns: { id: 'ID', featureName: '特征名称', dataType: '数据类型', sourceTable: '来源表', status: '状态', createdAt: '创建时间' },
-      statusEnabled: '启用',
-      statusDisabled: '停用'
+      title: '特征源表管理',
+      columns: { sourceName: '数据源', sourceTable: '源表', tableType: '表类型', sourceFieldCount: '源字段数', customerIdField: '客编字段', timeField: '时间字段', actions: '操作' },
+      containsSourceFields: '包含 {{count}} 个源字段',
+      tableTypeMonthly: '月统计表',
+      tableTypeFlow: '流水表',
+      createTitle: '新建特征源表',
+      editTitle: '编辑特征源表',
+      form: { source: '数据源', database: '库名', tableName: '表名字', tableType: '表类型', customerIdField: '客编字段', timeField: '时间字段', featureFields: '特征字段' },
+      createSuccess: '特征源表已创建',
+      editSuccess: '特征源表已保存',
+      deleteConfirmTitle: '确认删除',
+      deleteConfirmContent: '确定要删除源表 "{{name}}" 吗？此操作不可恢复。',
+      deleteSuccess: '源表 "{{name}}" 已删除'
+    },
+    featureFieldDetail: {
+      title: '特征衔生明细',
+      backToFeatureManagement: '返回特征源表管理',
+      headerSource: '数据源',
+      headerTable: '源表',
+      headerType: '表类型',
+      headerSourceFields: '源字段数',
+      headerDerivedTotal: '衍生特征总数',
+      columns: { featureName: '特征名称', category: '类别', stat: '统计方法', period: '时间窗口' },
+      category: { source: '源值', basic: '基础统计', yoy: '同比', mom: '环比' },
+      stat: {
+        sourceValue: '源值',
+        max: '最大值', min: '最小值', avg: '平均值', median: '中位数',
+        p50: '50分位数', p75: '75分位数', p90: '90分位数',
+        range: '极差', variance: '方差', stddev: '标准差', cv: '变异系数',
+        yoy: '同比变化率', mom: '环比变化率'
+      },
+      period: {
+        '2y': '过去 2 年',
+        yoy_1y: '同比去年', yoy_2y: '同比前年',
+        mom_1m: '环比上 1 个月', mom_2m: '环比上 2 个月', mom_3m: '环比上 3 个月',
+        mom_4m: '环比上 4 个月', mom_5m: '环比上 5 个月', mom_6m: '环比上 6 个月'
+      },
+      totalFeatures: '共 {{count}} 个特征'
     },
     userPortrait: {
       title: '用户画像管理',
-      columns: { id: 'ID', portraitName: '画像名称', userCount: '覆盖用户数', tagCount: '标签数', status: '状态', updatedAt: '更新时间' },
-      statusActive: '生效中',
-      statusInactive: '未生效'
+      columns: { portraitName: '画像名称', dataSource: '数据来源', userCount: '覆盖用户数', featureCount: '特征数', periodCount: '特征期数', actions: '操作' },
+      dataSourceComputed: '源表计算',
+      dataSourceImported: '文件导入',
+      containsPeriods: '包含 {{count}} 个月特征',
+      createTitle: '新建画像',
+      editTitle: '编辑画像',
+      createSuccess: '画像创建成功',
+      editSuccess: '画像更新成功',
+      deleteConfirmTitle: '确认删除',
+      deleteConfirmContent: '确定要删除画像「{{name}}」吗？',
+      deleteSuccess: '画像「{{name}}」已删除',
+      form: { portraitName: '画像名称', dataSource: '数据来源', sourceTable: '源表' }
+    },
+    portraitPeriod: {
+      title: '特征期数管理',
+      backToPortrait: '返回画像管理',
+      addPeriod: '新增期数',
+      addPeriodTitle: '新增特征期数',
+      selectYear: '选择年',
+      selectMonth: '选择月',
+      monthUnit: '月',
+      computeTab: '源表计算',
+      computeDesc: '基于已配置的源表自动计算该期特征数据',
+      computeButton: '开始计算',
+      computeStarted: '计算任务已提交',
+      localTab: '服务器导入',
+      localDesc: '从服务器本地路径导入特征数据文件',
+      localButton: '开始导入',
+      localStarted: '导入任务已提交',
+      remoteTab: '远程上传',
+      remoteDesc: '上传本地文件到服务器',
+      remoteDragText: '点击或拖拽文件到此区域上传',
+      remoteDragHint: '支持 CSV、Parquet、JSON、XLSX 格式',
+      remoteReady: '文件已就绪',
+      remoteButton: '开始上传',
+      remoteStarted: '上传任务已提交',
+      columns: { period: '月份', customerCount: '客户数', featureCount: '特征数', status: '状态', actions: '操作' },
+      statusReady: '就绪',
+      statusComputing: '计算中',
+      recalculate: '重新计算',
+      recalculating: '重新计算任务已提交',
+      deleteConfirmTitle: '确认删除',
+      deleteConfirmContent: '确定要删除 {{period}} 的期数数据吗？',
+      deleteSuccess: '期数数据已删除'
     },
     targetManagement: {
       title: '监督学习管理',
@@ -262,7 +337,8 @@ export default {
       deleteConfirmTitle: '确认删除',
       deleteConfirmContent: '确定要删除该表吗？此操作不可恢复。',
       passwordRequired: '请输入登录密码以确认删除',
-      passwordPlaceholder: '请输入登录密码'
+      passwordPlaceholder: '请输入登录密码',
+      deleteSuccess: '表 "{{name}}" 已删除'
     },
     duckdbTables: {
       title: 'DuckDB表管理',
@@ -290,7 +366,11 @@ export default {
       backToDataSources: '返回数据源',
       enabledTrue: '已启用',
       enabledFalse: '未启用',
-      sourceLabel: '数据源'
+      sourceLabel: '数据源',
+      deleteConfirmTitle: '确认删除',
+      deleteConfirmContent: '确定要删除表 "{{name}}" 吗？此操作不可恢复，请输入密码以确认。',
+      deletePasswordPlaceholder: '请输入密码',
+      deleteSuccess: '表 "{{name}}" 已删除'
     },
     sqlConsole: {
       title: 'SQL 控制台',

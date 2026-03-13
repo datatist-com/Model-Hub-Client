@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, Form, Input, Modal, Select, Space, Table, Tabs, Tooltip } from 'antd';
+import { App, Button, Card, Form, Input, Modal, Popconfirm, Select, Space, Table, Tabs, Tooltip } from 'antd';
 import { LeftOutlined, MinusCircleOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,7 @@ const HIVE_TYPES = ['STRING', 'INT', 'BIGINT', 'DOUBLE', 'FLOAT', 'BOOLEAN', 'TI
 
 export default function HiveTablesPage() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sourceId = searchParams.get('sourceId') ?? 'src-001';
@@ -74,6 +75,25 @@ export default function HiveTablesPage() {
         <Space>
           <span>{refreshingRowIds.has(row.id) ? '-' : t('pages.hiveTables.containsRecords', { count: v.toLocaleString() })}</span>
           <ReloadOutlined style={{ cursor: 'pointer', fontSize: 12, opacity: 0.45 }} onClick={() => handleRefreshRow(row.id)} />
+        </Space>
+      )
+    },
+    {
+      title: t('pages.hiveTables.columns.actions'),
+      width: 160,
+      render: (_, row) => (
+        <Space>
+          <Button size="small">{t('common.edit')}</Button>
+          <Popconfirm
+            title={t('pages.hiveTables.deleteConfirmTitle')}
+            description={t('pages.hiveTables.deleteConfirmContent')}
+            okText={t('common.delete')}
+            cancelText={t('common.cancel')}
+            okButtonProps={{ danger: true }}
+            onConfirm={() => message.success(t('pages.hiveTables.deleteSuccess', { name: row.tableName }))}
+          >
+            <Button size="small" danger>{t('common.delete')}</Button>
+          </Popconfirm>
         </Space>
       )
     }

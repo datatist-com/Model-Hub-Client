@@ -10,6 +10,7 @@ const UsersPage = lazy(() => import('../pages/UsersPage'));
 const ProfilePage = lazy(() => import('../pages/ProfilePage'));
 const DataSourcesPage = lazy(() => import('../pages/DataSourcesPage'));
 const FeatureManagementPage = lazy(() => import('../pages/FeatureManagementPage'));
+const FeatureFieldDetailPage = lazy(() => import('../pages/FeatureFieldDetailPage'));
 const UserPortraitPage = lazy(() => import('../pages/UserPortraitPage'));
 const TargetManagementPage = lazy(() => import('../pages/TargetManagementPage'));
 const ModelManagementPage = lazy(() => import('../pages/ModelManagementPage'));
@@ -21,6 +22,7 @@ const HiveTablesPage = lazy(() => import('../pages/HiveTablesPage'));
 const DuckDBTablesPage = lazy(() => import('../pages/DuckDBTablesPage'));
 const IngestJobsPage = lazy(() => import('../pages/IngestJobsPage'));
 const SqlConsolePage = lazy(() => import('../pages/SqlConsolePage'));
+const PortraitPeriodPage = lazy(() => import('../pages/PortraitPeriodPage'));
 
 const withLoading = (node: React.ReactNode) => <Suspense fallback={<Spin />}>{node}</Suspense>;
 
@@ -44,7 +46,9 @@ export const router = createBrowserRouter([
       { path: '/profile', element: withLoading(<ProfilePage />) },
       { path: '/data-sources', element: withLoading(<DataSourcesPage />) },
       { path: '/feature-management', element: withLoading(<FeatureManagementPage />) },
+      { path: '/feature-field-detail', element: withLoading(<FeatureFieldDetailPage />) },
       { path: '/user-portrait', element: withLoading(<UserPortraitPage />) },
+      { path: '/portrait-periods', element: withLoading(<PortraitPeriodPage />) },
       { path: '/target-management', element: withLoading(<TargetManagementPage />) },
       { path: '/model-management', element: withLoading(<ModelManagementPage />) },
       { path: '/scoring-generation', element: withLoading(<ScoringGenerationPage />) },

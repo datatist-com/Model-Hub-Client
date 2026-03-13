@@ -62,7 +62,7 @@ export default {
     users: 'User Management',
     license: 'License',
     dataSources: 'Data Sources',
-    featureManagement: 'Feature Management',
+    featureManagement: 'Feature Source Tables',
     userPortrait: 'User Portrait',
     targetManagement: 'Supervised Learning',
     modelManagement: 'Model Management',
@@ -186,16 +186,91 @@ export default {
       deleteConfirmContent: 'Are you sure you want to delete this data source? This cannot be undone.'
     },
     featureManagement: {
-      title: 'Feature Management',
-      columns: { id: 'ID', featureName: 'Feature Name', dataType: 'Data Type', sourceTable: 'Source Table', status: 'Status', createdAt: 'Created At' },
-      statusEnabled: 'Enabled',
-      statusDisabled: 'Disabled'
+      title: 'Feature Source Tables',
+      columns: { sourceName: 'Data Source', sourceTable: 'Source Table', tableType: 'Table Type', sourceFieldCount: 'Source Fields', customerIdField: 'Customer ID Field', timeField: 'Time Field', actions: 'Actions' },
+      containsSourceFields: '{{count}} source fields',
+      tableTypeMonthly: 'Monthly Stats',
+      tableTypeFlow: 'Transaction',
+      createTitle: 'Create Feature Source Table',
+      editTitle: 'Edit Feature Source Table',
+      form: { source: 'Data Source', database: 'Database', tableName: 'Table Name', tableType: 'Table Type', customerIdField: 'Customer ID Field', timeField: 'Time Field', featureFields: 'Feature Fields' },
+      createSuccess: 'Feature source table created',
+      editSuccess: 'Feature source table saved',
+      deleteConfirmTitle: 'Confirm Deletion',
+      deleteConfirmContent: 'Are you sure you want to delete source table "{{name}}"? This action cannot be undone.',
+      deleteSuccess: 'Source table "{{name}}" deleted'
+    },
+    featureFieldDetail: {
+      title: 'Feature Derivation Detail',
+      backToFeatureManagement: 'Back to Feature Source Tables',
+      headerSource: 'Data Source',
+      headerTable: 'Source Table',
+      headerType: 'Table Type',
+      headerSourceFields: 'Source Fields',
+      headerDerivedTotal: 'Total Derived Features',
+      columns: { featureName: 'Feature Name', category: 'Category', stat: 'Statistical Method', period: 'Time Window' },
+      category: { source: 'Source', basic: 'Basic Stats', yoy: 'YoY', mom: 'MoM' },
+      stat: {
+        sourceValue: 'Source Value',
+        max: 'Max', min: 'Min', avg: 'Average', median: 'Median',
+        p50: 'P50', p75: 'P75', p90: 'P90',
+        range: 'Range', variance: 'Variance', stddev: 'Std Dev', cv: 'CV',
+        yoy: 'YoY Change', mom: 'MoM Change'
+      },
+      period: {
+        '2y': 'Past 2 Years',
+        yoy_1y: 'vs Last Year', yoy_2y: 'vs 2 Years Ago',
+        mom_1m: 'vs 1 Month Ago', mom_2m: 'vs 2 Months Ago', mom_3m: 'vs 3 Months Ago',
+        mom_4m: 'vs 4 Months Ago', mom_5m: 'vs 5 Months Ago', mom_6m: 'vs 6 Months Ago'
+      },
+      totalFeatures: '{{count}} features'
     },
     userPortrait: {
       title: 'User Portrait',
-      columns: { id: 'ID', portraitName: 'Portrait Name', userCount: 'User Count', tagCount: 'Tag Count', status: 'Status', updatedAt: 'Updated At' },
-      statusActive: 'Active',
-      statusInactive: 'Inactive'
+      columns: { portraitName: 'Portrait Name', dataSource: 'Data Source', userCount: 'User Count', featureCount: 'Features', periodCount: 'Feature Periods', actions: 'Actions' },
+      dataSourceComputed: 'Source Table',
+      dataSourceImported: 'Imported',
+      containsPeriods: '{{count}} monthly periods',
+      createTitle: 'Create Portrait',
+      editTitle: 'Edit Portrait',
+      createSuccess: 'Portrait created',
+      editSuccess: 'Portrait updated',
+      deleteConfirmTitle: 'Confirm Delete',
+      deleteConfirmContent: 'Delete portrait "{{name}}"?',
+      deleteSuccess: 'Portrait "{{name}}" deleted',
+      form: { portraitName: 'Portrait Name', dataSource: 'Data Source', sourceTable: 'Source Table' }
+    },
+    portraitPeriod: {
+      title: 'Feature Periods',
+      backToPortrait: 'Back to Portrait',
+      addPeriod: 'Add Period',
+      addPeriodTitle: 'Add Feature Period',
+      selectYear: 'Year',
+      selectMonth: 'Month',
+      monthUnit: '',
+      computeTab: 'Compute',
+      computeDesc: 'Automatically compute features from configured source tables',
+      computeButton: 'Start Computing',
+      computeStarted: 'Compute task submitted',
+      localTab: 'Server Import',
+      localDesc: 'Import feature data from server local path',
+      localButton: 'Start Import',
+      localStarted: 'Import task submitted',
+      remoteTab: 'Remote Upload',
+      remoteDesc: 'Upload local file to server',
+      remoteDragText: 'Click or drag file to upload',
+      remoteDragHint: 'Supports CSV, Parquet, JSON, XLSX',
+      remoteReady: 'File ready',
+      remoteButton: 'Start Upload',
+      remoteStarted: 'Upload task submitted',
+      columns: { period: 'Period', customerCount: 'Customers', featureCount: 'Features', status: 'Status', actions: 'Actions' },
+      statusReady: 'Ready',
+      statusComputing: 'Computing',
+      recalculate: 'Recalculate',
+      recalculating: 'Recalculate task submitted',
+      deleteConfirmTitle: 'Confirm Delete',
+      deleteConfirmContent: 'Delete period {{period}} data?',
+      deleteSuccess: 'Period data deleted'
     },
     targetManagement: {
       title: 'Supervised Learning',
@@ -263,7 +338,8 @@ export default {
       deleteConfirmTitle: 'Confirm Deletion',
       deleteConfirmContent: 'Are you sure you want to delete this table? This cannot be undone.',
       passwordRequired: 'Enter your login password to confirm',
-      passwordPlaceholder: 'Enter login password'
+      passwordPlaceholder: 'Enter login password',
+      deleteSuccess: 'Table "{{name}}" deleted'
     },
     duckdbTables: {
       title: 'DuckDB Tables',
@@ -291,7 +367,11 @@ export default {
       backToDataSources: 'Back to Data Sources',
       enabledTrue: 'Enabled',
       enabledFalse: 'Disabled',
-      sourceLabel: 'Source'
+      sourceLabel: 'Source',
+      deleteConfirmTitle: 'Confirm Deletion',
+      deleteConfirmContent: 'Are you sure you want to delete table "{{name}}"? This action cannot be undone. Please enter your password to confirm.',
+      deletePasswordPlaceholder: 'Enter password',
+      deleteSuccess: 'Table "{{name}}" deleted'
     },
     sqlConsole: {
       title: 'SQL Console',

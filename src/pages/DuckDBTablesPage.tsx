@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { App, Button, Card, Modal, Space, Table, Tabs, Tag, Tooltip, Upload } from 'antd';
-import { InboxOutlined, LeftOutlined, PlusOutlined, ReloadOutlined, UploadOutlined } from '@ant-design/icons';
+import { App, Button, Card, Input, Modal, Space, Table, Tabs, Tag, Tooltip, Upload } from 'antd';
+import { ExclamationCircleOutlined, InboxOutlined, LeftOutlined, PlusOutlined, ReloadOutlined, UploadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -28,6 +28,9 @@ export default function DuckDBTablesPage() {
   const [refreshingRowIds, setRefreshingRowIds] = useState<Set<string>>(new Set());
   const [fieldDetailOpen, setFieldDetailOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
+  const [deletePassword, setDeletePassword] = useState('');
 
   const handleRefreshField = (id: string) => {
     setRefreshingFieldIds((prev) => new Set(prev).add(id));
@@ -84,7 +87,7 @@ export default function DuckDBTablesPage() {
             {t('pages.duckdbTables.uploadData')}
           </Button>
           <Button size="small">{t('common.edit')}</Button>
-          <Button size="small" danger>{t('common.delete')}</Button>
+          <Button size="small" danger onClick={() => { setDeleteTarget(row); setDeletePassword(''); setDeleteOpen(true); }}>{t('common.delete')}</Button>
         </Space>
       )
     }
@@ -176,6 +179,32 @@ export default function DuckDBTablesPage() {
               )
             }
           ]}
+        />
+      </Modal>
+      <Modal
+        open={deleteOpen}
+        title={
+          <Space>
+            <ExclamationCircleOutlined style={{ color: '#faad14' }} />
+            {t('pages.duckdbTables.deleteConfirmTitle')}
+          </Space>
+        }
+        okText={t('common.delete')}
+        okButtonProps={{ danger: true, disabled: !deletePassword.trim() }}
+        cancelText={t('common.cancel')}
+        onOk={() => {
+          message.success(t('pages.duckdbTables.deleteSuccess', { name: deleteTarget?.tableName }));
+          setDeleteOpen(false);
+          setDeleteTarget(null);
+          setDeletePassword('');
+        }}
+        onCancel={() => { setDeleteOpen(false); setDeleteTarget(null); setDeletePassword(''); }}
+      >
+        <p style={{ marginBottom: 16 }}>{t('pages.duckdbTables.deleteConfirmContent', { name: deleteTarget?.tableName })}</p>
+        <Input.Password
+          placeholder={t('pages.duckdbTables.deletePasswordPlaceholder')}
+          value={deletePassword}
+          onChange={(e) => setDeletePassword(e.target.value)}
         />
       </Modal>
     </Card>

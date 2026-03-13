@@ -1393,6 +1393,15 @@ body.environment-guard-active {
   color: #e8f4ff !important;
 }
 
+.app-content .ant-btn-text {
+  color: rgba(191, 213, 239, 0.7) !important;
+}
+
+.app-content .ant-btn-text:hover {
+  color: #7dd3fc !important;
+  background: rgba(125, 211, 252, 0.1) !important;
+}
+
 .app-content .ant-input,
 .app-content .ant-input-affix-wrapper,
 .app-content .ant-select .ant-select-selector {
@@ -2601,6 +2610,15 @@ body.environment-guard-active {
   color: rgba(2, 8, 23, 0.9) !important;
 }
 
+:root[data-ui-theme-effective='light'] .app-content .ant-btn-text {
+  color: rgba(2, 8, 23, 0.55) !important;
+}
+
+:root[data-ui-theme-effective='light'] .app-content .ant-btn-text:hover {
+  color: rgba(14, 165, 233, 0.85) !important;
+  background: rgba(14, 165, 233, 0.08) !important;
+}
+
 :root[data-ui-theme-effective='light'] .app-content .profile-theme-segmented {
   background: rgba(255, 255, 255, 0.92) !important;
   border: 1px solid rgba(2, 8, 23, 0.14);
@@ -2792,4 +2810,484 @@ body.environment-guard-active {
   background: rgba(59, 130, 246, 0.12) !important;
   border-color: rgba(59, 130, 246, 0.28) !important;
   color: rgba(29, 78, 216, 0.96) !important;
+}
+
+/* ── Global Modal theme (dark) ── */
+.ant-modal-root .ant-modal .ant-modal-content {
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  color: #dbeafe;
+}
+
+.ant-modal-root .ant-modal .ant-modal-header {
+  background: transparent;
+}
+
+.ant-modal-root .ant-modal .ant-modal-title {
+  color: #dbeafe;
+}
+
+.ant-modal-root .ant-modal .ant-modal-close {
+  color: rgba(191, 213, 239, 0.8);
+}
+
+.ant-modal-root .ant-modal .ant-modal-close:hover {
+  color: #e2f3ff;
+}
+
+.ant-modal-root .ant-modal .ant-input,
+.ant-modal-root .ant-modal .ant-input-affix-wrapper,
+.ant-modal-root .ant-modal .ant-select .ant-select-selector {
+  background: rgba(15, 23, 42, 0.62) !important;
+  border-color: rgba(148, 163, 184, 0.26) !important;
+  color: #dbeafe !important;
+}
+
+.ant-modal-root .ant-modal .ant-input::placeholder,
+.ant-modal-root .ant-modal .ant-input-affix-wrapper input::placeholder {
+  color: rgba(148, 163, 184, 0.86);
+}
+
+.ant-modal-root .ant-modal .ant-select .ant-select-arrow,
+.ant-modal-root .ant-modal .ant-select .ant-select-selection-item,
+.ant-modal-root .ant-modal .ant-select .ant-select-selection-placeholder {
+  color: #dbeafe !important;
+}
+
+.ant-modal-root .ant-modal .ant-btn-default {
+  background: rgba(15, 23, 42, 0.64) !important;
+  border-color: rgba(148, 163, 184, 0.28) !important;
+  color: #dbeafe !important;
+}
+
+.ant-modal-root .ant-modal .ant-btn-default:hover {
+  border-color: rgba(125, 211, 252, 0.65) !important;
+  color: #e8f4ff !important;
+}
+
+.ant-modal-root .ant-modal .ant-table-wrapper .ant-table {
+  background: transparent;
+}
+
+.ant-modal-root .ant-modal .ant-table-wrapper .ant-table-thead > tr > th {
+  background: rgba(30, 41, 59, 0.8);
+  color: rgba(191, 213, 239, 0.88) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.ant-modal-root .ant-modal .ant-table-wrapper .ant-table-cell,
+.ant-modal-root .ant-modal .ant-table-wrapper .ant-table-tbody > tr > td {
+  color: #dbeafe;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.ant-modal-root .ant-modal .ant-table-wrapper .ant-table-tbody > tr:hover > td {
+  background: rgba(30, 41, 59, 0.5) !important;
+}
+
+.ant-modal-root .ant-modal .ant-form-item-label > label {
+  color: rgba(191, 213, 239, 0.9) !important;
+}
+
+.ant-modal-root .ant-modal .ant-tabs .ant-tabs-tab {
+  color: rgba(191, 213, 239, 0.7);
+}
+
+.ant-modal-root .ant-modal .ant-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #7dd3fc !important;
+}
+
+.ant-modal-root .ant-modal .ant-upload-drag {
+  background: rgba(15, 23, 42, 0.5) !important;
+  border-color: rgba(148, 163, 184, 0.28) !important;
+}
+
+.ant-modal-root .ant-modal .ant-upload-drag .ant-upload-drag-icon .anticon {
+  color: rgba(125, 211, 252, 0.7);
+}
+
+.ant-modal-root .ant-modal .ant-upload-drag .ant-upload-text {
+  color: rgba(191, 213, 239, 0.88);
+}
+
+.ant-modal-root .ant-modal .ant-upload-drag .ant-upload-hint {
+  color: rgba(148, 163, 184, 0.76);
+}
+
+.ant-modal-root .ant-modal-confirm .ant-modal-confirm-title {
+  color: #dbeafe !important;
+}
+
+.ant-modal-root .ant-modal-confirm .ant-modal-confirm-content {
+  color: rgba(191, 213, 239, 0.85) !important;
+}
+
+/* ── Global Modal theme (light) ── */
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-modal-content {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(2, 8, 23, 0.1);
+  color: rgba(2, 8, 23, 0.86);
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-modal-title {
+  color: rgba(2, 8, 23, 0.88);
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-modal-close {
+  color: rgba(2, 8, 23, 0.62);
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-modal-close:hover {
+  color: rgba(2, 8, 23, 0.88);
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-input,
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-input-affix-wrapper,
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-select .ant-select-selector {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-color: rgba(2, 8, 23, 0.16) !important;
+  color: rgba(2, 8, 23, 0.86) !important;
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-input::placeholder,
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-input-affix-wrapper input::placeholder {
+  color: rgba(2, 8, 23, 0.38) !important;
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-select .ant-select-arrow,
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-select .ant-select-selection-item,
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-select .ant-select-selection-placeholder {
+  color: rgba(2, 8, 23, 0.72) !important;
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-btn-default {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(2, 8, 23, 0.16) !important;
+  color: rgba(2, 8, 23, 0.78) !important;
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-btn-default:hover {
+  border-color: rgba(56, 189, 248, 0.5) !important;
+  color: rgba(2, 8, 23, 0.88) !important;
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-table-wrapper .ant-table {
+  background: rgba(255, 255, 255, 0.86);
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-table-wrapper .ant-table-thead > tr > th {
+  background: rgba(255, 255, 255, 0.96);
+  color: rgba(2, 8, 23, 0.72) !important;
+  border-bottom: 1px solid rgba(2, 8, 23, 0.08);
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-table-wrapper .ant-table-cell,
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-table-wrapper .ant-table-tbody > tr > td {
+  color: rgba(2, 8, 23, 0.84);
+  border-bottom: 1px solid rgba(2, 8, 23, 0.06);
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-table-wrapper .ant-table-tbody > tr:hover > td {
+  background: rgba(2, 8, 23, 0.04) !important;
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-form-item-label > label {
+  color: rgba(2, 8, 23, 0.78) !important;
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-tabs .ant-tabs-tab {
+  color: rgba(2, 8, 23, 0.6);
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: rgba(14, 165, 233, 0.9) !important;
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-upload-drag {
+  background: rgba(255, 255, 255, 0.6) !important;
+  border-color: rgba(2, 8, 23, 0.16) !important;
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-upload-drag .ant-upload-drag-icon .anticon {
+  color: rgba(14, 165, 233, 0.7);
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-upload-drag .ant-upload-text {
+  color: rgba(2, 8, 23, 0.78);
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal .ant-upload-drag .ant-upload-hint {
+  color: rgba(2, 8, 23, 0.52);
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal-confirm .ant-modal-confirm-title {
+  color: rgba(2, 8, 23, 0.88) !important;
+}
+
+:root[data-ui-theme-effective='light'] .ant-modal-root .ant-modal-confirm .ant-modal-confirm-content {
+  color: rgba(2, 8, 23, 0.72) !important;
+}
+
+/* ── Feature Field Detail Page ── */
+
+.feature-field-detail-header {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 1px solid rgba(125, 211, 252, 0.15);
+  backdrop-filter: blur(12px);
+}
+
+.feature-field-detail-header-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 100px;
+}
+
+.feature-field-detail-header-label {
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.8);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.feature-field-detail-header-value {
+  font-size: 14px;
+  color: #dbeafe;
+  font-weight: 500;
+}
+
+.feature-field-detail-header-number {
+  font-size: 22px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.feature-field-detail-field-card {
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(15, 23, 42, 0.4);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.feature-field-detail-field-card:hover {
+  border-color: rgba(125, 211, 252, 0.3);
+}
+
+.feature-field-detail-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(30, 41, 59, 0.5);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.feature-field-detail-field-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e2e8f0;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  letter-spacing: 0.3px;
+}
+
+.feature-field-detail-expand-icon {
+  font-size: 11px;
+  color: rgba(148, 163, 184, 0.6);
+  transition: color 0.2s, transform 0.2s;
+}
+
+.feature-field-detail-field-header:hover .feature-field-detail-expand-icon {
+  color: rgba(125, 211, 252, 0.8);
+}
+
+.feature-field-detail-field-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.feature-field-detail-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.badge-source {
+  background: rgba(250, 204, 21, 0.12);
+  color: rgba(250, 204, 21, 0.9);
+  border: 1px solid rgba(250, 204, 21, 0.25);
+}
+
+.badge-basic {
+  background: rgba(59, 130, 246, 0.12);
+  color: rgba(96, 165, 250, 0.95);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.badge-yoy {
+  background: rgba(168, 85, 247, 0.12);
+  color: rgba(192, 132, 252, 0.95);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+.badge-mom {
+  background: rgba(34, 211, 238, 0.12);
+  color: rgba(103, 232, 249, 0.95);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+}
+
+.badge-total {
+  background: rgba(148, 163, 184, 0.1);
+  color: rgba(191, 213, 239, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.feature-field-detail-feature-name {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 13px;
+  color: rgba(125, 211, 252, 0.85);
+}
+
+.feature-field-detail-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.3s ease, opacity 0.25s ease;
+}
+
+.feature-field-detail-collapse > * {
+  overflow: hidden;
+}
+
+.feature-field-detail-collapse.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.feature-field-detail-field-card .ant-table {
+  background: transparent !important;
+}
+
+.feature-field-detail-field-card .ant-table-thead > tr > th {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1) !important;
+  font-size: 12px;
+}
+
+.feature-field-detail-field-card .ant-table-tbody > tr > td {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.06) !important;
+}
+
+.feature-field-detail-field-card .ant-table-tbody > tr:hover > td {
+  background: rgba(30, 41, 59, 0.4) !important;
+}
+
+/* ── Feature Field Detail (light) ── */
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-header {
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.98) 100%);
+  border-color: rgba(2, 8, 23, 0.1);
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-header-label {
+  color: rgba(2, 8, 23, 0.5);
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-header-value {
+  color: rgba(2, 8, 23, 0.85);
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-header-number {
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-field-card {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(2, 8, 23, 0.08);
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-field-card:hover {
+  border-color: rgba(14, 165, 233, 0.35);
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-field-header {
+  background: rgba(248, 250, 252, 0.9);
+  border-bottom-color: rgba(2, 8, 23, 0.06);
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-field-name {
+  color: rgba(2, 8, 23, 0.88);
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-expand-icon {
+  color: rgba(2, 8, 23, 0.35);
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-field-header:hover .feature-field-detail-expand-icon {
+  color: rgba(14, 165, 233, 0.75);
+}
+
+:root[data-ui-theme-effective='light'] .badge-source {
+  background: rgba(245, 158, 11, 0.1);
+  color: rgba(180, 83, 9, 0.9);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+:root[data-ui-theme-effective='light'] .badge-basic {
+  background: rgba(59, 130, 246, 0.08);
+  color: rgba(37, 99, 235, 0.9);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+:root[data-ui-theme-effective='light'] .badge-yoy {
+  background: rgba(168, 85, 247, 0.08);
+  color: rgba(126, 34, 206, 0.85);
+  border-color: rgba(168, 85, 247, 0.2);
+}
+
+:root[data-ui-theme-effective='light'] .badge-mom {
+  background: rgba(6, 182, 212, 0.08);
+  color: rgba(8, 145, 178, 0.9);
+  border-color: rgba(6, 182, 212, 0.2);
+}
+
+:root[data-ui-theme-effective='light'] .badge-total {
+  background: rgba(2, 8, 23, 0.04);
+  color: rgba(2, 8, 23, 0.6);
+  border-color: rgba(2, 8, 23, 0.1);
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-feature-name {
+  color: rgba(14, 165, 233, 0.85);
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-field-card .ant-table-thead > tr > th {
+  background: rgba(248, 250, 252, 0.9) !important;
+  border-bottom-color: rgba(2, 8, 23, 0.06) !important;
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-field-card .ant-table-tbody > tr > td {
+  border-bottom-color: rgba(2, 8, 23, 0.04) !important;
+}
+
+:root[data-ui-theme-effective='light'] .feature-field-detail-field-card .ant-table-tbody > tr:hover > td {
+  background: rgba(2, 8, 23, 0.03) !important;
 }

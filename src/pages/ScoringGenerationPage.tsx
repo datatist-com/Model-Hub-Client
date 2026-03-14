@@ -1,54 +1,66 @@
-import { Button, Card, Table, Tag } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import type { ColumnsType } from 'antd/es/table';
+import { Card, Col, Row, Tag, Tooltip } from 'antd';
+import { FileSearchOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
-type ScoringRow = { id: string; model: string; dataset: string; scoreCount: number; status: 'pending' | 'running' | 'completed' | 'failed'; createdAt: string };
+type ModelRow = {
+  id: string;
+  modelName: string;
+  portrait: string;
+  target: string;
+  algorithm: string;
+  auc?: number;
+  liftTop10?: number;
+};
 
-const statusColorMap = { pending: 'gold', running: 'blue', completed: 'green', failed: 'red' } as const;
-
-const data: ScoringRow[] = [
-  { id: 'sc-001', model: '信用卡申请模型 v2.1', dataset: 'user_credit_202603', scoreCount: 18432, status: 'completed', createdAt: '2026-03-10' },
-  { id: 'sc-002', model: '资产提升模型 v1.4', dataset: 'user_asset_202603', scoreCount: 0, status: 'running', createdAt: '2026-03-11' },
-  { id: 'sc-003', model: '三方支付防流失模型 v3.0', dataset: 'payment_churn_202603', scoreCount: 0, status: 'pending', createdAt: '2026-03-12' }
+const publishedModels: ModelRow[] = [
+  { id: 'mod-001', modelName: '新疆工行长尾客群资产提升模型', portrait: 'AUM资产客群画像', target: '新疆工行长尾客群资产提升', algorithm: '画龙模型A (2026.01)', auc: 0.83, liftTop10: 3.2 }
 ];
 
 export default function ScoringGenerationPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  const statusTextMap: Record<string, string> = {
-    pending: t('pages.scoringGeneration.statusPending'),
-    running: t('pages.scoringGeneration.statusRunning'),
-    completed: t('pages.scoringGeneration.statusCompleted'),
-    failed: t('pages.scoringGeneration.statusFailed')
-  };
-
-  const columns: ColumnsType<ScoringRow> = [
-    { title: t('pages.scoringGeneration.columns.id'), dataIndex: 'id', width: 100 },
-    { title: t('pages.scoringGeneration.columns.model'), dataIndex: 'model', width: 200 },
-    { title: t('pages.scoringGeneration.columns.dataset'), dataIndex: 'dataset', width: 160 },
-    { title: t('pages.scoringGeneration.columns.scoreCount'), dataIndex: 'scoreCount', width: 120 },
-    {
-      title: t('pages.scoringGeneration.columns.status'),
-      dataIndex: 'status',
-      width: 100,
-      render: (s) => <Tag color={statusColorMap[s as keyof typeof statusColorMap]}>{statusTextMap[s]}</Tag>
-    },
-    { title: t('pages.scoringGeneration.columns.createdAt'), dataIndex: 'createdAt', width: 160 },
-    {
-      title: t('pages.users.columns.actions'),
-      width: 100,
-      render: () => <Button size="small">{t('common.edit')}</Button>
-    }
-  ];
+  const p = 'pages.scoringGeneration';
 
   return (
-    <Card
-      className="page-card"
-      title={t('pages.scoringGeneration.title')}
-      extra={<Button icon={<PlusOutlined />}>{t('common.create')}</Button>}
-    >
-      <Table rowKey="id" columns={columns} dataSource={data} pagination={{ pageSize: 10 }} />
+    <Card className="page-card" title={t(`${p}.title`)}>
+      <Row gutter={[16, 16]}>
+        {publishedModels.map((model) => (
+          <Col key={model.id} xs={24} sm={12} lg={8} xl={6}>
+            <Card
+              size="small"
+              actions={[
+                <Tooltip key="detail" title={t(`${p}.detailTooltip`)}>
+                  <FileSearchOutlined
+                    onClick={() => navigate(`/model-detail?id=${encodeURIComponent(model.id)}&from=scoring`, { state: { sessionTabMode: 'replace' } })}
+                  />
+                </Tooltip>,
+                <Tooltip key="list" title={t(`${p}.listOutputTooltip`)}>
+                  <UnorderedListOutlined
+                    onClick={() => navigate(`/model-scoring-list?id=${encodeURIComponent(model.id)}`, { state: { sessionTabMode: 'replace' } })}
+                  />
+                </Tooltip>
+              ]}
+            >
+              <Card.Meta
+                title={model.modelName}
+                description={
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
+                    <div><span style={{ opacity: 0.65 }}>{t(`${p}.portrait`)}：</span>{model.portrait}</div>
+                    <div><span style={{ opacity: 0.65 }}>{t(`${p}.target`)}：</span>{model.target}</div>
+                    <div><span style={{ opacity: 0.65 }}>{t(`${p}.algorithm`)}：</span><Tag>{model.algorithm}</Tag></div>
+                    <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
+                      <span><span style={{ opacity: 0.65 }}>AUC：</span>{model.auc != null ? <span style={{ fontWeight: 600 }}>{model.auc.toFixed(2)}</span> : '-'}</span>
+                      <span><span style={{ opacity: 0.65 }}>Lift Top10%：</span>{model.liftTop10 != null ? <span style={{ fontWeight: 600 }}>{model.liftTop10.toFixed(1)}</span> : '-'}</span>
+                    </div>
+                  </div>
+                }
+              />
+            </Card>
+          </Col>
+        ))}
+      </Row>
     </Card>
   );
 }

@@ -23,6 +23,8 @@ import {
   getUserUiTheme,
   setUserSessionTabs
 } from '../auth/token';
+import { getUserRole, getMenuKeysForRole } from '../auth/roles';
+import type { MenuKey } from '../auth/roles';
 import { applyUiTheme } from '../theme/uiTheme';
 import { maskLicenseKey } from '../components/license/utils';
 import KeepAliveOutlet from '../router/KeepAliveOutlet';
@@ -65,7 +67,11 @@ const TAB_IDENTITY_PARAMS_MAP: Record<string, string[]> = {
   '/target-management': [],
   '/model-management': [],
   '/scoring-generation': [],
+  '/model-list-detail': ['id'],
+  '/model-scoring-list': ['id'],
   '/operation-list-output': [],
+  '/operation-list-create': [],
+  '/operation-list-detail': ['id'],
   '/log-viewer': []
 };
 
@@ -395,6 +401,11 @@ export default function AppLayout() {
     message.success(t('layout.user.passwordSuccess'));
   };
 
+  const currentUsername = getCurrentUsername() ?? 'admin';
+  const currentRole = getUserRole(currentUsername);
+  const allowedMenuKeys = getMenuKeysForRole(currentRole);
+  const filteredMenuItems = MENU_ITEMS.filter((item) => allowedMenuKeys.includes(item.key as MenuKey));
+
   return (
     <div className="app-root">
       <div className="app-bg-grid" />
@@ -412,7 +423,7 @@ export default function AppLayout() {
             mode="inline"
             tabIndex={-1}
             selectedKeys={[ROUTE_TO_MENU_KEY[location.pathname] ?? location.pathname]}
-            items={MENU_ITEMS.map((item) => ({ key: item.key, label: t(item.labelKey), icon: item.icon }))}
+            items={filteredMenuItems.map((item) => ({ key: item.key, label: t(item.labelKey), icon: item.icon }))}
             onClick={(e) => navigate(e.key)}
           />
           <div className="app-sider-footer">

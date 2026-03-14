@@ -5,21 +5,21 @@ import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-type PeriodRow = { id: string; year: number; month: number; customerCount: number; featureCount: number; status: 'ready' | 'computing' };
+type TargetPeriodRow = { id: string; year: number; month: number; totalSamples: number; positiveSamples: number; negativeSamples: number; status: 'ready' | 'computing' };
 
-const PORTRAIT_MAP: Record<string, string> = {
-  'up-001': 'AUM资产客群画像',
-  'up-002': '三方支付客群画像',
-  'up-003': '贷款客群画像'
+const TARGET_MAP: Record<string, string> = {
+  'tgt-001': '新疆工行长尾客群资产提升',
+  'tgt-002': '信用卡激活预测',
+  'tgt-003': '客户流失预警'
 };
 
-const mockPeriods: PeriodRow[] = [
-  { id: 'pp-001', year: 2026, month: 3, customerCount: 12350, featureCount: 28, status: 'ready' },
-  { id: 'pp-002', year: 2026, month: 2, customerCount: 12100, featureCount: 28, status: 'ready' },
-  { id: 'pp-003', year: 2026, month: 1, customerCount: 11800, featureCount: 28, status: 'ready' },
-  { id: 'pp-004', year: 2025, month: 12, customerCount: 11500, featureCount: 26, status: 'ready' },
-  { id: 'pp-005', year: 2025, month: 11, customerCount: 11200, featureCount: 26, status: 'ready' },
-  { id: 'pp-006', year: 2025, month: 10, customerCount: 10900, featureCount: 26, status: 'ready' }
+const mockPeriods: TargetPeriodRow[] = [
+  { id: 'tp-001', year: 2026, month: 2, totalSamples: 12350, positiveSamples: 1820, negativeSamples: 10530, status: 'ready' },
+  { id: 'tp-002', year: 2026, month: 1, totalSamples: 12100, positiveSamples: 1750, negativeSamples: 10350, status: 'ready' },
+  { id: 'tp-003', year: 2025, month: 12, totalSamples: 11800, positiveSamples: 1690, negativeSamples: 10110, status: 'ready' },
+  { id: 'tp-004', year: 2025, month: 11, totalSamples: 11500, positiveSamples: 1620, negativeSamples: 9880, status: 'ready' },
+  { id: 'tp-005', year: 2025, month: 10, totalSamples: 11200, positiveSamples: 1580, negativeSamples: 9620, status: 'ready' },
+  { id: 'tp-006', year: 2025, month: 9, totalSamples: 10900, positiveSamples: 1530, negativeSamples: 9370, status: 'ready' }
 ];
 
 const now = new Date();
@@ -29,14 +29,14 @@ const maxYear = currentMonth === 1 ? currentYear - 1 : currentYear;
 const YEARS = Array.from({ length: maxYear - 2016 + 1 }, (_, i) => 2016 + i);
 const defaultMonth = currentMonth === 1 ? 12 : currentMonth - 1;
 
-export default function PortraitPeriodPage() {
+export default function TargetPeriodPage() {
   const { t } = useTranslation();
   const { message } = App.useApp();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const portraitId = searchParams.get('id') ?? '';
-  const portraitDataSource = searchParams.get('ds') ?? 'computed';
-  const portraitName = PORTRAIT_MAP[portraitId] ?? portraitId;
+  const targetId = searchParams.get('id') ?? '';
+  const targetDataSource = searchParams.get('ds') ?? 'computed';
+  const targetName = TARGET_MAP[targetId] ?? targetId;
 
   const [addOpen, setAddOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState<number>(maxYear);
@@ -48,18 +48,18 @@ export default function PortraitPeriodPage() {
     setTimeout(() => setRefreshingIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
   };
 
-  const p = 'pages.portraitPeriod';
+  const p = 'pages.targetPeriod';
 
-  const columns: ColumnsType<PeriodRow> = [
+  const columns: ColumnsType<TargetPeriodRow> = [
     {
       title: t(`${p}.columns.period`),
       width: 140,
       render: (_, row) => `${row.year}-${String(row.month).padStart(2, '0')}`
     },
     {
-      title: t(`${p}.columns.customerCount`),
-      dataIndex: 'customerCount',
-      width: 140,
+      title: t(`${p}.columns.totalSamples`),
+      dataIndex: 'totalSamples',
+      width: 130,
       render: (v: number, row) => (
         <Space>
           <span>{refreshingIds.has(row.id) ? '-' : v.toLocaleString()}</span>
@@ -67,7 +67,23 @@ export default function PortraitPeriodPage() {
         </Space>
       )
     },
-    { title: t(`${p}.columns.featureCount`), dataIndex: 'featureCount', width: 100 },
+    {
+      title: t(`${p}.columns.positiveSamples`),
+      dataIndex: 'positiveSamples',
+      width: 120,
+      render: (v: number) => <span style={{ color: '#52c41a' }}>{v.toLocaleString()}</span>
+    },
+    {
+      title: t(`${p}.columns.negativeSamples`),
+      dataIndex: 'negativeSamples',
+      width: 120,
+      render: (v: number) => <span style={{ color: '#ff4d4f' }}>{v.toLocaleString()}</span>
+    },
+    {
+      title: t(`${p}.columns.positiveRate`),
+      width: 100,
+      render: (_, row) => `${(row.positiveSamples / row.totalSamples * 100).toFixed(1)}%`
+    },
     {
       title: t(`${p}.columns.status`),
       dataIndex: 'status',
@@ -81,7 +97,7 @@ export default function PortraitPeriodPage() {
       width: 200,
       render: (_, row) => (
         <Space>
-          {portraitDataSource === 'computed' && (
+          {targetDataSource === 'computed' && (
             <Button size="small" onClick={() => message.info(t(`${p}.recalculating`))}>{t(`${p}.recalculate`)}</Button>
           )}
           <Popconfirm
@@ -110,13 +126,13 @@ export default function PortraitPeriodPage() {
       className="page-card"
       title={
         <Space>
-          <Tooltip title={t(`${p}.backToPortrait`)}>
+          <Tooltip title={t(`${p}.backToTarget`)}>
             <LeftOutlined
               style={{ fontSize: 14, cursor: 'pointer', opacity: 0.45 }}
-              onClick={() => navigate('/user-portrait', { state: { sessionTabMode: 'replace' } })}
+              onClick={() => navigate('/target-management', { state: { sessionTabMode: 'replace' } })}
             />
           </Tooltip>
-          <span>{t(`${p}.title`)} ({portraitName})</span>
+          <span>{t(`${p}.title`)} ({targetName})</span>
         </Space>
       }
       extra={<Button icon={<PlusOutlined />} onClick={() => { setSelectedYear(maxYear); setSelectedMonth(undefined); setAddOpen(true); }}>{t(`${p}.addPeriod`)}</Button>}
@@ -150,7 +166,7 @@ export default function PortraitPeriodPage() {
         </div>
         <Tabs
           items={[
-            ...(portraitDataSource === 'computed' ? [{
+            ...(targetDataSource === 'computed' ? [{
               key: 'compute',
               label: t(`${p}.computeTab`),
               children: (
@@ -167,7 +183,7 @@ export default function PortraitPeriodPage() {
                 </div>
               )
             }] : []),
-            ...(portraitDataSource === 'imported' ? [{
+            ...(targetDataSource === 'imported' ? [{
               key: 'local',
               label: t(`${p}.localTab`),
               children: (

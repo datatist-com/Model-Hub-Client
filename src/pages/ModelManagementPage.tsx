@@ -1,59 +1,160 @@
-import { Button, Card, Space, Table, Tag } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import type { ColumnsType } from 'antd/es/table';
+import { useState } from 'react';
+import { App, Button, Card, Col, Form, Input, Modal, Row, Select, Space, Tag, Tooltip } from 'antd';
+import { DeleteOutlined, ExclamationCircleOutlined, FileSearchOutlined, PlusOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
-type ModelRow = { id: string; modelName: string; version: string; auc: number; status: 'draft' | 'published' | 'archived'; updatedAt: string };
+type ModelRow = {
+  id: string;
+  modelName: string;
+  portrait: string;
+  target: string;
+  algorithm: string;
+  auc?: number;
+  liftTop10?: number;
+  published?: boolean;
+};
 
-const statusColorMap = { draft: 'gold', published: 'green', archived: 'default' } as const;
+const mockPortraits = [
+  { value: 'up-001', label: 'AUM资产客群画像' },
+  { value: 'up-002', label: '三方支付客群画像' },
+  { value: 'up-003', label: '贷款客群画像' }
+];
+
+const mockTargets = [
+  { value: 'tgt-001', label: '新疆工行长尾客群资产提升' },
+  { value: 'tgt-002', label: '信用卡激活预测' },
+  { value: 'tgt-003', label: '客户流失预警' }
+];
+
+const mockAlgorithms = [
+  { value: 'hualong-a-202601', label: '画龙模型A (2026.01)' }
+];
 
 const data: ModelRow[] = [
-  { id: 'mod-001', modelName: '信用卡申请模型', version: 'v2.1', auc: 0.83, status: 'published', updatedAt: '2026-03-08' },
-  { id: 'mod-002', modelName: '资产提升模型', version: 'v1.4', auc: 0.77, status: 'published', updatedAt: '2026-02-21' },
-  { id: 'mod-003', modelName: '三方支付防流失模型', version: 'v3.0', auc: 0.86, status: 'draft', updatedAt: '2026-03-10' },
-  { id: 'mod-004', modelName: '贷款审批模型', version: 'v1.0', auc: 0.73, status: 'archived', updatedAt: '2025-12-15' }
+  { id: 'mod-001', modelName: '新疆工行长尾客群资产提升模型', portrait: 'AUM资产客群画像', target: '新疆工行长尾客群资产提升', algorithm: '画龙模型A (2026.01)', auc: 0.83, liftTop10: 3.2, published: true },
+  { id: 'mod-002', modelName: '信用卡激活预测模型', portrait: '三方支付客群画像', target: '信用卡激活预测', algorithm: '画龙模型A (2026.01)', auc: 0.77, liftTop10: 2.8, published: false },
+  { id: 'mod-003', modelName: '客户流失预警模型', portrait: '贷款客群画像', target: '客户流失预警', algorithm: '画龙模型A (2026.01)' }
 ];
 
 export default function ModelManagementPage() {
   const { t } = useTranslation();
+  const { message } = App.useApp();
+  const navigate = useNavigate();
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createForm] = Form.useForm();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<ModelRow | null>(null);
+  const [deletePassword, setDeletePassword] = useState('');
 
-  const statusTextMap: Record<string, string> = {
-    draft: t('pages.modelManagement.statusDraft'),
-    published: t('pages.modelManagement.statusPublished'),
-    archived: t('pages.modelManagement.statusArchived')
-  };
-
-  const columns: ColumnsType<ModelRow> = [
-    { title: t('pages.modelManagement.columns.id'), dataIndex: 'id', width: 100 },
-    { title: t('pages.modelManagement.columns.modelName'), dataIndex: 'modelName', width: 200 },
-    { title: t('pages.modelManagement.columns.version'), dataIndex: 'version', width: 80 },
-    { title: t('pages.modelManagement.columns.auc'), dataIndex: 'auc', width: 80, render: (v) => v.toFixed(2) },
-    {
-      title: t('pages.modelManagement.columns.status'),
-      dataIndex: 'status',
-      width: 100,
-      render: (s) => <Tag color={statusColorMap[s as keyof typeof statusColorMap]}>{statusTextMap[s]}</Tag>
-    },
-    { title: t('pages.modelManagement.columns.updatedAt'), dataIndex: 'updatedAt', width: 160 },
-    {
-      title: t('pages.users.columns.actions'),
-      width: 160,
-      render: () => (
-        <Space>
-          <Button size="small">{t('common.edit')}</Button>
-          <Button size="small" danger>{t('common.delete')}</Button>
-        </Space>
-      )
-    }
-  ];
+  const p = 'pages.modelManagement';
 
   return (
     <Card
       className="page-card"
-      title={t('pages.modelManagement.title')}
-      extra={<Button icon={<PlusOutlined />}>{t('common.create')}</Button>}
+      title={t(`${p}.title`)}
+      extra={<Button icon={<PlusOutlined />} onClick={() => { createForm.resetFields(); setCreateOpen(true); }}>{t('common.create')}</Button>}
     >
-      <Table rowKey="id" columns={columns} dataSource={data} pagination={{ pageSize: 10 }} />
+      <Row gutter={[16, 16]}>
+        {data.map((model) => (
+          <Col key={model.id} xs={24} sm={12} lg={8} xl={6}>
+            <Card
+              size="small"
+              actions={[
+                <Tooltip key="detail" title={t(`${p}.detailTooltip`)}>
+                  <FileSearchOutlined
+                    onClick={() => navigate(`/model-detail?id=${encodeURIComponent(model.id)}`, { state: { sessionTabMode: 'replace' } })}
+                  />
+                </Tooltip>,
+                <Tooltip key="train" title={t(`${p}.trainTooltip`)}>
+                  <ThunderboltOutlined
+                    onClick={() => navigate(`/model-train?id=${encodeURIComponent(model.id)}`, { state: { sessionTabMode: 'replace' } })}
+                  />
+                </Tooltip>,
+                <Tooltip key="delete" title={t('common.delete')}>
+                  <DeleteOutlined
+                    style={{ color: '#ff4d4f' }}
+                    onClick={() => {
+                      setDeleteTarget(model);
+                      setDeletePassword('');
+                      setDeleteOpen(true);
+                    }}
+                  />
+                </Tooltip>
+              ]}
+            >
+              <Card.Meta
+                title={
+                  <span>
+                    {model.modelName}
+                    {model.published
+                      ? <Tag color="green" style={{ marginLeft: 8 }}>{t(`${p}.published`)}</Tag>
+                      : <Tag style={{ marginLeft: 8 }}>{t(`${p}.unpublished`)}</Tag>}
+                  </span>
+                }
+                description={
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
+                    <div><span style={{ opacity: 0.65 }}>{t(`${p}.portrait`)}：</span>{model.portrait}</div>
+                    <div><span style={{ opacity: 0.65 }}>{t(`${p}.target`)}：</span>{model.target}</div>
+                    <div><span style={{ opacity: 0.65 }}>{t(`${p}.algorithm`)}：</span><Tag>{model.algorithm}</Tag></div>
+                    <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
+                      <span><span style={{ opacity: 0.65 }}>AUC：</span>{model.auc != null ? <span style={{ fontWeight: 600 }}>{model.auc.toFixed(2)}</span> : '-'}</span>
+                      <span><span style={{ opacity: 0.65 }}>Lift Top10%：</span>{model.liftTop10 != null ? <span style={{ fontWeight: 600 }}>{model.liftTop10.toFixed(1)}</span> : '-'}</span>
+                    </div>
+                  </div>
+                }
+              />
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      <Modal open={createOpen} title={t(`${p}.createTitle`)} footer={null} onCancel={() => setCreateOpen(false)}>
+        <Form form={createForm} layout="vertical" onFinish={() => { message.success(t(`${p}.createSuccess`)); setCreateOpen(false); }}>
+          <Form.Item label={t(`${p}.form.modelName`)} name="modelName" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label={t(`${p}.form.portrait`)} name="portrait" rules={[{ required: true }]}>
+            <Select options={mockPortraits} />
+          </Form.Item>
+          <Form.Item label={t(`${p}.form.target`)} name="target" rules={[{ required: true }]}>
+            <Select options={mockTargets} />
+          </Form.Item>
+          <Form.Item label={t(`${p}.form.algorithm`)} name="algorithm" rules={[{ required: true }]}>
+            <Select options={mockAlgorithms} />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">{t('common.save')}</Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        open={deleteOpen}
+        title={
+          <Space>
+            <ExclamationCircleOutlined style={{ color: '#faad14' }} />
+            {t(`${p}.deleteConfirmTitle`)}
+          </Space>
+        }
+        okText={t('common.delete')}
+        okButtonProps={{ danger: true, disabled: !deletePassword.trim() }}
+        cancelText={t('common.cancel')}
+        onOk={() => {
+          message.success(t(`${p}.deleteSuccess`, { name: deleteTarget?.modelName }));
+          setDeleteOpen(false);
+          setDeleteTarget(null);
+          setDeletePassword('');
+        }}
+        onCancel={() => { setDeleteOpen(false); setDeleteTarget(null); setDeletePassword(''); }}
+      >
+        <p style={{ marginBottom: 16 }}>{t(`${p}.deleteConfirmContent`, { name: deleteTarget?.modelName })}</p>
+        <Input.Password
+          placeholder={t(`${p}.deletePasswordPlaceholder`)}
+          value={deletePassword}
+          onChange={(e) => setDeletePassword(e.target.value)}
+        />
+      </Modal>
     </Card>
   );
 }

@@ -56,11 +56,14 @@ cd server && go build -ldflags="-s -w" -trimpath -o ../model-hub-client .
 ## 使用方式
 
 ```bash
-# 启动（默认 0.0.0.0:8000）
+# 启动（默认后台运行，0.0.0.0:8000）
 ./model-hub-client
 
 # 指定地址和端口
 ./model-hub-client --host 127.0.0.1 --port 9000
+
+# 前台运行
+./model-hub-client -f
 
 # 停止
 ./model-hub-client stop
@@ -71,6 +74,8 @@ cd server && go build -ldflags="-s -w" -trimpath -o ../model-hub-client .
 # 查看帮助
 ./model-hub-client --help
 ```
+
+默认后台运行，日志输出到 `<binary>.log` 文件。加 `-f` 参数可前台运行。
 
 ## 发布流程
 
@@ -102,6 +107,27 @@ cd server && go build -ldflags="-s -w" -trimpath -o ../model-hub-client .
 │   └── release.yml     # CI/CD 自动发布
 └── index.html          # 入口 HTML
 ```
+
+## 角色权限
+
+系统内置 6 种角色，通过菜单可见性实现权限控制。系统管理员仅有一个，不可新增。
+
+| 功能模块 | 系统管理员 | 建模工程师 | 数据工程师 | 业务运营 | 项目管理员 | 项目成员 |
+|----------|:---:|:---:|:---:|:---:|:---:|:---:|
+| 仪表盘 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 数据源管理 | ✓ | ✓ | ✓ | | ✓ | |
+| 特征源表管理 | ✓ | ✓ | | | | |
+| 用户画像管理 | ✓ | ✓ | ✓ | | ✓ | |
+| 目标管理 | ✓ | ✓ | ✓ | | ✓ | |
+| 模型管理 | ✓ | ✓ | | | | |
+| 评分生成 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 运营人群包 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 用户管理 | ✓ | | | | ✓ | |
+| 日志查看 | ✓ | | | | | |
+
+**用户管理权限：**
+- 系统管理员：可管理所有角色的用户
+- 项目管理员：仅可管理项目成员
 
 ## License
 

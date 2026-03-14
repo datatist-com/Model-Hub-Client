@@ -4,6 +4,8 @@ import { InboxOutlined, LeftOutlined, PlusOutlined, ReloadOutlined, UploadOutlin
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useRefreshingSet } from '../hooks/useRefreshingSet';
+import { usePeriodOptions } from '../hooks/usePeriodOptions';
 
 type TargetPeriodRow = { id: string; year: number; month: number; totalSamples: number; positiveSamples: number; negativeSamples: number; status: 'ready' | 'computing' };
 
@@ -22,13 +24,6 @@ const mockPeriods: TargetPeriodRow[] = [
   { id: 'tp-006', year: 2025, month: 9, totalSamples: 10900, positiveSamples: 1530, negativeSamples: 9370, status: 'ready' }
 ];
 
-const now = new Date();
-const currentYear = now.getFullYear();
-const currentMonth = now.getMonth() + 1;
-const maxYear = currentMonth === 1 ? currentYear - 1 : currentYear;
-const YEARS = Array.from({ length: maxYear - 2016 + 1 }, (_, i) => 2016 + i);
-const defaultMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-
 export default function TargetPeriodPage() {
   const { t } = useTranslation();
   const { message } = App.useApp();
@@ -39,14 +34,8 @@ export default function TargetPeriodPage() {
   const targetName = TARGET_MAP[targetId] ?? targetId;
 
   const [addOpen, setAddOpen] = useState(false);
-  const [selectedYear, setSelectedYear] = useState<number>(maxYear);
-  const [selectedMonth, setSelectedMonth] = useState<number | undefined>(defaultMonth);
-  const [refreshingIds, setRefreshingIds] = useState<Set<string>>(new Set());
-
-  const handleRefresh = (id: string) => {
-    setRefreshingIds((prev) => new Set(prev).add(id));
-    setTimeout(() => setRefreshingIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
-  };
+  const { selectedYear, setSelectedYear, selectedMonth, setSelectedMonth, years, months } = usePeriodOptions();
+  const { refreshingIds, refresh: handleRefresh } = useRefreshingSet();
 
   const p = 'pages.targetPeriod';
 
@@ -115,11 +104,8 @@ export default function TargetPeriodPage() {
     }
   ];
 
-  const maxMonth = selectedYear === currentYear ? currentMonth - 1 : 12;
-  const MONTHS = Array.from({ length: maxMonth }, (_, i) => i + 1);
-
-  const yearOptions = YEARS.map((y) => ({ value: y, label: String(y) }));
-  const monthOptions = MONTHS.map((m) => ({ value: m, label: `${m}${t(`${p}.monthUnit`)}` }));
+  const yearOptions = years.map((y) => ({ value: y, label: String(y) }));
+  const monthOptions = months.map((m) => ({ value: m, label: `${m}${t(`${p}.monthUnit`)}` }));
 
   return (
     <Card

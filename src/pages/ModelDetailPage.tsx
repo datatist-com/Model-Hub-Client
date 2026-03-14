@@ -5,8 +5,9 @@ import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, Legend, ResponsiveContainer } from 'recharts';
+import { generateLiftData } from '../utils/liftData';
+import type { LiftRow } from '../utils/liftData';
 
-type LiftRow = { rank: number; liftValue: number; cumLiftValue: number };
 type FeatureRow = { key: string; featureName: string; weight: number };
 
 const MODEL_MAP: Record<string, { modelName: string; portrait: string; target: string; algorithm: string; auc?: number; liftTop10?: number; published?: boolean }> = {
@@ -14,19 +15,6 @@ const MODEL_MAP: Record<string, { modelName: string; portrait: string; target: s
   'mod-002': { modelName: '信用卡激活预测模型', portrait: '三方支付客群画像', target: '信用卡激活预测', algorithm: '画龙模型A (2026.01)', auc: 0.77, liftTop10: 2.8, published: false },
   'mod-003': { modelName: '客户流失预警模型', portrait: '贷款客群画像', target: '客户流失预警', algorithm: '画龙模型A (2026.01)' }
 };
-
-function generateLiftData(count: number, baseLift: number): LiftRow[] {
-  let cumSum = 0;
-  return Array.from({ length: count }, (_, i) => {
-    const rank = i + 1;
-    const decay = Math.pow(0.92, i);
-    const lift = +(baseLift * decay + (Math.random() - 0.5) * 0.1).toFixed(2);
-    const liftValue = Math.max(lift, 0.5);
-    cumSum += liftValue;
-    const cumLiftValue = +(cumSum / rank).toFixed(2);
-    return { rank, liftValue, cumLiftValue };
-  });
-}
 
 const mockLift10 = generateLiftData(10, 3.2);
 const mockLift100 = generateLiftData(100, 3.2);

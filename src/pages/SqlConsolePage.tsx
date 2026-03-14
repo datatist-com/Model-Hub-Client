@@ -4,8 +4,7 @@ import { ClearOutlined, LeftOutlined, PlayCircleOutlined } from '@ant-design/ico
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
-const SOURCE_NAME_MAP: Record<string, string> = { 'src-001': 'hive-prod', 'src-002': 'duckdb-local-a' };
+import { SOURCE_NAME_MAP } from '../constants/mockMaps';
 
 type HistoryRecord = {
   id: string;

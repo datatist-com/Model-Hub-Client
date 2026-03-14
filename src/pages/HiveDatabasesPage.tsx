@@ -4,10 +4,10 @@ import { LeftOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { SOURCE_NAME_MAP } from '../constants/mockMaps';
+import { useRefreshingSet } from '../hooks/useRefreshingSet';
 
 type Row = { id: string; sourceId: string; databaseName: string; tableCount: number };
-
-const SOURCE_NAME_MAP: Record<string, string> = { 'src-001': 'hive-prod', 'src-002': 'duckdb-local-a' };
 
 const data: Row[] = [
   { id: 'hdb-001', sourceId: 'src-001', databaseName: 'dwd', tableCount: 12 },
@@ -21,12 +21,7 @@ export default function HiveDatabasesPage() {
   const sourceId = searchParams.get('sourceId') ?? 'src-001';
   const sourceName = SOURCE_NAME_MAP[sourceId] ?? sourceId;
   const [createOpen, setCreateOpen] = useState(false);
-  const [refreshingIds, setRefreshingIds] = useState<Set<string>>(new Set());
-
-  const handleRefreshCount = (id: string) => {
-    setRefreshingIds((prev) => new Set(prev).add(id));
-    setTimeout(() => setRefreshingIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
-  };
+  const { refreshingIds, refresh: handleRefreshCount } = useRefreshingSet();
 
   const columns: ColumnsType<Row> = [
     { title: t('pages.hiveDatabases.columns.source'), dataIndex: 'sourceId', width: 160, render: () => sourceName },

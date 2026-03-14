@@ -29,6 +29,7 @@ vite.config.d.ts
 npm-debug.log*
 
 # Go binary output (local builds)
-model-hub-client-*
+model-hub-client*
+*.pid
 server/dist/*
 !server/dist/index.html

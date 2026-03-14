@@ -1,5 +1,5 @@
 import { Button, Descriptions, Input, Modal, Tag, Typography } from 'antd';
-import { formatDisplayDate } from './utils';
+import { formatDisplayDate } from './licenseUtils';
 
 export type LicenseState = 'missing' | 'expired' | 'active';
 

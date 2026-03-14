@@ -4,6 +4,7 @@ import { ConsoleSqlOutlined, ExclamationCircleOutlined, PlusOutlined, ReloadOutl
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useRefreshingSet } from '../hooks/useRefreshingSet';
 
 type Source = { id: string; name: string; type: 'hive' | 'duckdb'; connected: boolean; objectCount: number };
 
@@ -25,18 +26,13 @@ export default function DataSourcesPage() {
   const [editRecord, setEditRecord] = useState<Source | null>(null);
   const [editForm] = Form.useForm();
   const lastClickTimeRef = useRef(0);
-  const [refreshingIds, setRefreshingIds] = useState<Set<string>>(new Set());
+  const { refreshingIds, refresh: handleRefreshCount } = useRefreshingSet();
 
   const handleConnectionClick = (row: Source) => {
     const now = Date.now();
     if (now - lastClickTimeRef.current < 1000) return;
     lastClickTimeRef.current = now;
     message.info(row.connected ? t('pages.dataSources.reconnecting') : t('pages.dataSources.connecting'));
-  };
-
-  const handleRefreshCount = (id: string) => {
-    setRefreshingIds((prev) => new Set(prev).add(id));
-    setTimeout(() => setRefreshingIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
   };
 
   const columns: ColumnsType<Source> = [

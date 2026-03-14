@@ -4,10 +4,10 @@ import { LeftOutlined, MinusCircleOutlined, PlusOutlined, ReloadOutlined } from 
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { SOURCE_NAME_MAP } from '../constants/mockMaps';
+import { useRefreshingSet } from '../hooks/useRefreshingSet';
 
 type Row = { id: string; databaseName: string; tableName: string; alias?: string; fieldCount: number; rowCount: number };
-
-const SOURCE_NAME_MAP: Record<string, string> = { 'src-001': 'hive-prod', 'src-002': 'duckdb-local-a' };
 
 const mockFields = [
   { name: 'user_id', type: 'BIGINT', comment: '用户ID' },
@@ -34,17 +34,8 @@ export default function HiveTablesPage() {
   const sourceName = SOURCE_NAME_MAP[sourceId] ?? sourceId;
   const [createOpen, setCreateOpen] = useState(false);
   const [fieldDetailOpen, setFieldDetailOpen] = useState(false);
-  const [refreshingIds, setRefreshingIds] = useState<Set<string>>(new Set());
-  const [refreshingRowIds, setRefreshingRowIds] = useState<Set<string>>(new Set());
-
-  const handleRefreshField = (id: string) => {
-    setRefreshingIds((prev) => new Set(prev).add(id));
-    setTimeout(() => setRefreshingIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
-  };
-  const handleRefreshRow = (id: string) => {
-    setRefreshingRowIds((prev) => new Set(prev).add(id));
-    setTimeout(() => setRefreshingRowIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
-  };
+  const { refreshingIds, refresh: handleRefreshField } = useRefreshingSet();
+  const { refreshingIds: refreshingRowIds, refresh: handleRefreshRow } = useRefreshingSet();
 
   const fieldColumns = [
     { title: t('pages.hiveTables.fieldDetailColumns.name'), dataIndex: 'name', width: 160 },

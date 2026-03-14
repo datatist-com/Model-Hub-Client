@@ -4,6 +4,8 @@ import { InboxOutlined, LeftOutlined, PlusOutlined, ReloadOutlined, UploadOutlin
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useRefreshingSet } from '../hooks/useRefreshingSet';
+import { usePeriodOptions } from '../hooks/usePeriodOptions';
 
 type PeriodRow = { id: string; year: number; month: number; customerCount: number; featureCount: number; status: 'ready' | 'computing' };
 
@@ -22,13 +24,6 @@ const mockPeriods: PeriodRow[] = [
   { id: 'pp-006', year: 2025, month: 10, customerCount: 10900, featureCount: 26, status: 'ready' }
 ];
 
-const now = new Date();
-const currentYear = now.getFullYear();
-const currentMonth = now.getMonth() + 1;
-const maxYear = currentMonth === 1 ? currentYear - 1 : currentYear;
-const YEARS = Array.from({ length: maxYear - 2016 + 1 }, (_, i) => 2016 + i);
-const defaultMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-
 export default function PortraitPeriodPage() {
   const { t } = useTranslation();
   const { message } = App.useApp();
@@ -39,14 +34,8 @@ export default function PortraitPeriodPage() {
   const portraitName = PORTRAIT_MAP[portraitId] ?? portraitId;
 
   const [addOpen, setAddOpen] = useState(false);
-  const [selectedYear, setSelectedYear] = useState<number>(maxYear);
-  const [selectedMonth, setSelectedMonth] = useState<number | undefined>(defaultMonth);
-  const [refreshingIds, setRefreshingIds] = useState<Set<string>>(new Set());
-
-  const handleRefresh = (id: string) => {
-    setRefreshingIds((prev) => new Set(prev).add(id));
-    setTimeout(() => setRefreshingIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
-  };
+  const { selectedYear, setSelectedYear, selectedMonth, setSelectedMonth, years, months } = usePeriodOptions();
+  const { refreshingIds, refresh: handleRefresh } = useRefreshingSet();
 
   const p = 'pages.portraitPeriod';
 
@@ -99,11 +88,8 @@ export default function PortraitPeriodPage() {
     }
   ];
 
-  const maxMonth = selectedYear === currentYear ? currentMonth - 1 : 12;
-  const MONTHS = Array.from({ length: maxMonth }, (_, i) => i + 1);
-
-  const yearOptions = YEARS.map((y) => ({ value: y, label: String(y) }));
-  const monthOptions = MONTHS.map((m) => ({ value: m, label: `${m}${t(`${p}.monthUnit`)}` }));
+  const yearOptions = years.map((y) => ({ value: y, label: String(y) }));
+  const monthOptions = months.map((m) => ({ value: m, label: `${m}${t(`${p}.monthUnit`)}` }));
 
   return (
     <Card

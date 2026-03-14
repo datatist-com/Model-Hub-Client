@@ -4,6 +4,8 @@ import { DownloadOutlined, LeftOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { MODEL_NAME_MAP } from '../constants/mockMaps';
+import { usePeriodOptions } from '../hooks/usePeriodOptions';
 
 type ListRow = {
   id: string;
@@ -13,7 +15,7 @@ type ListRow = {
 };
 
 const MODEL_MAP: Record<string, string> = {
-  'mod-001': '新疆工行长尾客群资产提升模型'
+  'mod-001': MODEL_NAME_MAP['mod-001']
 };
 
 const mockData: Record<string, ListRow[]> = {
@@ -23,13 +25,6 @@ const mockData: Record<string, ListRow[]> = {
     { id: 'ml-003', predictionMonth: '2025-12', totalCount: 0, status: 'generating' }
   ]
 };
-
-const now = new Date();
-const currentYear = now.getFullYear();
-const currentMonth = now.getMonth() + 1;
-const maxYear = currentMonth === 1 ? currentYear - 1 : currentYear;
-const YEARS = Array.from({ length: maxYear - 2016 + 1 }, (_, i) => 2016 + i);
-const defaultMonth = currentMonth === 1 ? 12 : currentMonth - 1;
 
 export default function ModelScoringListPage() {
   const { t } = useTranslation();
@@ -42,14 +37,12 @@ export default function ModelScoringListPage() {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [createForm] = Form.useForm();
-  const [selectedYear, setSelectedYear] = useState<number>(maxYear);
+  const { selectedYear, setSelectedYear, years, months } = usePeriodOptions();
 
   const p = 'pages.modelScoringList';
 
-  const maxMonth = selectedYear === currentYear ? currentMonth - 1 : 12;
-  const MONTHS = Array.from({ length: maxMonth }, (_, i) => i + 1);
-  const yearOptions = YEARS.map((y) => ({ value: y, label: String(y) }));
-  const monthOptions = MONTHS.map((m) => ({ value: m, label: `${m}${t(`${p}.monthUnit`)}` }));
+  const yearOptions = years.map((y) => ({ value: y, label: String(y) }));
+  const monthOptions = months.map((m) => ({ value: m, label: `${m}${t(`${p}.monthUnit`)}` }));
 
   const columns: ColumnsType<ListRow> = [
     { title: t(`${p}.columns.predictionMonth`), dataIndex: 'predictionMonth', width: 120 },

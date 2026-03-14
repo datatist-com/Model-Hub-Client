@@ -26,7 +26,7 @@ import {
 import { getUserRole, getMenuKeysForRole } from '../auth/roles';
 import type { MenuKey } from '../auth/roles';
 import { applyUiTheme } from '../theme/uiTheme';
-import { maskLicenseKey } from '../components/license/utils';
+import { maskLicenseKey } from '../components/license/licenseUtils';
 import KeepAliveOutlet from '../router/KeepAliveOutlet';
 import LicenseCenterModal from '../components/license/LicenseCenterModal';
 

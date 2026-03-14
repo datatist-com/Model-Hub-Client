@@ -4,6 +4,8 @@ import { ExclamationCircleOutlined, InboxOutlined, LeftOutlined, PlusOutlined, R
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { SOURCE_NAME_MAP } from '../constants/mockMaps';
+import { useRefreshingSet } from '../hooks/useRefreshingSet';
 
 type Row = { id: string; tableName: string; fieldCount: number; rowCount: number; enabled: boolean };
 
@@ -22,24 +24,14 @@ export default function DuckDBTablesPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sourceId = searchParams.get('sourceId') ?? 'src-002';
-  const SOURCE_NAME_MAP: Record<string, string> = { 'src-001': 'hive-prod', 'src-002': 'duckdb-local-a' };
   const sourceName = SOURCE_NAME_MAP[sourceId] ?? sourceId;
-  const [refreshingFieldIds, setRefreshingFieldIds] = useState<Set<string>>(new Set());
-  const [refreshingRowIds, setRefreshingRowIds] = useState<Set<string>>(new Set());
+  const { refreshingIds: refreshingFieldIds, refresh: handleRefreshField } = useRefreshingSet();
+  const { refreshingIds: refreshingRowIds, refresh: handleRefreshRow } = useRefreshingSet();
   const [fieldDetailOpen, setFieldDetailOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
   const [deletePassword, setDeletePassword] = useState('');
-
-  const handleRefreshField = (id: string) => {
-    setRefreshingFieldIds((prev) => new Set(prev).add(id));
-    setTimeout(() => setRefreshingFieldIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
-  };
-  const handleRefreshRow = (id: string) => {
-    setRefreshingRowIds((prev) => new Set(prev).add(id));
-    setTimeout(() => setRefreshingRowIds((prev) => { const s = new Set(prev); s.delete(id); return s; }), 1500);
-  };
 
   const fieldColumns = [
     { title: t('pages.duckdbTables.fieldDetailColumns.name'), dataIndex: 'name', width: 160 },

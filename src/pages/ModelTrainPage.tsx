@@ -4,8 +4,10 @@ import type { ColumnsType } from 'antd/es/table';
 import { InfoCircleOutlined, LeftOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
-type LiftRow = { rank: number; liftValue: number; cumLiftValue: number };
+import { MODEL_NAME_MAP } from '../constants/mockMaps';
+import { usePeriodOptions } from '../hooks/usePeriodOptions';
+import { generateLiftData } from '../utils/liftData';
+import type { LiftRow } from '../utils/liftData';
 
 type TrainRecord = {
   id: string;
@@ -17,24 +19,7 @@ type TrainRecord = {
   status: 'completed' | 'running';
 };
 
-const MODEL_MAP: Record<string, string> = {
-  'mod-001': '新疆工行长尾客群资产提升模型',
-  'mod-002': '信用卡激活预测模型',
-  'mod-003': '客户流失预警模型'
-};
-
-function generateLiftData(count: number, baseLift: number): LiftRow[] {
-  let cumSum = 0;
-  return Array.from({ length: count }, (_, i) => {
-    const rank = i + 1;
-    const decay = Math.pow(0.92, i);
-    const lift = +(baseLift * decay + (Math.random() - 0.5) * 0.1).toFixed(2);
-    const liftValue = Math.max(lift, 0.5);
-    cumSum += liftValue;
-    const cumLiftValue = +(cumSum / rank).toFixed(2);
-    return { rank, liftValue, cumLiftValue };
-  });
-}
+const MODEL_MAP: Record<string, string> = MODEL_NAME_MAP;
 
 const mockTrainRecords: TrainRecord[] = [
   { id: 'train-s-001', type: 'sample', featureMonths: '2023-10 ~ 2025-10', yTableMonth: '2025-11', auc: 0.85, liftTop10: 3.4, status: 'completed' },
@@ -46,13 +31,6 @@ const mockValRecords: TrainRecord[] = [
   { id: 'val-f-001', type: 'full', featureMonths: '2023-11 ~ 2025-11', yTableMonth: '2025-12', auc: 0.83, liftTop10: 3.2, status: 'completed' }
 ];
 
-const now = new Date();
-const currentYear = now.getFullYear();
-const currentMonth = now.getMonth() + 1;
-const maxYear = currentMonth === 1 ? currentYear - 1 : currentYear;
-const YEARS = Array.from({ length: maxYear - 2016 + 1 }, (_, i) => 2016 + i);
-const defaultMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-
 export default function ModelTrainPage() {
   const { t } = useTranslation();
   const { message } = App.useApp();
@@ -61,18 +39,15 @@ export default function ModelTrainPage() {
   const modelId = searchParams.get('id') ?? '';
   const modelName = MODEL_MAP[modelId] ?? modelId;
 
-  const [selectedYear, setSelectedYear] = useState<number>(maxYear);
-  const [selectedMonth, setSelectedMonth] = useState<number | undefined>(defaultMonth);
+  const { selectedYear, setSelectedYear, selectedMonth, setSelectedMonth, years, months } = usePeriodOptions();
   const [liftOpen, setLiftOpen] = useState(false);
   const [liftData, setLiftData] = useState<LiftRow[]>([]);
   const [liftLabel, setLiftLabel] = useState('');
 
   const p = 'pages.modelTrain';
 
-  const maxMonth = selectedYear === currentYear ? currentMonth - 1 : 12;
-  const MONTHS = Array.from({ length: maxMonth }, (_, i) => i + 1);
-  const yearOptions = YEARS.map((y) => ({ value: y, label: String(y) }));
-  const monthOptions = MONTHS.map((m) => ({ value: m, label: `${m}${t(`${p}.monthUnit`)}` }));
+  const yearOptions = years.map((y) => ({ value: y, label: String(y) }));
+  const monthOptions = months.map((m) => ({ value: m, label: `${m}${t(`${p}.monthUnit`)}` }));
 
   const liftColumns: ColumnsType<LiftRow> = [
     { title: t(`${p}.liftColumns.rank`), dataIndex: 'rank', width: 80 },

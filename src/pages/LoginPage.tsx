@@ -7,7 +7,7 @@ import i18n from '../i18n';
 import { getUserLanguage, setAccessToken, setCurrentUsername, setUserLanguage } from '../auth/token';
 import { applyUiTheme } from '../theme/uiTheme';
 import LicenseCenterModal from '../components/license/LicenseCenterModal';
-import { maskLicenseKey } from '../components/license/utils';
+import { maskLicenseKey } from '../components/license/licenseUtils';
 
 type LicenseInfo = {
   licenseKeyMasked: string;

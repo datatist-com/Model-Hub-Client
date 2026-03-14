@@ -68,7 +68,7 @@ export default function ModelListDetailPage() {
           <span>{info.modelName}</span>
           <Tag>{info.predictionMonth}</Tag>
           <span style={{ fontSize: 14, fontWeight: 400, opacity: 0.65 }}>
-            {t(`${p}.totalCount`, { count: info.totalCount.toLocaleString() })}
+            {t(`${p}.totalCount`, { count: info.totalCount })}
           </span>
         </Space>
       }

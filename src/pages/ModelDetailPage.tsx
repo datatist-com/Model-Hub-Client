@@ -131,7 +131,7 @@ export default function ModelDetailPage() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="top" type="number" domain={[0, 100]} ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]} tickFormatter={(v: number) => `${v}%`} fontSize={12} />
                   <YAxis fontSize={12} />
-                  <RTooltip labelFormatter={(v: number) => `${v}%`} />
+                  <RTooltip labelFormatter={(v) => `${v}%`} />
                   <Legend />
                   <Line type="monotone" dataKey="liftValue" name={t(`${p}.liftColumns.liftValue`)} stroke="#1677ff" dot={false} strokeWidth={2} />
                   <Line type="monotone" dataKey="cumLiftValue" name={t(`${p}.liftColumns.cumLiftValue`)} stroke="#52c41a" dot={false} strokeWidth={2} />

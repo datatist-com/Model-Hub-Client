@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"strconv"
@@ -16,9 +17,16 @@ import (
 //go:embed all:dist
 var content embed.FS
 
+const daemonEnv = "__MODEL_HUB_DAEMON"
+
 func pidFilePath() string {
 	exe, _ := os.Executable()
 	return exe + ".pid"
+}
+
+func logFilePath() string {
+	exe, _ := os.Executable()
+	return exe + ".log"
 }
 
 func readPID() (int, error) {
@@ -72,22 +80,24 @@ func stopProcess() bool {
 
 func usage() {
 	exe := filepath.Base(os.Args[0])
-	fmt.Printf("Usage: %s [start|stop|restart] [--host HOST] [--port PORT]\n\n", exe)
+	fmt.Printf("Usage: %s [start|stop|restart] [--host HOST] [--port PORT] [-f]\n\n", exe)
 	fmt.Println("Commands:")
-	fmt.Println("  (none)     Start server (default)")
-	fmt.Println("  start      Start server")
+	fmt.Println("  (none)     Start server in background (default)")
+	fmt.Println("  start      Start server in background")
 	fmt.Println("  stop       Stop running server")
-	fmt.Println("  restart    Restart server")
+	fmt.Println("  restart    Restart server in background")
 	fmt.Println()
 	fmt.Println("Options:")
 	fmt.Println("  --host     Bind address (default: 0.0.0.0)")
 	fmt.Println("  --port     Listen port  (default: 8000)")
+	fmt.Println("  -f         Run in foreground")
 }
 
-func parseArgs() (command, host string, port int) {
+func parseArgs() (command, host string, port int, foreground bool) {
 	command = "start"
 	host = "0.0.0.0"
 	port = 8000
+	foreground = false
 
 	args := os.Args[1:]
 	i := 0
@@ -96,6 +106,8 @@ func parseArgs() (command, host string, port int) {
 		switch {
 		case arg == "start" || arg == "stop" || arg == "restart":
 			command = arg
+		case arg == "-f" || arg == "--foreground":
+			foreground = true
 		case arg == "--host" && i+1 < len(args):
 			i++
 			host = args[i]
@@ -127,6 +139,36 @@ func parseArgs() (command, host string, port int) {
 		i++
 	}
 	return
+}
+
+// daemonize re-executes the current process in the background.
+func daemonize() {
+	exe, err := os.Executable()
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	logFile, err := os.OpenFile(logFilePath(), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		fmt.Printf("Error: failed to open log file: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Pass all original args, ensure -f is added so the child runs in foreground
+	args := append(os.Args[1:], "-f")
+
+	cmd := exec.Command(exe, args...)
+	cmd.Stdout = logFile
+	cmd.Stderr = logFile
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
+
+	if err := cmd.Start(); err != nil {
+		fmt.Printf("Error: failed to start daemon: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Datatist Model Hub Client started (PID %d), log: %s\n", cmd.Process.Pid, logFilePath())
 }
 
 func serve(host string, port int) {
@@ -181,11 +223,15 @@ func serve(host string, port int) {
 }
 
 func main() {
-	command, host, port := parseArgs()
+	command, host, port, foreground := parseArgs()
 
 	switch command {
 	case "start":
-		serve(host, port)
+		if foreground {
+			serve(host, port)
+		} else {
+			daemonize()
+		}
 	case "stop":
 		if stopProcess() {
 			fmt.Println("Server stopped.")
@@ -196,6 +242,10 @@ func main() {
 		if stopProcess() {
 			fmt.Println("Server stopped, restarting...")
 		}
-		serve(host, port)
+		if foreground {
+			serve(host, port)
+		} else {
+			daemonize()
+		}
 	}
 }

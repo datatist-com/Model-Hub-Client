@@ -4,16 +4,10 @@ import { DeleteOutlined, ExclamationCircleOutlined, FileSearchOutlined, PlusOutl
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-type ModelRow = {
-  id: string;
-  modelName: string;
-  portrait: string;
-  target: string;
-  algorithm: string;
-  auc?: number;
-  liftTop10?: number;
-  published?: boolean;
-};
+import { MOCK_MODELS } from '../constants/mockMaps';
+import type { MockModel } from '../constants/mockMaps';
+
+type ModelRow = MockModel;
 
 const mockPortraits = [
   { value: 'up-001', label: 'AUM资产客群画像' },
@@ -31,11 +25,7 @@ const mockAlgorithms = [
   { value: 'hualong-a-202601', label: '画龙模型A (2026.01)' }
 ];
 
-const data: ModelRow[] = [
-  { id: 'mod-001', modelName: '新疆工行长尾客群资产提升模型', portrait: 'AUM资产客群画像', target: '新疆工行长尾客群资产提升', algorithm: '画龙模型A (2026.01)', auc: 0.83, liftTop10: 3.2, published: true },
-  { id: 'mod-002', modelName: '信用卡激活预测模型', portrait: '三方支付客群画像', target: '信用卡激活预测', algorithm: '画龙模型A (2026.01)', auc: 0.77, liftTop10: 2.8, published: false },
-  { id: 'mod-003', modelName: '客户流失预警模型', portrait: '贷款客群画像', target: '客户流失预警', algorithm: '画龙模型A (2026.01)' }
-];
+const data: ModelRow[] = MOCK_MODELS;
 
 export default function ModelManagementPage() {
   const { t } = useTranslation();

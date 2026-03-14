@@ -34,7 +34,7 @@ export default function PortraitPeriodPage() {
   const portraitName = PORTRAIT_MAP[portraitId] ?? portraitId;
 
   const [addOpen, setAddOpen] = useState(false);
-  const { selectedYear, setSelectedYear, selectedMonth, setSelectedMonth, years, months } = usePeriodOptions();
+  const { selectedYear, setSelectedYear, selectedMonth, setSelectedMonth, years, months, maxYear } = usePeriodOptions();
   const { refreshingIds, refresh: handleRefresh } = useRefreshingSet();
 
   const p = 'pages.portraitPeriod';

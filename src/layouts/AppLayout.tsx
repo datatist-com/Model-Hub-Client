@@ -27,67 +27,13 @@ import { getUserRole, getMenuKeysForRole } from '../auth/roles';
 import type { MenuKey } from '../auth/roles';
 import { applyUiTheme } from '../theme/uiTheme';
 import { maskLicenseKey } from '../components/license/licenseUtils';
+import { SOURCE_NAME_MAP } from '../constants/mockMaps';
+import { ROUTE_LABEL_KEY_MAP, TAB_IDENTITY_PARAMS_MAP, ROUTE_TO_MENU_KEY } from '../constants/routeConfig';
 import KeepAliveOutlet from '../router/KeepAliveOutlet';
 import LicenseCenterModal from '../components/license/LicenseCenterModal';
 
 const { Header, Sider, Content, Footer } = Layout;
 const PROJECT_NAME = 'Datatist Model Hub';
-
-const ROUTE_LABEL_KEY_MAP: Record<string, string> = {
-  '/dashboard': 'menu.dashboard',
-  '/profile': 'pages.profile.title',
-  '/data-sources': 'menu.dataSources',
-  '/feature-management': 'menu.featureManagement',
-  '/user-portrait': 'menu.userPortrait',
-  '/target-management': 'menu.targetManagement',
-  '/model-management': 'menu.modelManagement',
-  '/scoring-generation': 'menu.scoringGeneration',
-  '/operation-list-output': 'menu.operationListOutput',
-  '/users': 'menu.users',
-  '/log-viewer': 'menu.logViewer',
-  '/hive-databases': 'menu.hiveDatabases',
-  '/hive-tables': 'menu.hiveTables',
-  '/duckdb-tables': 'menu.duckdbTables',
-  '/ingest-jobs': 'menu.ingestJobs',
-  '/sql-console': 'menu.sqlConsole'
-};
-
-const TAB_IDENTITY_PARAMS_MAP: Record<string, string[]> = {
-  '/hive-databases': ['sourceId'],
-  '/hive-tables': ['sourceId', 'databaseName'],
-  '/duckdb-tables': ['sourceId'],
-  '/ingest-jobs': ['sourceId', 'tableName'],
-  '/sql-console': ['sourceId'],
-  '/users': ['id', 'username'],
-  '/profile': [],
-  '/dashboard': [],
-  '/data-sources': [],
-  '/feature-management': [],
-  '/user-portrait': [],
-  '/target-management': [],
-  '/model-management': [],
-  '/scoring-generation': [],
-  '/model-list-detail': ['id'],
-  '/model-scoring-list': ['id'],
-  '/operation-list-output': [],
-  '/operation-list-create': [],
-  '/operation-list-detail': ['id'],
-  '/log-viewer': []
-};
-
-const SOURCE_ID_NAME_MAP: Record<string, string> = {
-  'src-001': 'hive-prod',
-  'src-002': 'duckdb-local-a'
-};
-
-const ROUTE_TO_MENU_KEY: Record<string, string> = {
-  '/hive-databases': '/data-sources',
-  '/hive-tables': '/data-sources',
-  '/duckdb-tables': '/data-sources',
-  '/ingest-jobs': '/data-sources',
-  '/sql-console': '/data-sources',
-  '/profile': '/dashboard'
-};
 
 function computeTabKey(pathname: string, search: string): string {
   const identityParams = TAB_IDENTITY_PARAMS_MAP[pathname] ?? [];
@@ -167,7 +113,7 @@ export default function AppLayout() {
       const url = new URL(tab.href, window.location.origin);
       const pathname = url.pathname;
       const sourceId = url.searchParams.get('sourceId');
-      const sourceName = sourceId ? SOURCE_ID_NAME_MAP[sourceId] ?? sourceId : null;
+      const sourceName = sourceId ? SOURCE_NAME_MAP[sourceId] ?? sourceId : null;
 
       const identityParams = TAB_IDENTITY_PARAMS_MAP[pathname] ?? [];
       const params = url.searchParams;

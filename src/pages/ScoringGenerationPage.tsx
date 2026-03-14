@@ -3,19 +3,9 @@ import { FileSearchOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-type ModelRow = {
-  id: string;
-  modelName: string;
-  portrait: string;
-  target: string;
-  algorithm: string;
-  auc?: number;
-  liftTop10?: number;
-};
+import { MOCK_MODELS } from '../constants/mockMaps';
 
-const publishedModels: ModelRow[] = [
-  { id: 'mod-001', modelName: '新疆工行长尾客群资产提升模型', portrait: 'AUM资产客群画像', target: '新疆工行长尾客群资产提升', algorithm: '画龙模型A (2026.01)', auc: 0.83, liftTop10: 3.2 }
-];
+const publishedModels = MOCK_MODELS.filter((m) => m.published);
 
 export default function ScoringGenerationPage() {
   const { t } = useTranslation();

@@ -19,8 +19,6 @@ type TrainRecord = {
   status: 'completed' | 'running';
 };
 
-const MODEL_MAP: Record<string, string> = MODEL_NAME_MAP;
-
 const mockTrainRecords: TrainRecord[] = [
   { id: 'train-s-001', type: 'sample', featureMonths: '2023-10 ~ 2025-10', yTableMonth: '2025-11', auc: 0.85, liftTop10: 3.4, status: 'completed' },
   { id: 'train-f-001', type: 'full', featureMonths: '2023-10 ~ 2025-10', yTableMonth: '2025-11', auc: 0.88, liftTop10: 3.6, status: 'completed' }
@@ -37,7 +35,7 @@ export default function ModelTrainPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const modelId = searchParams.get('id') ?? '';
-  const modelName = MODEL_MAP[modelId] ?? modelId;
+  const modelName = MODEL_NAME_MAP[modelId] ?? modelId;
 
   const { selectedYear, setSelectedYear, selectedMonth, setSelectedMonth, years, months } = usePeriodOptions();
   const [liftOpen, setLiftOpen] = useState(false);

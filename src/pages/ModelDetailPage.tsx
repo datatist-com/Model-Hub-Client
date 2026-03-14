@@ -7,14 +7,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, Legend, ResponsiveContainer } from 'recharts';
 import { generateLiftData } from '../utils/liftData';
 import type { LiftRow } from '../utils/liftData';
+import { MOCK_MODELS } from '../constants/mockMaps';
 
 type FeatureRow = { key: string; featureName: string; weight: number };
 
-const MODEL_MAP: Record<string, { modelName: string; portrait: string; target: string; algorithm: string; auc?: number; liftTop10?: number; published?: boolean }> = {
-  'mod-001': { modelName: '新疆工行长尾客群资产提升模型', portrait: 'AUM资产客群画像', target: '新疆工行长尾客群资产提升', algorithm: '画龙模型A (2026.01)', auc: 0.83, liftTop10: 3.2, published: true },
-  'mod-002': { modelName: '信用卡激活预测模型', portrait: '三方支付客群画像', target: '信用卡激活预测', algorithm: '画龙模型A (2026.01)', auc: 0.77, liftTop10: 2.8, published: false },
-  'mod-003': { modelName: '客户流失预警模型', portrait: '贷款客群画像', target: '客户流失预警', algorithm: '画龙模型A (2026.01)' }
-};
+const MODEL_MAP = Object.fromEntries(MOCK_MODELS.map((m) => [m.id, m]));
 
 const mockLift10 = generateLiftData(10, 3.2);
 const mockLift100 = generateLiftData(100, 3.2);

@@ -36,7 +36,8 @@ export function getUserLanguage(username: string): string | null {
   return localStorage.getItem(`${USER_LANGUAGE_PREFIX}${username}`);
 }
 
-export type UiThemePreference = 'dark' | 'light' | 'system';
+export type { UiThemePreference } from '../theme/uiTheme';
+import type { UiThemePreference } from '../theme/uiTheme';
 
 export function setUserUiTheme(username: string, theme: UiThemePreference): void {
   localStorage.setItem(`${USER_UI_THEME_PREFIX}${username}`, theme);

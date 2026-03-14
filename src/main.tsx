@@ -4,18 +4,19 @@ import ReactDOM from 'react-dom/client';
 import { ConfigProvider, App as AntApp, theme } from 'antd';
 import { I18nextProvider } from 'react-i18next';
 import App from './App';
+import { EFFECTIVE_ATTR } from './theme/uiTheme';
 import i18n from './i18n/index';
 import 'antd/dist/reset.css';
 import './styles.css';
 
 function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(() => document.documentElement.getAttribute('data-ui-theme-effective') !== 'light');
+  const [isDark, setIsDark] = useState(() => document.documentElement.getAttribute(EFFECTIVE_ATTR) !== 'light');
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.getAttribute('data-ui-theme-effective') !== 'light');
+      setIsDark(document.documentElement.getAttribute(EFFECTIVE_ATTR) !== 'light');
     });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-ui-theme-effective'] });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: [EFFECTIVE_ATTR] });
     return () => observer.disconnect();
   }, []);
 

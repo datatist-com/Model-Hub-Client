@@ -4,7 +4,7 @@ type EffectiveTheme = 'dark' | 'light';
 
 const MEDIA_QUERY = '(prefers-color-scheme: dark)';
 const PREF_ATTR = 'data-ui-theme-pref';
-const EFFECTIVE_ATTR = 'data-ui-theme-effective';
+export const EFFECTIVE_ATTR = 'data-ui-theme-effective';
 
 let currentPreference: UiThemePreference | null = null;
 let mediaQueryList: MediaQueryList | null = null;

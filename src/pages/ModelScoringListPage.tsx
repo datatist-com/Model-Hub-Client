@@ -14,10 +14,6 @@ type ListRow = {
   status: 'generating' | 'generated';
 };
 
-const MODEL_MAP: Record<string, string> = {
-  'mod-001': MODEL_NAME_MAP['mod-001']
-};
-
 const mockData: Record<string, ListRow[]> = {
   'mod-001': [
     { id: 'ml-001', predictionMonth: '2026-02', totalCount: 52360, status: 'generated' },
@@ -32,12 +28,12 @@ export default function ModelScoringListPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const modelId = searchParams.get('id') ?? '';
-  const modelName = MODEL_MAP[modelId] ?? modelId;
+  const modelName = MODEL_NAME_MAP[modelId] ?? modelId;
   const rows = mockData[modelId] ?? [];
 
   const [createOpen, setCreateOpen] = useState(false);
   const [createForm] = Form.useForm();
-  const { selectedYear, setSelectedYear, years, months } = usePeriodOptions();
+  const { setSelectedYear, years, months, maxYear, defaultMonth } = usePeriodOptions();
 
   const p = 'pages.modelScoringList';
 

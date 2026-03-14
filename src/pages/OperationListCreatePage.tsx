@@ -3,12 +3,13 @@ import { App, Button, Card, Col, Divider, Form, Input, InputNumber, Radio, Row, 
 import { DeleteOutlined, LeftOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { MOCK_MODELS } from '../constants/mockMaps';
 
 type Condition = { id: number; name: string; source: string; database: string; table: string; field: string; operator: string; value: string };
 
-const publishedModels = [
-  { value: 'mod-001', label: '新疆工行长尾客群资产提升模型' }
-];
+const publishedModels = MOCK_MODELS
+  .filter((m) => m.published)
+  .map((m) => ({ value: m.id, label: m.modelName }));
 
 const mockSources = [
   { value: 'src-001', label: 'hive-prod', type: 'hive' },

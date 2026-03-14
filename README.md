@@ -1,166 +1,108 @@
-# Datatist Model Hub - Frontend 文档（对齐后端 01 / 02）
+# Datatist Model Hub Client
 
-本文件先聚焦前端与后端 **01 通用模块**、**02 数据库管理** 的页面与交互规范。
+Model Hub 前端应用，基于 React 19 + Vite 7 + TypeScript + Ant Design 构建。
+通过 GitHub Actions 自动编译为跨平台单文件可执行程序，内嵌静态资源，无需额外部署。
 
-## 项目交接/上手（推荐先读）
+## 技术栈
 
-- 前端交接文档索引：[docs/README.md](docs/README.md)
-- 作者偏好与约定（MUST/禁止项）：[docs/04-preferences.md](docs/04-preferences.md)
-- AI 执行手册（任务模板 + 验收清单）：[docs/06-ai-runbook.md](docs/06-ai-runbook.md)
+| 类别 | 技术 |
+|------|------|
+| 框架 | React 19 + TypeScript 5.9 |
+| 构建 | Vite 7 |
+| UI | Ant Design 5 |
+| 路由 | React Router 7 |
+| 国际化 | i18next（中文/英文） |
+| 图表 | Recharts |
+| 服务端 | Go 1.22（embed 静态资源） |
+| CI/CD | GitHub Actions → 自动 Tag + Release |
 
-## 当前落地状态（已完成）
+## 功能模块
 
-- 技术栈：React + Ant Design + React Router
-- 路由策略：页面级懒加载（`React.lazy` + `Suspense`）
-- 国际化：i18n（`i18next` + `react-i18next`，内置中文/英文）
-- 后端对接：**暂未接入**（全部为 Mock 页面与本地静态数据）
+- **仪表盘** — 系统概览
+- **数据源管理** — Hive / DuckDB 数据源接入
+- **特征源表管理** — 源表字段配置与特征衍生
+- **用户画像管理** — 画像期数管理
+- **目标管理** — 目标变量定义与期数管理
+- **模型管理** — 模型训练、详情、Lift 图表
+- **评分生成** — 模型评分任务与结果列表
+- **运营人群包** — 人群包创建、产出、A/B Test
+- **用户管理** — 6 种角色的 RBAC 权限控制
+- **日志查看** — 系统操作日志
 
-已落地页面（01/02）：
-- `/login`
-- `/users`
-- `/license`
-- `/data-sources`
-- `/hive-databases`
-- `/hive-tables`
-- `/duckdb-tables`
-- `/ingest-jobs`
-
-## 本地运行
+## 本地开发
 
 ```bash
+# 安装依赖
 npm install
+
+# 启动开发服务器
 npm run dev
-```
 
-构建验证：
-
-```bash
+# 类型检查 + 构建
 npm run build
 ```
 
----
+## 编译为可执行文件（本地）
 
-## 1. 角色身份说明
+```bash
+# 1. 构建前端
+npm run build
 
-1. 系统管理员（System Admin）：系统配置、用户管理、许可证管理。
-2. 模型工程师（Model Engineer）：数据源与数据准备、特征与模型流程。
-3. 业务运营（Business Operator）：名单执行相关操作。
-4. 普通成员（Member）：受限查看与有限操作。
+# 2. 编译 Go 二进制
+rm -rf server/dist && cp -r dist server/dist
+cd server && go build -ldflags="-s -w" -trimpath -o ../model-hub-client .
+```
 
----
+## 使用方式
 
-## 2. 后端文档入口（本阶段）
+```bash
+# 启动（默认 0.0.0.0:8000）
+./model-hub-client
 
-- 通用模块（01）：[../backend/docs/api/01-general/README.md](../backend/docs/api/01-general/README.md)
-- 数据库管理（02）：[../backend/docs/api/02-database-management/README.md](../backend/docs/api/02-database-management/README.md)
-- 全量接口清单：[../backend/docs/api/api-endpoint-list.md](../backend/docs/api/api-endpoint-list.md)
-- 通用错误响应：[../backend/docs/api/common-error-response-example.md](../backend/docs/api/common-error-response-example.md)
+# 指定地址和端口
+./model-hub-client --host 127.0.0.1 --port 9000
 
----
+# 停止
+./model-hub-client stop
 
-## 3. 前端模块划分（先落地 01 / 02）
+# 重启
+./model-hub-client restart --port 8080
 
-### 3.1 认证与会话（对应后端 1.1）
+# 查看帮助
+./model-hub-client --help
+```
 
-页面与能力：
-- 登录页：账号密码登录。
-- 顶部用户菜单：登出。
-- 启动鉴权：进入系统时调用 `GET /api/v1/auth/me` 校验 token。
-- 修改密码：个人设置页。
+## 发布流程
 
-交互要点：
-- `accessToken` 建议存放在安全存储（优先 HttpOnly Cookie 方案，次选内存 + 刷新机制）。
-- 首屏加载时先校验 token，再渲染路由。
-- 对 `TOKEN_EXPIRED_OR_REVOKED` 做统一拦截并跳转登录。
+推送到 `main` 分支后，GitHub Actions 自动执行：
 
-### 3.2 用户管理（对应后端 1.2）
+1. 自动递增 patch 版本号并创建 Git Tag
+2. 构建前端 + 交叉编译 6 个平台的 Go 二进制
+3. 发布 GitHub Release 并上传编译产物
 
-页面与能力：
-- 用户列表（分页、关键字、角色筛选）。
-- 新建用户。
-- 编辑用户（用户名/显示名/邮箱/角色等）。
-- 冻结/解冻用户。
-- 删除用户（二次确认）。
+支持平台：`linux-amd64` / `linux-arm64` / `darwin-amd64` / `darwin-arm64` / `windows-amd64` / `windows-arm64`
 
-交互要点：
-- 角色与状态使用标签显示（`active` / `frozen`）。
-- 危险操作（冻结、删除）使用确认弹窗。
-- 表格操作后局部刷新当前页。
+## 项目结构
 
-### 3.3 许可证管理（对应后端 1.3）
+```
+├── src/
+│   ├── auth/           # 认证 & RBAC 角色权限
+│   ├── components/     # 公共组件
+│   ├── i18n/           # 国际化配置
+│   ├── layouts/        # 布局（侧边栏菜单）
+│   ├── locales/        # 中英文语言包
+│   ├── pages/          # 页面组件
+│   ├── platform/       # 平台环境检测
+│   ├── router/         # 路由配置
+│   └── theme/          # 主题配置（暗色/亮色）
+├── server/
+│   ├── main.go         # Go 服务端（embed + 进程管理）
+│   └── go.mod
+├── .github/workflows/
+│   └── release.yml     # CI/CD 自动发布
+└── index.html          # 入口 HTML
+```
 
-页面与能力：
-- 激活许可证：提交 `licenseKey`。
-- 查看许可证：展示脱敏激活码、激活时间、到期时间、被授权人。
+## License
 
-接口约束（已对齐）：
-- 激活：`POST /api/v1/license`，请求体仅 `licenseKey`。
-- 查询：`GET /api/v1/license`。
-
-错误处理：
-- 激活页特有错误：`LICENSE_KEY_INVALID`。
-- 通用错误：`UNAUTHORIZED` / `FORBIDDEN` 等按全局策略处理。
-
-### 3.4 数据源管理（对应后端 2.1）
-
-页面与能力：
-- 数据源列表/详情。
-- 创建数据源（`hive` 或 `duckdb`）。
-- 更新数据源、删除数据源。
-- 测试数据源连通性/权限。
-
-表单建议：
-- `type` 与 `connectionMode` 联动（hive=external，duckdb=local）。
-- `config` 使用分类型动态表单。
-- 对敏感字段做前端脱敏展示。
-
-### 3.5 Hive 库/表管理（对应后端 2.2 / 2.3）
-
-页面与能力：
-- Hive 库：注册、列表、详情、更新、删除。
-- Hive 表：注册、列表、详情、更新、删除。
-
-交互要点：
-- 左侧层级导航建议为：数据源 → 库 → 表。
-- 删除库时提示“是否存在表引用”的业务风险。
-
-### 3.6 DuckDB 表与入表任务（对应后端 2.4 / 2.5）
-
-页面与能力：
-- DuckDB 表：创建、列表、详情、更新、删除。
-- 上传会话：创建、完成上传。
-- 导入任务：发起 CSV/Parquet 入表。
-- 任务查询：轮询 `GET /api/v1/jobs/{jobId}` 展示状态。
-
-推荐流程：
-1) 创建 DuckDB 表；
-2) 创建上传会话；
-3) 客户端直传对象存储；
-4) 完成上传；
-5) 发起入表任务；
-6) 跳转任务详情页查看进度与结果。
-
----
-
-## 4. 前端通用约定
-
-### 4.1 API 调用与状态管理
-- 统一封装请求层（自动附带 token、traceId 透传、错误归一化）。
-- 异步任务统一状态枚举：`queued` / `running` / `succeeded` / `failed`。
-- 列表页统一分页参数：`page`、`pageSize`。
-
-### 4.2 错误处理
-- 通用错误按 [../backend/docs/api/common-error-response-example.md](../backend/docs/api/common-error-response-example.md) 处理。
-- 业务错误优先展示 `message_code` 映射文案。
-- 关键错误（401/403）使用全局拦截器处理。
-
-### 4.3 权限控制
-- 路由级权限：`system_admin`、`model_engineer`、`business_operator`、`member`。
-- 按钮级权限：无权限时隐藏或禁用并给出提示。
-
----
-
-## 5. 后续计划
-
-- 下一步补齐 03/04/05/06/07 模块的前端页面规范与原型清单。
-- 增加字段级校验规则表与错误码映射表（前后端共享）。
+Private

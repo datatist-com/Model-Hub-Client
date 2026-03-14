@@ -12,6 +12,13 @@ dist/
 *~
 .DS_Store
 
+# TypeScript build info
+*.tsbuildinfo
+
+# Vite compiled config
+vite.config.js
+vite.config.d.ts
+
 # Env
 .env
 .env.local

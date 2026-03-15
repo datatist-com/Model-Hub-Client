@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"syscall"
 )
 
 //go:embed all:dist
@@ -51,12 +50,7 @@ func removePID() {
 
 // isRunning checks if a process with the given PID is alive.
 func isRunning(pid int) bool {
-	proc, err := os.FindProcess(pid)
-	if err != nil {
-		return false
-	}
-	err = proc.Signal(syscall.Signal(0))
-	return err == nil
+	return processAlive(pid)
 }
 
 func stopProcess() bool {
@@ -73,7 +67,7 @@ func stopProcess() bool {
 		removePID()
 		return false
 	}
-	_ = proc.Signal(syscall.SIGTERM)
+	_ = proc.Signal(stopSignal())
 	removePID()
 	return true
 }
@@ -161,7 +155,7 @@ func daemonize() {
 	cmd := exec.Command(exe, args...)
 	cmd.Stdout = logFile
 	cmd.Stderr = logFile
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
+	setSysProcAttr(cmd)
 
 	if err := cmd.Start(); err != nil {
 		fmt.Printf("Error: failed to start daemon: %v\n", err)
@@ -207,7 +201,7 @@ func serve(host string, port int) {
 
 	go func() {
 		sig := make(chan os.Signal, 1)
-		signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+		signal.Notify(sig, os.Interrupt, stopSignal())
 		<-sig
 		fmt.Println("\nShutting down...")
 		removePID()

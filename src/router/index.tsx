@@ -1,10 +1,14 @@
-import { lazy, Suspense } from 'react';
-import { Spin } from 'antd';
+import { lazy } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import AppLayout from '../layouts/AppLayout';
 import { hasAccessToken } from '../auth/token';
 import ErrorPage from '../pages/ErrorPage';
+import LazyLoadGuard from '../components/lazy/LazyLoadGuard';
+import type { LazyLoadingState } from '../components/lazy/LazyLoadGuard';
+import AppShellFallback from '../components/lazy/AppShellFallback';
+import RoutePageFallback from '../components/lazy/RoutePageFallback';
+import { loadAppLayout } from './preload';
 
+const AppLayout = lazy(loadAppLayout);
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const DashboardPage = lazy(() => import('../pages/DashboardPage'));
 const UsersPage = lazy(() => import('../pages/UsersPage'));
@@ -32,7 +36,15 @@ const ModelScoringListPage = lazy(() => import('../pages/ModelScoringListPage'))
 const OperationListCreatePage = lazy(() => import('../pages/OperationListCreatePage'));
 const OperationListDetailPage = lazy(() => import('../pages/OperationListDetailPage'));
 
-const withLoading = (node: React.ReactNode) => <Suspense fallback={<Spin />}>{node}</Suspense>;
+const withLoading = (
+  node: React.ReactNode,
+  featureName: string,
+  fallback?: React.ReactNode | ((state: LazyLoadingState) => React.ReactNode)
+) => (
+  <LazyLoadGuard featureName={featureName} loadingFallback={fallback}>
+    {node}
+  </LazyLoadGuard>
+);
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   return hasAccessToken() ? <>{children}</> : <Navigate to="/login" replace />;
@@ -43,38 +55,38 @@ function RedirectIfAuthed({ children }: { children: React.ReactNode }) {
 }
 
 export const router = createBrowserRouter([
-  { path: '/login', element: withLoading(<RedirectIfAuthed><LoginPage /></RedirectIfAuthed>), errorElement: <ErrorPage /> },
+  { path: '/login', element: withLoading(<RedirectIfAuthed><LoginPage /></RedirectIfAuthed>, 'login page'), errorElement: <ErrorPage /> },
   {
     path: '/',
-    element: <RequireAuth><AppLayout /></RequireAuth>,
+    element: withLoading(<RequireAuth><AppLayout /></RequireAuth>, 'authenticated workspace', (state) => <AppShellFallback state={state} />),
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
-      { path: '/dashboard', element: withLoading(<DashboardPage />) },
-      { path: '/users', element: withLoading(<UsersPage />) },
-      { path: '/profile', element: withLoading(<ProfilePage />) },
-      { path: '/data-sources', element: withLoading(<DataSourcesPage />) },
-      { path: '/feature-management', element: withLoading(<FeatureManagementPage />) },
-      { path: '/feature-field-detail', element: withLoading(<FeatureFieldDetailPage />) },
-      { path: '/user-portrait', element: withLoading(<UserPortraitPage />) },
-      { path: '/portrait-periods', element: withLoading(<PortraitPeriodPage />) },
-      { path: '/target-management', element: withLoading(<TargetManagementPage />) },
-      { path: '/target-periods', element: withLoading(<TargetPeriodPage />) },
-      { path: '/model-management', element: withLoading(<ModelManagementPage />) },
-      { path: '/model-detail', element: withLoading(<ModelDetailPage />) },
-      { path: '/model-train', element: withLoading(<ModelTrainPage />) },
-      { path: '/scoring-generation', element: withLoading(<ScoringGenerationPage />) },
-      { path: '/model-list-detail', element: withLoading(<ModelListDetailPage />) },
-      { path: '/model-scoring-list', element: withLoading(<ModelScoringListPage />) },
-      { path: '/operation-list-output', element: withLoading(<OperationListOutputPage />) },
-      { path: '/operation-list-create', element: withLoading(<OperationListCreatePage />) },
-      { path: '/operation-list-detail', element: withLoading(<OperationListDetailPage />) },
-      { path: '/log-viewer', element: withLoading(<LogViewerPage />) },
-      { path: '/hive-databases', element: withLoading(<HiveDatabasesPage />) },
-      { path: '/hive-tables', element: withLoading(<HiveTablesPage />) },
-      { path: '/duckdb-tables', element: withLoading(<DuckDBTablesPage />) },
-      { path: '/ingest-jobs', element: withLoading(<IngestJobsPage />) },
-      { path: '/sql-console', element: withLoading(<SqlConsolePage />) }
+      { path: '/dashboard', element: withLoading(<DashboardPage />, 'dashboard', (state) => <RoutePageFallback state={state} />) },
+      { path: '/users', element: withLoading(<UsersPage />, 'users page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/profile', element: withLoading(<ProfilePage />, 'profile page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/data-sources', element: withLoading(<DataSourcesPage />, 'data sources page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/feature-management', element: withLoading(<FeatureManagementPage />, 'feature management page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/feature-field-detail', element: withLoading(<FeatureFieldDetailPage />, 'feature field detail page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/user-portrait', element: withLoading(<UserPortraitPage />, 'user portrait page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/portrait-periods', element: withLoading(<PortraitPeriodPage />, 'portrait periods page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/target-management', element: withLoading(<TargetManagementPage />, 'target management page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/target-periods', element: withLoading(<TargetPeriodPage />, 'target periods page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/model-management', element: withLoading(<ModelManagementPage />, 'model management page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/model-detail', element: withLoading(<ModelDetailPage />, 'model detail page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/model-train', element: withLoading(<ModelTrainPage />, 'model train page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/scoring-generation', element: withLoading(<ScoringGenerationPage />, 'scoring generation page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/model-list-detail', element: withLoading(<ModelListDetailPage />, 'model list detail page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/model-scoring-list', element: withLoading(<ModelScoringListPage />, 'model scoring list page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/operation-list-output', element: withLoading(<OperationListOutputPage />, 'operation list output page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/operation-list-create', element: withLoading(<OperationListCreatePage />, 'operation list create page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/operation-list-detail', element: withLoading(<OperationListDetailPage />, 'operation list detail page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/log-viewer', element: withLoading(<LogViewerPage />, 'log viewer page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/hive-databases', element: withLoading(<HiveDatabasesPage />, 'hive databases page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/hive-tables', element: withLoading(<HiveTablesPage />, 'hive tables page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/duckdb-tables', element: withLoading(<DuckDBTablesPage />, 'duckdb tables page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/ingest-jobs', element: withLoading(<IngestJobsPage />, 'ingest jobs page', (state) => <RoutePageFallback state={state} />) },
+      { path: '/sql-console', element: withLoading(<SqlConsolePage />, 'sql console page', (state) => <RoutePageFallback state={state} />) }
     ]
   }
 ]);

@@ -8,10 +8,10 @@ export type EnvironmentCheckResult = {
 const ENVIRONMENT_GUARD_BYPASS_KEY = 'model_hub.environment_guard_bypass.v1';
 const ENVIRONMENT_GUARD_BYPASS_TTL_MS = 24 * 60 * 60 * 1000;
 
-const MIN_WIDTH = 1180;
-const MIN_HEIGHT = 700;
-const MOBILE_RATIO_THRESHOLD = 0.8;
-const MOBILE_LIKE_MAX_WIDTH = 900;
+const MIN_WIDTH = 768;
+const MIN_HEIGHT = 500;
+const MOBILE_RATIO_THRESHOLD = 0.65;
+const MOBILE_LIKE_MAX_WIDTH = 480;
 
 function isChromeBrowser(userAgent: string, vendor: string): boolean {
   const hasChromeToken = /Chrome\//.test(userAgent);

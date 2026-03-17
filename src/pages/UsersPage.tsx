@@ -60,7 +60,7 @@ export default function UsersPage() {
     label: t(`pages.users.roles.${ROLE_I18N_MAP[r]}`)
   }));
 
-  const columns: ColumnsType<UserRow> = [
+  const columns = useMemo<ColumnsType<UserRow>>(() => [
     { title: t('pages.users.columns.username'), dataIndex: 'username', width: 140 },
     { title: t('pages.users.columns.realName'), dataIndex: 'realName', width: 140 },
     {
@@ -90,7 +90,7 @@ export default function UsersPage() {
           </Space>
         )
     }
-  ];
+  ], [t]);
 
   const handleEdit = (user: UserRow) => {
     setEditingUser(user);

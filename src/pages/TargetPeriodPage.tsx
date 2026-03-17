@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { App, Button, Card, Modal, Popconfirm, Select, Space, Table, Tabs, Tag, Tooltip, Upload } from 'antd';
 import { InboxOutlined, LeftOutlined, PlusOutlined, ReloadOutlined, UploadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -39,7 +39,7 @@ export default function TargetPeriodPage() {
 
   const p = 'pages.targetPeriod';
 
-  const columns: ColumnsType<TargetPeriodRow> = [
+  const columns = useMemo<ColumnsType<TargetPeriodRow>>(() => [
     {
       title: t(`${p}.columns.period`),
       width: 140,
@@ -102,10 +102,10 @@ export default function TargetPeriodPage() {
         </Space>
       )
     }
-  ];
+  ], [handleRefresh, message, p, refreshingIds, t, targetDataSource]);
 
-  const yearOptions = years.map((y) => ({ value: y, label: String(y) }));
-  const monthOptions = months.map((m) => ({ value: m, label: `${m}${t(`${p}.monthUnit`)}` }));
+  const yearOptions = useMemo(() => years.map((y) => ({ value: y, label: String(y) })), [years]);
+  const monthOptions = useMemo(() => months.map((m) => ({ value: m, label: `${m}${t(`${p}.monthUnit`)}` })), [months, p, t]);
 
   return (
     <Card

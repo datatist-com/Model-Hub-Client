@@ -1,21 +1,18 @@
-import { useState } from 'react';
-import { App, Button, Card, Descriptions, Modal, Space, Table, Tabs, Tag, Tooltip } from 'antd';
-import { LeftOutlined, TableOutlined } from '@ant-design/icons';
+import { lazy, useMemo, useState } from 'react';
+import { Alert, App, Button, Card, Descriptions, Space, Table, Tag, Tooltip, Typography } from 'antd';
+import { LeftOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, Legend, ResponsiveContainer } from 'recharts';
 import { generateLiftData } from '../utils/liftData';
-import type { LiftRow } from '../utils/liftData';
 import { MOCK_MODELS } from '../constants/mockMaps';
+import LazyLoadGuard from '../components/lazy/LazyLoadGuard';
+
+const ModelLiftSection = lazy(() => import('./modelDetail/ModelLiftSection'));
 
 type FeatureRow = { key: string; featureName: string; weight: number };
 
 const MODEL_MAP = Object.fromEntries(MOCK_MODELS.map((m) => [m.id, m]));
-
-const mockLift10 = generateLiftData(10, 3.2);
-const mockLift100 = generateLiftData(100, 3.2);
-const mockLift1000 = generateLiftData(1000, 3.2);
 
 const mockFeatures: FeatureRow[] = [
   { key: 'f1', featureName: '近 3 月平均 AUM', weight: 18.5 },
@@ -44,21 +41,20 @@ export default function ModelDetailPage() {
   const model = MODEL_MAP[modelId];
 
   const [published, setPublished] = useState(model?.published ?? false);
-  const [liftTableOpen, setLiftTableOpen] = useState(false);
 
   const p = 'pages.modelDetail';
 
-  const liftColumns: ColumnsType<LiftRow> = [
-    { title: t(`${p}.liftColumns.rank`), dataIndex: 'rank', width: 80 },
-    { title: t(`${p}.liftColumns.liftValue`), dataIndex: 'liftValue', width: 120, render: (v: number) => <span style={{ fontWeight: 600 }}>{v.toFixed(2)}</span> },
-    { title: t(`${p}.liftColumns.cumLiftValue`), dataIndex: 'cumLiftValue', width: 120, render: (v: number) => <span style={{ fontWeight: 600 }}>{v.toFixed(2)}</span> }
-  ];
+  const mockLift10 = useMemo(() => generateLiftData(10, 3.2), []);
+  const mockLift100 = useMemo(() => generateLiftData(100, 3.2), []);
+  const mockLift1000 = useMemo(() => generateLiftData(1000, 3.2), []);
 
-  const featureColumns: ColumnsType<FeatureRow> = [
+  const chartLiftData = useMemo(() => mockLift100.map((d) => ({ ...d, top: d.rank })), [mockLift100]);
+
+  const featureColumns = useMemo<ColumnsType<FeatureRow>>(() => [
     { title: '#', dataIndex: 'key', width: 50, render: (_v: string, _r: FeatureRow, idx: number) => idx + 1 },
     { title: t(`${p}.featureColumns.featureName`), dataIndex: 'featureName' },
     { title: t(`${p}.featureColumns.weight`), dataIndex: 'weight', width: 120, render: (v: number) => `${v.toFixed(1)}%` }
-  ];
+  ], [t]);
 
   const handlePublishToggle = () => {
     setPublished((prev) => {
@@ -102,55 +98,29 @@ export default function ModelDetailPage() {
           </Descriptions>
 
           {model.auc != null && (
-            <Card
-              size="small"
-              title={t(`${p}.liftDetail`)}
-              extra={
-                <Button size="small" icon={<TableOutlined />} onClick={() => setLiftTableOpen(true)}>
-                  {t(`${p}.viewLiftTable`)}
-                </Button>
-              }
+            <LazyLoadGuard
+              featureName="model lift analytics"
+              loadingFallback={(state) => (
+                <Card size="small" title={t(`${p}.liftDetail`)}>
+                  {state.isSlow && (
+                    <Alert
+                      style={{ marginBottom: 12 }}
+                      showIcon
+                      type={state.isOnline ? 'info' : 'warning'}
+                      message={state.isOnline ? 'Loading model lift analytics...' : 'Offline while loading model lift analytics'}
+                    />
+                  )}
+                  <Card size="small" loading />
+                  {state.isSlow && (
+                    <Typography.Text type="secondary">
+                      Chart module is loading under weak network. You can keep browsing other details.
+                    </Typography.Text>
+                  )}
+                </Card>
+              )}
             >
-              <ResponsiveContainer width="100%" height={360}>
-                <LineChart data={mockLift100.map((d) => ({ ...d, top: d.rank }))}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="top" type="number" domain={[0, 100]} ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]} tickFormatter={(v: number) => `${v}%`} fontSize={12} />
-                  <YAxis fontSize={12} />
-                  <RTooltip labelFormatter={(v) => `${v}%`} />
-                  <Legend />
-                  <Line type="monotone" dataKey="liftValue" name={t(`${p}.liftColumns.liftValue`)} stroke="#1677ff" dot={false} strokeWidth={2} />
-                  <Line type="monotone" dataKey="cumLiftValue" name={t(`${p}.liftColumns.cumLiftValue`)} stroke="#52c41a" dot={false} strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-
-              <Modal
-                open={liftTableOpen}
-                title={t(`${p}.liftDetail`)}
-                footer={null}
-                width={560}
-                onCancel={() => setLiftTableOpen(false)}
-              >
-                <Tabs
-                  items={[
-                    {
-                      key: 'decile',
-                      label: t(`${p}.liftDecile`),
-                      children: <Table rowKey="rank" columns={liftColumns} dataSource={mockLift10} pagination={false} size="small" />
-                    },
-                    {
-                      key: 'percentile',
-                      label: t(`${p}.liftPercentile`),
-                      children: <Table rowKey="rank" columns={liftColumns} dataSource={mockLift100} pagination={{ pageSize: 20, size: 'small' }} size="small" />
-                    },
-                    {
-                      key: 'permille',
-                      label: t(`${p}.liftPermille`),
-                      children: <Table rowKey="rank" columns={liftColumns} dataSource={mockLift1000} pagination={{ pageSize: 20, size: 'small' }} size="small" />
-                    }
-                  ]}
-                />
-              </Modal>
-            </Card>
+              <ModelLiftSection chartLiftData={chartLiftData} mockLift10={mockLift10} mockLift100={mockLift100} mockLift1000={mockLift1000} />
+            </LazyLoadGuard>
           )}
 
           {!fromScoring && (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { App, Button, Card, Col, Form, Input, Modal, Row, Select, Space, Tag, Tooltip } from 'antd';
 import { DeleteOutlined, ExclamationCircleOutlined, FileSearchOutlined, PlusOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +27,68 @@ const mockAlgorithms = [
 
 const data: ModelRow[] = MOCK_MODELS;
 
+type ModelCardLabels = {
+  detailTooltip: string;
+  trainTooltip: string;
+  deleteText: string;
+  publishedText: string;
+  unpublishedText: string;
+  portraitText: string;
+  targetText: string;
+  algorithmText: string;
+};
+
+type ModelCardItemProps = {
+  model: ModelRow;
+  labels: ModelCardLabels;
+  onDetail: (modelId: string) => void;
+  onTrain: (modelId: string) => void;
+  onDelete: (model: ModelRow) => void;
+};
+
+const ModelCardItem = memo(function ModelCardItem({ model, labels, onDetail, onTrain, onDelete }: ModelCardItemProps) {
+  const actions = useMemo(
+    () => [
+      <Tooltip key="detail" title={labels.detailTooltip}>
+        <FileSearchOutlined onClick={() => onDetail(model.id)} />
+      </Tooltip>,
+      <Tooltip key="train" title={labels.trainTooltip}>
+        <ThunderboltOutlined onClick={() => onTrain(model.id)} />
+      </Tooltip>,
+      <Tooltip key="delete" title={labels.deleteText}>
+        <DeleteOutlined style={{ color: '#ff4d4f' }} onClick={() => onDelete(model)} />
+      </Tooltip>
+    ],
+    [labels, model, onDelete, onDetail, onTrain]
+  );
+
+  return (
+    <Card size="small" actions={actions}>
+      <Card.Meta
+        title={
+          <span>
+            {model.modelName}
+            {model.published
+              ? <Tag color="green" style={{ marginLeft: 8 }}>{labels.publishedText}</Tag>
+              : <Tag style={{ marginLeft: 8 }}>{labels.unpublishedText}</Tag>}
+          </span>
+        }
+        description={
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
+            <div><span style={{ opacity: 0.65 }}>{labels.portraitText}：</span>{model.portrait}</div>
+            <div><span style={{ opacity: 0.65 }}>{labels.targetText}：</span>{model.target}</div>
+            <div><span style={{ opacity: 0.65 }}>{labels.algorithmText}：</span><Tag>{model.algorithm}</Tag></div>
+            <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
+              <span><span style={{ opacity: 0.65 }}>AUC：</span>{model.auc != null ? <span style={{ fontWeight: 600 }}>{model.auc.toFixed(2)}</span> : '-'}</span>
+              <span><span style={{ opacity: 0.65 }}>Lift Top10%：</span>{model.liftTop10 != null ? <span style={{ fontWeight: 600 }}>{model.liftTop10.toFixed(1)}</span> : '-'}</span>
+            </div>
+          </div>
+        }
+      />
+    </Card>
+  );
+});
+
 export default function ModelManagementPage() {
   const { t } = useTranslation();
   const { message } = App.useApp();
@@ -38,63 +100,46 @@ export default function ModelManagementPage() {
   const [deletePassword, setDeletePassword] = useState('');
 
   const p = 'pages.modelManagement';
+  const modelCardLabels = useMemo<ModelCardLabels>(() => ({
+    detailTooltip: t(`${p}.detailTooltip`),
+    trainTooltip: t(`${p}.trainTooltip`),
+    deleteText: t('common.delete'),
+    publishedText: t(`${p}.published`),
+    unpublishedText: t(`${p}.unpublished`),
+    portraitText: t(`${p}.portrait`),
+    targetText: t(`${p}.target`),
+    algorithmText: t(`${p}.algorithm`)
+  }), [t]);
+
+  const handleOpenCreate = useCallback(() => {
+    createForm.resetFields();
+    setCreateOpen(true);
+  }, [createForm]);
+
+  const handleDetail = useCallback((modelId: string) => {
+    navigate(`/model-detail?id=${encodeURIComponent(modelId)}`, { state: { sessionTabMode: 'replace' } });
+  }, [navigate]);
+
+  const handleTrain = useCallback((modelId: string) => {
+    navigate(`/model-train?id=${encodeURIComponent(modelId)}`, { state: { sessionTabMode: 'replace' } });
+  }, [navigate]);
+
+  const handleDelete = useCallback((model: ModelRow) => {
+    setDeleteTarget(model);
+    setDeletePassword('');
+    setDeleteOpen(true);
+  }, []);
 
   return (
     <Card
       className="page-card"
       title={t(`${p}.title`)}
-      extra={<Button icon={<PlusOutlined />} onClick={() => { createForm.resetFields(); setCreateOpen(true); }}>{t('common.create')}</Button>}
+      extra={<Button icon={<PlusOutlined />} onClick={handleOpenCreate}>{t('common.create')}</Button>}
     >
       <Row gutter={[16, 16]}>
         {data.map((model) => (
           <Col key={model.id} xs={24} sm={12} lg={8} xl={6}>
-            <Card
-              size="small"
-              actions={[
-                <Tooltip key="detail" title={t(`${p}.detailTooltip`)}>
-                  <FileSearchOutlined
-                    onClick={() => navigate(`/model-detail?id=${encodeURIComponent(model.id)}`, { state: { sessionTabMode: 'replace' } })}
-                  />
-                </Tooltip>,
-                <Tooltip key="train" title={t(`${p}.trainTooltip`)}>
-                  <ThunderboltOutlined
-                    onClick={() => navigate(`/model-train?id=${encodeURIComponent(model.id)}`, { state: { sessionTabMode: 'replace' } })}
-                  />
-                </Tooltip>,
-                <Tooltip key="delete" title={t('common.delete')}>
-                  <DeleteOutlined
-                    style={{ color: '#ff4d4f' }}
-                    onClick={() => {
-                      setDeleteTarget(model);
-                      setDeletePassword('');
-                      setDeleteOpen(true);
-                    }}
-                  />
-                </Tooltip>
-              ]}
-            >
-              <Card.Meta
-                title={
-                  <span>
-                    {model.modelName}
-                    {model.published
-                      ? <Tag color="green" style={{ marginLeft: 8 }}>{t(`${p}.published`)}</Tag>
-                      : <Tag style={{ marginLeft: 8 }}>{t(`${p}.unpublished`)}</Tag>}
-                  </span>
-                }
-                description={
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
-                    <div><span style={{ opacity: 0.65 }}>{t(`${p}.portrait`)}：</span>{model.portrait}</div>
-                    <div><span style={{ opacity: 0.65 }}>{t(`${p}.target`)}：</span>{model.target}</div>
-                    <div><span style={{ opacity: 0.65 }}>{t(`${p}.algorithm`)}：</span><Tag>{model.algorithm}</Tag></div>
-                    <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
-                      <span><span style={{ opacity: 0.65 }}>AUC：</span>{model.auc != null ? <span style={{ fontWeight: 600 }}>{model.auc.toFixed(2)}</span> : '-'}</span>
-                      <span><span style={{ opacity: 0.65 }}>Lift Top10%：</span>{model.liftTop10 != null ? <span style={{ fontWeight: 600 }}>{model.liftTop10.toFixed(1)}</span> : '-'}</span>
-                    </div>
-                  </div>
-                }
-              />
-            </Card>
+            <ModelCardItem model={model} labels={modelCardLabels} onDetail={handleDetail} onTrain={handleTrain} onDelete={handleDelete} />
           </Col>
         ))}
       </Row>

@@ -8,13 +8,18 @@ export type KeepAliveOutletProps = {
   evictKey?: string | null;
 };
 
+const ACTIVE_PANEL_STYLE: React.CSSProperties = { display: 'block', height: '100%' };
+const HIDDEN_PANEL_STYLE: React.CSSProperties = { display: 'none', height: '100%' };
+
 export default function KeepAliveOutlet({ max = 6, excludePathnames = ['/'], activeKey, evictKey }: KeepAliveOutletProps) {
   const outlet = useOutlet();
   const location = useLocation();
   const pathname = location.pathname;
 
-  const excludeSet = useMemo(() => new Set(excludePathnames), [excludePathnames.join('|')]);
+  const excludeSet = useMemo(() => new Set(excludePathnames), [excludePathnames]);
   const cacheRef = useRef<Map<string, React.ReactNode>>(new Map());
+  const outletRef = useRef(outlet);
+  outletRef.current = outlet;
   const [cacheKeys, setCacheKeys] = useState<string[]>([]);
 
   useEffect(() => {
@@ -26,7 +31,8 @@ export default function KeepAliveOutlet({ max = 6, excludePathnames = ['/'], act
   }, [evictKey]);
 
   useEffect(() => {
-    if (!outlet) {
+    const currentOutlet = outletRef.current;
+    if (!currentOutlet) {
       return;
     }
 
@@ -34,7 +40,7 @@ export default function KeepAliveOutlet({ max = 6, excludePathnames = ['/'], act
       return;
     }
 
-    cacheRef.current.set(activeKey, outlet);
+    cacheRef.current.set(activeKey, currentOutlet);
     setCacheKeys((prev) => {
       const already = prev.includes(activeKey);
       let next = already ? prev : [...prev, activeKey];
@@ -50,7 +56,7 @@ export default function KeepAliveOutlet({ max = 6, excludePathnames = ['/'], act
 
       return next;
     });
-  }, [activeKey, excludeSet, max, outlet, pathname]);
+  }, [activeKey, excludeSet, max, pathname]);
 
   if (excludeSet.has(pathname)) {
     return outlet;
@@ -59,7 +65,7 @@ export default function KeepAliveOutlet({ max = 6, excludePathnames = ['/'], act
   return (
     <>
       {cacheKeys.map((key) => (
-        <div key={key} style={{ display: key === activeKey ? 'block' : 'none', height: '100%' }}>
+        <div key={key} style={key === activeKey ? ACTIVE_PANEL_STYLE : HIDDEN_PANEL_STYLE}>
           {cacheRef.current.get(key)}
         </div>
       ))}

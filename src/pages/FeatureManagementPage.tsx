@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { App, Button, Card, Form, Modal, Popconfirm, Select, Space, Table, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -104,7 +104,7 @@ export default function FeatureManagementPage() {
     setFlds(mockFields[tbl] ?? []);
   };
 
-  const columns: ColumnsType<FeatureRow> = [
+  const columns = useMemo<ColumnsType<FeatureRow>>(() => [
     { title: t('pages.featureManagement.columns.sourceName'), dataIndex: 'sourceName', width: 140 },
     { title: t('pages.featureManagement.columns.sourceTable'), width: 240, render: (_, row) => row.database ? `${row.database}.${row.tableName}` : row.tableName },
     {
@@ -152,7 +152,7 @@ export default function FeatureManagementPage() {
         </Space>
       )
     }
-  ];
+  ], [t, navigate, editForm, message]);
 
   const renderFormFields = (mode: 'create' | 'edit') => {
     const sourceType = mode === 'create' ? createSourceType : editSourceType;

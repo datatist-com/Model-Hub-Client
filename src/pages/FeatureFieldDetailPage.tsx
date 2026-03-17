@@ -35,6 +35,15 @@ type DerivedFeature = {
   periodLabel: string;
 };
 
+type FieldGroup = {
+  fieldName: string;
+  features: DerivedFeature[];
+  sourceCount: number;
+  basicCount: number;
+  yoyCount: number;
+  momCount: number;
+};
+
 function buildMonthlyFeatures(fieldName: string, t: (k: string) => string): DerivedFeature[] {
   const p = 'pages.featureFieldDetail';
   const rows: DerivedFeature[] = [];
@@ -86,18 +95,38 @@ export default function FeatureFieldDetailPage() {
   }, [sourceTable, isMonthly, t]);
 
   /* group by field for summary cards */
-  const fieldGroups = useMemo(() => {
+  const fieldGroups = useMemo<FieldGroup[]>(() => {
     const map = new Map<string, DerivedFeature[]>();
     for (const f of derivedFeatures) {
       if (!map.has(f.fieldName)) map.set(f.fieldName, []);
       map.get(f.fieldName)!.push(f);
     }
-    return Array.from(map.entries());
+
+    return Array.from(map.entries()).map(([fieldName, features]) => {
+      let sourceCount = 0;
+      let basicCount = 0;
+      let yoyCount = 0;
+      let momCount = 0;
+
+      for (const feature of features) {
+        if (feature.category === 'source') {
+          sourceCount += 1;
+        } else if (feature.category === 'basic') {
+          basicCount += 1;
+        } else if (feature.category === 'yoy') {
+          yoyCount += 1;
+        } else {
+          momCount += 1;
+        }
+      }
+
+      return { fieldName, features, sourceCount, basicCount, yoyCount, momCount };
+    });
   }, [derivedFeatures]);
 
   const p = 'pages.featureFieldDetail';
 
-  const columns = [
+  const columns = useMemo(() => [
     {
       title: t(`${p}.columns.featureName`),
       dataIndex: 'featureName',
@@ -112,7 +141,7 @@ export default function FeatureFieldDetailPage() {
     },
     { title: t(`${p}.columns.stat`), dataIndex: 'statLabel', width: 200 },
     { title: t(`${p}.columns.period`), dataIndex: 'periodLabel', width: 160 }
-  ];
+  ], [p, t]);
 
   const tableLabel = sourceTable
     ? (sourceTable.database ? `${sourceTable.database}.${sourceTable.tableName}` : sourceTable.tableName)
@@ -161,11 +190,7 @@ export default function FeatureFieldDetailPage() {
       </div>
 
       {/* Per-field cards */}
-      {fieldGroups.map(([fieldName, features]) => {
-        const sourceCount = features.filter((f) => f.category === 'source').length;
-        const basicCount = features.filter((f) => f.category === 'basic').length;
-        const yoyCount = features.filter((f) => f.category === 'yoy').length;
-        const momCount = features.filter((f) => f.category === 'mom').length;
+      {fieldGroups.map(({ fieldName, features, sourceCount, basicCount, yoyCount, momCount }) => {
         const isExpanded = expandedFields.has(fieldName);
         return (
           <div key={fieldName} className={`feature-field-detail-field-card${isExpanded ? ' expanded' : ''}`}>

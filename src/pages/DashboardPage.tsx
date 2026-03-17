@@ -135,10 +135,10 @@ export default function DashboardPage() {
   const isZh = i18n.language.toLowerCase().startsWith('zh');
 
   const series = aucHubSeriesMap[selectedHub];
-  const hubOptions = aucApiMock.hubs.map((hub) => ({
-    label: t(hub.labelKey),
-    value: hub.key
-  }));
+  const hubOptions = useMemo(
+    () => aucApiMock.hubs.map((hub) => ({ label: t(hub.labelKey), value: hub.key })),
+    [t]
+  );
 
   const chartData = useMemo(() => {
     const allValues = series.flatMap((item) => item.values);

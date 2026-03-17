@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BarChartOutlined,
   CloudServerOutlined,
@@ -9,6 +9,7 @@ import {
   FlagOutlined,
   FunctionOutlined,
   IdcardOutlined,
+  MenuOutlined,
   RobotOutlined,
   TeamOutlined
 } from '@ant-design/icons';
@@ -30,10 +31,15 @@ import { maskLicenseKey } from '../components/license/licenseUtils';
 import { SOURCE_NAME_MAP } from '../constants/mockMaps';
 import { ROUTE_LABEL_KEY_MAP, TAB_IDENTITY_PARAMS_MAP, ROUTE_TO_MENU_KEY } from '../constants/routeConfig';
 import KeepAliveOutlet from '../router/KeepAliveOutlet';
-import LicenseCenterModal from '../components/license/LicenseCenterModal';
+import LazyLoadGuard from '../components/lazy/LazyLoadGuard';
+import LicenseCenterModalFallback from '../components/license/LicenseCenterModalFallback';
+import { loadLicenseCenterModal } from '../router/preload';
+
+const LicenseCenterModal = lazy(loadLicenseCenterModal);
 
 const { Header, Sider, Content, Footer } = Layout;
 const PROJECT_NAME = 'Datatist Model Hub';
+const KEEP_ALIVE_EXCLUDE: string[] = ['/'];
 
 function computeTabKey(pathname: string, search: string): string {
   const identityParams = TAB_IDENTITY_PARAMS_MAP[pathname] ?? [];
@@ -93,6 +99,7 @@ export default function AppLayout() {
   const [licenseOpen, setLicenseOpen] = useState(false);
   const [licenseKeyInput, setLicenseKeyInput] = useState('');
   const [passwordOpen, setPasswordOpen] = useState(false);
+  const [siderOpen, setSiderOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -253,6 +260,16 @@ export default function AppLayout() {
     activeSessionRef.current.scrollIntoView({ behavior: 'smooth', inline: 'end', block: 'nearest' });
   }, [activeTabKey]);
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadLicenseCenterModal();
+    }, 1200);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, []);
+
   const handleCloseSessionTab = (key: string) => {
     setKeepAliveEvictKey(key);
     setTimeout(() => setKeepAliveEvictKey(null), 0);
@@ -302,23 +319,6 @@ export default function AppLayout() {
     message.success(t('layout.license.activateSuccess'));
   };
 
-  const handleUserMenuClick = ({ key }: { key: string }) => {
-    if (key === 'profile') {
-      navigate('/profile');
-      return;
-    }
-
-    if (key === 'changePassword') {
-      setPasswordOpen(true);
-      return;
-    }
-
-    if (key === 'logout') {
-      clearAccessToken();
-      navigate('/login', { replace: true });
-    }
-  };
-
   const handleChangePassword = () => {
     if (!currentPassword.trim()) {
       message.warning(t('layout.user.currentPasswordValidation'));
@@ -350,7 +350,56 @@ export default function AppLayout() {
   const currentUsername = getCurrentUsername() ?? 'admin';
   const currentRole = getUserRole(currentUsername);
   const allowedMenuKeys = getMenuKeysForRole(currentRole);
-  const filteredMenuItems = MENU_ITEMS.filter((item) => allowedMenuKeys.includes(item.key as MenuKey));
+
+  const filteredMenuItems = useMemo(
+    () => MENU_ITEMS.filter((item) => allowedMenuKeys.includes(item.key as MenuKey)),
+    [allowedMenuKeys]
+  );
+
+  const menuItems = useMemo(
+    () => filteredMenuItems.map((item) => ({ key: item.key, label: t(item.labelKey), icon: item.icon })),
+    [filteredMenuItems, t]
+  );
+
+  const tabTitles = useMemo(
+    () => new Map(sessionTabs.map((tab) => [tab.key, getTabTitle(tab)])),
+    [sessionTabs, t]
+  );
+
+  const handleUserMenuClick = useCallback(({ key }: { key: string }) => {
+    if (key === 'profile') {
+      navigate('/profile');
+      return;
+    }
+
+    if (key === 'changePassword') {
+      setPasswordOpen(true);
+      return;
+    }
+
+    if (key === 'logout') {
+      clearAccessToken();
+      navigate('/login', { replace: true });
+    }
+  }, [navigate]);
+
+  const userDropdownMenu = useMemo(() => ({
+    onClick: handleUserMenuClick,
+    items: [
+      {
+        key: 'profile',
+        label: (
+          <div className="app-user-menu-profile">
+            <div>陆星安</div>
+            <Typography.Text type="secondary">{t('layout.user.roleAdmin')}</Typography.Text>
+          </div>
+        )
+      },
+      { type: 'divider' as const },
+      { key: 'changePassword', label: t('layout.user.changePassword') },
+      { key: 'logout', label: t('layout.user.logout'), danger: true }
+    ]
+  }), [handleUserMenuClick, t]);
 
   return (
     <div className="app-root">
@@ -360,7 +409,8 @@ export default function AppLayout() {
       <div className="app-bg-orb app-bg-orb-b" />
 
       <Layout className="app-shell" style={{ minHeight: '100%' }}>
-        <Sider width={250} theme="light" className="app-sider">
+        {siderOpen && <div className="app-sider-overlay" onClick={() => setSiderOpen(false)} />}
+        <Sider width={250} theme="light" className={`app-sider${siderOpen ? ' app-sider-open' : ''}`}>
           <div className="app-sider-brand">
             <span className="app-sider-brand-text">{PROJECT_NAME}</span>
           </div>
@@ -369,11 +419,16 @@ export default function AppLayout() {
             mode="inline"
             tabIndex={-1}
             selectedKeys={[ROUTE_TO_MENU_KEY[location.pathname] ?? location.pathname]}
-            items={filteredMenuItems.map((item) => ({ key: item.key, label: t(item.labelKey), icon: item.icon }))}
-            onClick={(e) => navigate(e.key)}
+            items={menuItems}
+            onClick={(e) => { setSiderOpen(false); navigate(e.key); }}
           />
           <div className="app-sider-footer">
-            <Typography.Text className="app-license-entry" onClick={() => setLicenseOpen(true)}>
+            <Typography.Text
+              className="app-license-entry"
+              onMouseEnter={() => { void loadLicenseCenterModal(); }}
+              onFocus={() => { void loadLicenseCenterModal(); }}
+              onClick={() => setLicenseOpen(true)}
+            >
               {t('layout.license.entry')}
             </Typography.Text>
           </div>
@@ -381,17 +436,25 @@ export default function AppLayout() {
         <Layout>
           <Header className="app-header" style={{ padding: '0 16px' }}>
             <div className="app-header-inner">
+              <button
+                type="button"
+                className="app-sider-toggle"
+                aria-label="toggle menu"
+                onClick={() => setSiderOpen((v) => !v)}
+              >
+                <MenuOutlined />
+              </button>
               <div className="app-header-sessions" aria-label="sessions">
                 {sessionTabs.map((tab) => (
                   <div
                     key={tab.key}
                     className={`app-session-pill${tab.key === activeTabKey ? ' is-active' : ''}`}
                     onClick={() => navigate(tab.href)}
-                    title={getTabTitle(tab)}
+                    title={tabTitles.get(tab.key)}
                     ref={tab.key === activeTabKey ? activeSessionRef : undefined}
                   >
                     <span className="app-session-pill-title">
-                      {getTabTitle(tab)}
+                      {tabTitles.get(tab.key)}
                     </span>
                     <button
                       type="button"
@@ -413,23 +476,7 @@ export default function AppLayout() {
               <Space>
                 <Dropdown
                   trigger={['hover']}
-                  menu={{
-                    onClick: handleUserMenuClick,
-                    items: [
-                      {
-                        key: 'profile',
-                        label: (
-                          <div className="app-user-menu-profile">
-                            <div>陆星安</div>
-                            <Typography.Text type="secondary">{t('layout.user.roleAdmin')}</Typography.Text>
-                          </div>
-                        )
-                      },
-                      { type: 'divider' },
-                      { key: 'changePassword', label: t('layout.user.changePassword') },
-                      { key: 'logout', label: t('layout.user.logout'), danger: true }
-                    ]
-                  }}
+                  menu={userDropdownMenu}
                 >
                   <span className="app-user-avatar-trigger">
                     <Avatar className="app-user-avatar">陆</Avatar>
@@ -439,7 +486,7 @@ export default function AppLayout() {
             </div>
           </Header>
           <Content className="app-content" style={{ padding: 16 }}>
-            <KeepAliveOutlet max={6} excludePathnames={['/']} activeKey={activeTabKey} evictKey={keepAliveEvictKey} />
+            <KeepAliveOutlet max={6} excludePathnames={KEEP_ALIVE_EXCLUDE} activeKey={activeTabKey} evictKey={keepAliveEvictKey} />
           </Content>
           <Footer className="app-footer">
             <Typography.Text>{t('layout.copyright')}</Typography.Text>
@@ -447,26 +494,40 @@ export default function AppLayout() {
         </Layout>
       </Layout>
 
-      <LicenseCenterModal
-        open={licenseOpen}
-        onCancel={() => setLicenseOpen(false)}
-        className="app-license-modal"
-        state={licenseState}
-        stateText={licenseState === 'active' ? t('layout.license.active') : t('layout.license.expired')}
-        title={t('layout.license.title')}
-        subtitle={licenseState === 'active' ? t('layout.license.subtitleActive') : t('layout.license.subtitleExpired')}
-        licenseInfo={licenseInfo}
-        keyLabel={t('layout.license.key')}
-        organizationLabel={t('layout.license.organization')}
-        validUntilLabel={t('layout.license.validUntil')}
-        activatedAtLabel={t('layout.license.activatedAt')}
-        inputHint={t('layout.license.inputHint')}
-        inputPlaceholder={t('layout.license.placeholder')}
-        activateButtonText={t('layout.license.activateButton')}
-        licenseKeyInput={licenseKeyInput}
-        onLicenseKeyInputChange={setLicenseKeyInput}
-        onActivate={handleActivateLicense}
-      />
+      {licenseOpen && (
+        <LazyLoadGuard
+          featureName="license center"
+          loadingFallback={(state) => (
+            <LicenseCenterModalFallback
+              open={licenseOpen}
+              title={t('layout.license.title')}
+              onCancel={() => setLicenseOpen(false)}
+              state={state}
+            />
+          )}
+        >
+          <LicenseCenterModal
+            open={licenseOpen}
+            onCancel={() => setLicenseOpen(false)}
+            className="app-license-modal"
+            state={licenseState}
+            stateText={licenseState === 'active' ? t('layout.license.active') : t('layout.license.expired')}
+            title={t('layout.license.title')}
+            subtitle={licenseState === 'active' ? t('layout.license.subtitleActive') : t('layout.license.subtitleExpired')}
+            licenseInfo={licenseInfo}
+            keyLabel={t('layout.license.key')}
+            organizationLabel={t('layout.license.organization')}
+            validUntilLabel={t('layout.license.validUntil')}
+            activatedAtLabel={t('layout.license.activatedAt')}
+            inputHint={t('layout.license.inputHint')}
+            inputPlaceholder={t('layout.license.placeholder')}
+            activateButtonText={t('layout.license.activateButton')}
+            licenseKeyInput={licenseKeyInput}
+            onLicenseKeyInputChange={setLicenseKeyInput}
+            onActivate={handleActivateLicense}
+          />
+        </LazyLoadGuard>
+      )}
 
       <Modal
         open={passwordOpen}

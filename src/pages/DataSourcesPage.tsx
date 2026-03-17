@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { App, Button, Card, Form, Input, Modal, Select, Space, Table, Tag, Tooltip, Typography } from 'antd';
 import { ConsoleSqlOutlined, ExclamationCircleOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -35,7 +35,7 @@ export default function DataSourcesPage() {
     message.info(row.connected ? t('pages.dataSources.reconnecting') : t('pages.dataSources.connecting'));
   };
 
-  const columns: ColumnsType<Source> = [
+  const columns = useMemo<ColumnsType<Source>>(() => [
     {
       title: t('pages.dataSources.columns.name'),
       dataIndex: 'name',
@@ -101,7 +101,7 @@ export default function DataSourcesPage() {
         </Space>
       )
     }
-  ];
+  ], [t, navigate, refreshingIds, modal, message]);
 
   const handleOpenCreate = () => {
     form.resetFields();

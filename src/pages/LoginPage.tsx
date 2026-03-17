@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, useEffect, useRef, useState } from 'react';
 import type { CSSProperties, MouseEventHandler } from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Form, Input, Space, Typography, App } from 'antd';
@@ -6,8 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import i18n from '../i18n';
 import { getUserLanguage, setAccessToken, setCurrentUsername, setUserLanguage } from '../auth/token';
 import { applyUiTheme } from '../theme/uiTheme';
-import LicenseCenterModal from '../components/license/LicenseCenterModal';
 import { maskLicenseKey } from '../components/license/licenseUtils';
+import LazyLoadGuard from '../components/lazy/LazyLoadGuard';
+import LicenseCenterModalFallback from '../components/license/LicenseCenterModalFallback';
+import { loadLicenseCenterModal, warmupAuthEntry } from '../router/preload';
+
+const LicenseCenterModal = lazy(loadLicenseCenterModal);
 
 type LicenseInfo = {
   licenseKeyMasked: string;
@@ -21,6 +25,7 @@ export default function LoginPage() {
   const { message } = App.useApp();
   const [form] = Form.useForm();
   const pageRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef(0);
   const [licenseOpen, setLicenseOpen] = useState(false);
   const [licenseKeyInput, setLicenseKeyInput] = useState('');
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -93,6 +98,15 @@ export default function LoginPage() {
     page.style.setProperty('--my', `${window.innerHeight / 2}px`);
     page.style.setProperty('--rx', '0');
     page.style.setProperty('--ry', '0');
+
+    const warmupTimer = window.setTimeout(() => {
+      void warmupAuthEntry();
+      void loadLicenseCenterModal();
+    }, 180);
+
+    return () => {
+      window.clearTimeout(warmupTimer);
+    };
   }, []);
 
   const handleMouseMove: MouseEventHandler<HTMLDivElement> = (event) => {
@@ -101,15 +115,17 @@ export default function LoginPage() {
       return;
     }
 
+    cancelAnimationFrame(rafRef.current);
     const x = event.clientX;
     const y = event.clientY;
-    const rx = (x / window.innerWidth - 0.5) * 2;
-    const ry = (y / window.innerHeight - 0.5) * 2;
-
-    page.style.setProperty('--mx', `${x}px`);
-    page.style.setProperty('--my', `${y}px`);
-    page.style.setProperty('--rx', rx.toFixed(3));
-    page.style.setProperty('--ry', ry.toFixed(3));
+    rafRef.current = requestAnimationFrame(() => {
+      const rx = (x / window.innerWidth - 0.5) * 2;
+      const ry = (y / window.innerHeight - 0.5) * 2;
+      page.style.setProperty('--mx', `${x}px`);
+      page.style.setProperty('--my', `${y}px`);
+      page.style.setProperty('--rx', rx.toFixed(3));
+      page.style.setProperty('--ry', ry.toFixed(3));
+    });
   };
 
   const handleMouseLeave = () => {
@@ -139,9 +155,10 @@ export default function LoginPage() {
     setIsTransitioning(true);
     setAccessToken('mock-access-token');
     message.success('Login successful');
+    void warmupAuthEntry();
     window.setTimeout(() => {
       navigate('/dashboard', { replace: true });
-    }, 520);
+    }, 280);
   };
 
   return (
@@ -267,6 +284,7 @@ export default function LoginPage() {
       <div className="login-page-footer">
         <Typography.Text
           className={`login-license-trigger login-license-trigger-${licenseState}`}
+          onMouseEnter={() => { void loadLicenseCenterModal(); }}
           onClick={() => setLicenseOpen(true)}
         >
           {footerTextByState[licenseState]}
@@ -276,30 +294,44 @@ export default function LoginPage() {
         </Typography.Text>
       </div>
 
-      <LicenseCenterModal
-        open={licenseOpen}
-        onCancel={() => setLicenseOpen(false)}
-        className="login-license-modal"
-        state={licenseState}
-        stateText={statusTextByState[licenseState]}
-        title={modalTitleByState[licenseState]}
-        subtitle={
-          licenseState === 'active'
-            ? 'Your workspace is licensed and ready. If you receive a new key, you can update it below.'
-            : 'Activate a valid license key to unlock full modeling, training, and operational capabilities.'
-        }
-        licenseInfo={licenseInfo}
-        keyLabel="License Key"
-        organizationLabel="Licensed Organization"
-        validUntilLabel="Valid Until"
-        activatedAtLabel="Activated At"
-        inputHint={licenseState === 'active' ? 'Need to replace your current key?' : 'Have a valid key? Activate now.'}
-        inputPlaceholder="Enter your license key"
-        activateButtonText={activateActionText}
-        licenseKeyInput={licenseKeyInput}
-        onLicenseKeyInputChange={setLicenseKeyInput}
-        onActivate={handleActivateLicense}
-      />
+      {licenseOpen && (
+        <LazyLoadGuard
+          featureName="license center"
+          loadingFallback={(state) => (
+            <LicenseCenterModalFallback
+              open={licenseOpen}
+              title={modalTitleByState[licenseState]}
+              onCancel={() => setLicenseOpen(false)}
+              state={state}
+            />
+          )}
+        >
+          <LicenseCenterModal
+            open={licenseOpen}
+            onCancel={() => setLicenseOpen(false)}
+            className="login-license-modal"
+            state={licenseState}
+            stateText={statusTextByState[licenseState]}
+            title={modalTitleByState[licenseState]}
+            subtitle={
+              licenseState === 'active'
+                ? 'Your workspace is licensed and ready. If you receive a new key, you can update it below.'
+                : 'Activate a valid license key to unlock full modeling, training, and operational capabilities.'
+            }
+            licenseInfo={licenseInfo}
+            keyLabel="License Key"
+            organizationLabel="Licensed Organization"
+            validUntilLabel="Valid Until"
+            activatedAtLabel="Activated At"
+            inputHint={licenseState === 'active' ? 'Need to replace your current key?' : 'Have a valid key? Activate now.'}
+            inputPlaceholder="Enter your license key"
+            activateButtonText={activateActionText}
+            licenseKeyInput={licenseKeyInput}
+            onLicenseKeyInputChange={setLicenseKeyInput}
+            onActivate={handleActivateLicense}
+          />
+        </LazyLoadGuard>
+      )}
     </div>
   );
 }

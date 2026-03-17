@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { App, Avatar, Button, Card, Input, Modal, Segmented, Select, Space, Table, Tag, Typography } from 'antd';
 import {
   DesktopOutlined,
@@ -74,7 +74,7 @@ export default function ProfilePage() {
     return getUserUiTheme(username) ?? 'system';
   });
 
-  const loginColumns: ColumnsType<LoginRecord> = [
+  const loginColumns = useMemo<ColumnsType<LoginRecord>>(() => [
     { title: t('pages.profile.loginTime'), dataIndex: 'time', width: 180 },
     { title: 'IP', dataIndex: 'ip', width: 140 },
     { title: t('pages.profile.location'), dataIndex: 'location', width: 160 },
@@ -85,9 +85,9 @@ export default function ProfilePage() {
       render: (status) =>
         status === 'success' ? <Tag color="green">{t('pages.profile.success')}</Tag> : <Tag color="red">{t('pages.profile.failed')}</Tag>
     }
-  ];
+  ], [t]);
 
-  const actionColumns: ColumnsType<ActionRecord> = [
+  const actionColumns = useMemo<ColumnsType<ActionRecord>>(() => [
     { title: t('pages.profile.actionTime'), dataIndex: 'time', width: 180 },
     { title: t('pages.profile.module'), dataIndex: 'module', width: 140 },
     { title: t('pages.profile.action'), dataIndex: 'action', width: 200 },
@@ -98,7 +98,7 @@ export default function ProfilePage() {
       render: (result) =>
         result === 'success' ? <Tag color="green">{t('pages.profile.success')}</Tag> : <Tag color="red">{t('pages.profile.failed')}</Tag>
     }
-  ];
+  ], [t]);
 
   const handleSavePassword = () => {
     if (!currentPassword.trim()) {

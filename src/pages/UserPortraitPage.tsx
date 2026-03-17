@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { App, Button, Card, Form, Input, Modal, Popconfirm, Select, Space, Table, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -31,12 +31,26 @@ export default function UserPortraitPage() {
   const [createDataSource, setCreateDataSource] = useState<string>();
   const [editDataSource, setEditDataSource] = useState<string>();
 
-  const dataSourceOptions = [
+  const dataSourceOptions = useMemo(() => [
     { value: 'computed', label: t('pages.userPortrait.dataSourceComputed') },
     { value: 'imported', label: t('pages.userPortrait.dataSourceImported') }
-  ];
+  ], [t]);
 
-  const columns: ColumnsType<PortraitRow> = [
+  const handleNavigatePeriods = useCallback((row: PortraitRow) => {
+    navigate(`/portrait-periods?id=${encodeURIComponent(row.id)}&ds=${encodeURIComponent(row.dataSource)}`, { state: { sessionTabMode: 'replace' } });
+  }, [navigate]);
+
+  const handleOpenEdit = useCallback((row: PortraitRow) => {
+    setEditDataSource(row.dataSource);
+    editForm.setFieldsValue({ portraitName: row.portraitName, dataSource: row.dataSource, sourceTables: row.sourceTables });
+    setEditOpen(true);
+  }, [editForm]);
+
+  const handleDelete = useCallback((row: PortraitRow) => {
+    message.success(t('pages.userPortrait.deleteSuccess', { name: row.portraitName }));
+  }, [message, t]);
+
+  const columns = useMemo<ColumnsType<PortraitRow>>(() => [
     { title: t('pages.userPortrait.columns.portraitName'), dataIndex: 'portraitName', width: 200 },
     {
       title: t('pages.userPortrait.columns.dataSource'),
@@ -53,7 +67,7 @@ export default function UserPortraitPage() {
       dataIndex: 'periodCount',
       width: 180,
       render: (v: number, row) => (
-        <a onClick={() => navigate(`/portrait-periods?id=${encodeURIComponent(row.id)}&ds=${encodeURIComponent(row.dataSource)}`, { state: { sessionTabMode: 'replace' } })}>
+        <a onClick={() => handleNavigatePeriods(row)}>
           {t('pages.userPortrait.containsPeriods', { count: v })}
         </a>
       )
@@ -63,25 +77,21 @@ export default function UserPortraitPage() {
       width: 160,
       render: (_, row) => (
         <Space>
-          <Button size="small" onClick={() => {
-            setEditDataSource(row.dataSource);
-            editForm.setFieldsValue({ portraitName: row.portraitName, dataSource: row.dataSource, sourceTables: row.sourceTables });
-            setEditOpen(true);
-          }}>{t('common.edit')}</Button>
+          <Button size="small" onClick={() => handleOpenEdit(row)}>{t('common.edit')}</Button>
           <Popconfirm
             title={t('pages.userPortrait.deleteConfirmTitle')}
             description={t('pages.userPortrait.deleteConfirmContent', { name: row.portraitName })}
             okText={t('common.delete')}
             cancelText={t('common.cancel')}
             okButtonProps={{ danger: true }}
-            onConfirm={() => message.success(t('pages.userPortrait.deleteSuccess', { name: row.portraitName }))}
+            onConfirm={() => handleDelete(row)}
           >
             <Button size="small" danger>{t('common.delete')}</Button>
           </Popconfirm>
         </Space>
       )
     }
-  ];
+  ], [handleDelete, handleNavigatePeriods, handleOpenEdit, t]);
 
   return (
     <Card

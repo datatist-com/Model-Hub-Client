@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { App, Button, Card, Col, Divider, Form, Input, InputNumber, Radio, Row, Select, Space, Tooltip } from 'antd';
 import { DeleteOutlined, LeftOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -70,8 +70,6 @@ const operatorOptions = [
   { value: '<=', label: '<=' }
 ];
 
-let conditionIdCounter = 1;
-
 export default function OperationListCreatePage() {
   const { t } = useTranslation();
   const { message } = App.useApp();
@@ -83,11 +81,13 @@ export default function OperationListCreatePage() {
   const [conditions, setConditions] = useState<Condition[]>([]);
   const [abTestEnabled, setAbTestEnabled] = useState(false);
   const [abTestUnit, setAbTestUnit] = useState<'percent' | 'count'>('percent');
+  const conditionIdRef = useRef(0);
 
   const p = 'pages.operationListCreate';
 
   const addCondition = () => {
-    setConditions((prev) => [...prev, { id: conditionIdCounter++, name: '', source: '', database: '', table: '', field: '', operator: '=', value: '' }]);
+    const id = ++conditionIdRef.current;
+    setConditions((prev) => [...prev, { id, name: '', source: '', database: '', table: '', field: '', operator: '=', value: '' }]);
   };
 
   const removeCondition = (id: number) => {

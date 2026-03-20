@@ -26,7 +26,7 @@ export default function UnsupportedEnvironmentPage({ issues, onRetry, onContinue
       <div className="environment-guard-orb environment-guard-orb-a" />
       <div className="environment-guard-orb environment-guard-orb-b" />
 
-      <Card className="environment-guard-card" bordered={false}>
+      <Card className="environment-guard-card" variant="borderless">
         <div className="environment-guard-shell">
           <div className="environment-guard-topbar">
             <div className="environment-guard-product">

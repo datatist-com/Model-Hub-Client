@@ -1,7 +1,7 @@
 import { getAccessToken } from '../auth/token';
 import i18n from '../i18n';
 
-const RAW_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api/v1';
+const RAW_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api/v1';
 const API_BASE_URL = RAW_BASE_URL.endsWith('/') ? RAW_BASE_URL.slice(0, -1) : RAW_BASE_URL;
 
 type ApiEnvelope<T> = {

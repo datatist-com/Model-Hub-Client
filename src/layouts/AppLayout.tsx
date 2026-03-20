@@ -25,7 +25,7 @@ import KeepAliveOutlet from '../router/KeepAliveOutlet';
 import LazyLoadGuard from '../components/lazy/LazyLoadGuard';
 import LicenseCenterModalFallback from '../components/license/LicenseCenterModalFallback';
 import { loadLicenseCenterModal } from '../router/preload';
-import { activateLicense, changePassword, getLicenseInfo, logout } from '../api/endpoints';
+import { activateLicense, changePassword, logout } from '../api/endpoints';
 import { getApiErrorMessage } from '../api/http';
 
 const LicenseCenterModal = lazy(loadLicenseCenterModal);
@@ -248,19 +248,6 @@ export default function AppLayout() {
     const timer = window.setTimeout(() => {
       void loadLicenseCenterModal();
     }, 1200);
-
-    void getLicenseInfo()
-      .then((info) => {
-        setLicenseInfo({
-          licenseKeyMasked: info.licenseKeyMasked,
-          licensee: info.licensee,
-          activatedAt: info.activatedAt,
-          expiresAt: info.expiresAt
-        });
-      })
-      .catch(() => {
-        // Keep existing local values if backend info is unavailable.
-      });
 
     return () => {
       window.clearTimeout(timer);

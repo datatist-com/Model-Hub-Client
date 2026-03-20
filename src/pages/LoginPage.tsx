@@ -11,7 +11,7 @@ import { maskLicenseKey } from '../components/license/licenseUtils';
 import LazyLoadGuard from '../components/lazy/LazyLoadGuard';
 import LicenseCenterModalFallback from '../components/license/LicenseCenterModalFallback';
 import { loadLicenseCenterModal, warmupAuthEntry } from '../router/preload';
-import { activateLicense, getLicenseInfo, login } from '../api/endpoints';
+import { activateLicense, login } from '../api/endpoints';
 import { getApiErrorMessage } from '../api/http';
 
 const LicenseCenterModal = lazy(loadLicenseCenterModal);
@@ -107,19 +107,6 @@ export default function LoginPage() {
       void warmupAuthEntry();
       void loadLicenseCenterModal();
     }, 180);
-
-    void getLicenseInfo()
-      .then((info) => {
-        setLicenseInfo({
-          licenseKeyMasked: info.licenseKeyMasked,
-          licensee: info.licensee,
-          activatedAt: info.activatedAt,
-          expiresAt: info.expiresAt
-        });
-      })
-      .catch(() => {
-        // Keep null state when no license is returned.
-      });
 
     return () => {
       window.clearTimeout(warmupTimer);
@@ -240,7 +227,7 @@ export default function LoginPage() {
           </Typography.Paragraph>
         </div>
 
-        <Card className="login-card" bordered={false}>
+        <Card className="login-card" variant="borderless">
           <Typography.Title level={3} className="login-card-title">
             Sign In
           </Typography.Title>

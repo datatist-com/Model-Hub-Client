@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { App, Avatar, Button, Card, Input, Modal, Segmented, Select, Space, Table, Tag, Typography } from 'antd';
 import {
   DesktopOutlined,
@@ -10,10 +10,10 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
-import { getCurrentUsername, getUserUiTheme, setUserLanguage, setUserUiTheme, type UiThemePreference } from '../auth/token';
-import { getUserRole, getRoleI18nKey } from '../auth/roles';
+import { getCurrentUsername, getUserUiTheme, setCurrentUsername, setUserLanguage, setUserUiTheme, type UiThemePreference } from '../auth/token';
+import { getRoleI18nKey, setUserRole, type Role } from '../auth/roles';
 import { applyUiTheme } from '../theme/uiTheme';
-import { changePassword } from '../api/endpoints';
+import { changePassword, getCurrentUser } from '../api/endpoints';
 import { getApiErrorMessage } from '../api/http';
 
 type LoginRecord = {
@@ -65,17 +65,40 @@ const actionRecords: ActionRecord[] = [
 export default function ProfilePage() {
   const { t, i18n } = useTranslation();
   const { message } = App.useApp();
+  const currentUsername = getCurrentUsername() ?? 'admin';
   const [passwordOpen, setPasswordOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [profile, setProfile] = useState<{ username: string; realName: string; role: Role } | null>(null);
   const [uiTheme, setUiTheme] = useState<UiThemePreference>(() => {
-    const username = getCurrentUsername();
-    if (!username) {
-      return 'system';
-    }
-    return getUserUiTheme(username) ?? 'system';
+    return getUserUiTheme(currentUsername) ?? 'system';
   });
+
+  useEffect(() => {
+    void getCurrentUser()
+      .then((user) => {
+        const username = user.username || currentUsername;
+        setCurrentUsername(username);
+        setUserRole(username, user.role);
+        if (user.language) {
+          setUserLanguage(username, user.language);
+        }
+        if (user.uiTheme === 'dark' || user.uiTheme === 'light' || user.uiTheme === 'system') {
+          setUserUiTheme(username, user.uiTheme);
+          setUiTheme(user.uiTheme);
+          applyUiTheme(user.uiTheme);
+        }
+        setProfile({
+          username,
+          realName: user.realName || user.username,
+          role: user.role
+        });
+      })
+      .catch((error) => {
+        message.error(getApiErrorMessage(error, t('errorPage.unknownError')));
+      });
+  }, [currentUsername, message, t]);
 
   const loginColumns = useMemo<ColumnsType<LoginRecord>>(() => [
     { title: t('pages.profile.loginTime'), dataIndex: 'time', width: 180 },
@@ -165,20 +188,20 @@ export default function ProfilePage() {
               <Avatar className="profile-identity-avatar" size={56} icon={<UserOutlined />} />
               <div>
                 <Typography.Title level={5} className="profile-identity-name">
-                  陆星安
+                  {profile?.realName ?? currentUsername}
                 </Typography.Title>
-                <Typography.Text className="profile-identity-role">{t(`pages.users.roles.${getRoleI18nKey(getUserRole(getCurrentUsername() ?? 'admin'))}`)}</Typography.Text>
+                <Typography.Text className="profile-identity-role">{t(`pages.users.roles.${getRoleI18nKey(profile?.role ?? 'model_operator')}`)}</Typography.Text>
               </div>
             </div>
 
             <div className="profile-info-list">
               <div className="profile-info-item">
                 <span>{t('pages.profile.loginName')}</span>
-                <strong>luxingan</strong>
+                <strong>{profile?.username ?? currentUsername}</strong>
               </div>
               <div className="profile-info-item">
                 <span>{t('pages.profile.realName')}</span>
-                <strong>陆星安</strong>
+                <strong>{profile?.realName ?? currentUsername}</strong>
               </div>
               <div className="profile-info-item">
                 <span>{t('pages.profile.identity')}</span>

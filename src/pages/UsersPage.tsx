@@ -1,13 +1,15 @@
-import { useState, useMemo } from 'react';
-import { Button, Card, Form, Input, Modal, Select, Space, Table, Tag } from 'antd';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { App, Button, Card, Form, Input, Modal, Select, Space, Table, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { getCurrentUsername } from '../auth/token';
 import { getUserRole, getManageableRoles, getRoleI18nKey } from '../auth/roles';
 import type { Role } from '../auth/roles';
+import { createUser, deleteUser, listUsers, updateUser, type UserStatus, type UserView } from '../api/endpoints';
+import { getApiErrorMessage } from '../api/http';
 
-type UserRow = { id: string; username: string; realName: string; role: Role; status: 'active' | 'frozen' };
+type UserRow = { id: string; username: string; realName: string; role: Role; status: UserStatus };
 
 const ROLE_COLOR_MAP: Record<Role, string> = {
   model_developer: 'blue',
@@ -15,19 +17,16 @@ const ROLE_COLOR_MAP: Record<Role, string> = {
   platform_admin: 'red'
 };
 
-const allUsers: UserRow[] = [
-  { id: 'u-001', username: 'admin', realName: '张三', role: 'platform_admin', status: 'active' },
-  { id: 'u-002', username: 'alice', realName: '李四', role: 'model_developer', status: 'active' },
-  { id: 'u-003', username: 'bob', realName: '王五', role: 'model_developer', status: 'active' },
-  { id: 'u-004', username: 'carol', realName: '赵六', role: 'model_operator', status: 'active' },
-  { id: 'u-005', username: 'dave', realName: '孙七', role: 'model_operator', status: 'active' },
-  { id: 'u-006', username: 'eve', realName: '周八', role: 'model_developer', status: 'frozen' }
-];
-
 export default function UsersPage() {
   const { t } = useTranslation();
+  const { message, modal } = App.useApp();
   const [open, setOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserRow | null>(null);
+  const [users, setUsers] = useState<UserRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
   const [form] = Form.useForm();
   const [editForm] = Form.useForm();
 
@@ -35,16 +34,100 @@ export default function UsersPage() {
   const currentRole = getUserRole(currentUser);
   const manageableRoles = getManageableRoles(currentRole);
 
-  const data = useMemo(() => {
-    if (currentRole === 'platform_admin') return allUsers;
-    return allUsers.filter((u) => manageableRoles.includes(u.role));
-  }, [currentRole, manageableRoles]);
+  const mapUser = (user: UserView): UserRow => ({
+    id: user.id,
+    username: user.username,
+    realName: user.realName || user.username,
+    role: user.role,
+    status: user.status
+  });
 
-  const creatableRoles = manageableRoles;
-  const roleOptions = creatableRoles.map((r) => ({
+  const fetchUsers = useCallback(async (nextPage = page, nextPageSize = pageSize) => {
+    setLoading(true);
+    try {
+      const res = await listUsers({ page: nextPage, pageSize: nextPageSize });
+      setUsers((res.items ?? []).map(mapUser));
+      setTotal(res.total ?? 0);
+      setPage(res.page ?? nextPage);
+      setPageSize(res.pageSize ?? nextPageSize);
+    } catch (error) {
+      message.error(getApiErrorMessage(error, t('errorPage.unknownError')));
+    } finally {
+      setLoading(false);
+    }
+  }, [message, page, pageSize, t]);
+
+  useEffect(() => {
+    void fetchUsers();
+  }, [fetchUsers]);
+
+  const data = useMemo(() => {
+    if (currentRole === 'platform_admin') return users;
+    return users.filter((u) => manageableRoles.includes(u.role));
+  }, [currentRole, manageableRoles, users]);
+
+  const roleOptions = manageableRoles.map((r) => ({
     value: r,
     label: t(`pages.users.roles.${getRoleI18nKey(r)}`)
   }));
+
+  const handleEdit = (user: UserRow) => {
+    setEditingUser(user);
+    editForm.setFieldsValue({ username: user.username, realName: user.realName, role: user.role });
+  };
+
+  const handleCreate = async (values: { username: string; realName: string; password: string; role: Role }) => {
+    try {
+      await createUser({
+        username: values.username,
+        password: values.password,
+        realName: values.realName,
+        role: values.role
+      });
+      setOpen(false);
+      form.resetFields();
+      message.success(t('common.save'));
+      void fetchUsers(1, pageSize);
+    } catch (error) {
+      message.error(getApiErrorMessage(error, t('errorPage.unknownError')));
+    }
+  };
+
+  const handleUpdate = async (values: { username: string; realName: string; role: Role }) => {
+    if (!editingUser) {
+      return;
+    }
+
+    try {
+      await updateUser(editingUser.id, {
+        realName: values.realName,
+        role: values.role
+      });
+      setEditingUser(null);
+      editForm.resetFields();
+      message.success(t('common.save'));
+      void fetchUsers(page, pageSize);
+    } catch (error) {
+      message.error(getApiErrorMessage(error, t('errorPage.unknownError')));
+    }
+  };
+
+  const handleDelete = (record: UserRow) => {
+    modal.confirm({
+      title: t('common.delete'),
+      content: `${record.username}`,
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          await deleteUser(record.id);
+          message.success(t('common.delete'));
+          void fetchUsers(page, pageSize);
+        } catch (error) {
+          message.error(getApiErrorMessage(error, t('errorPage.unknownError')));
+        }
+      }
+    });
+  };
 
   const columns = useMemo<ColumnsType<UserRow>>(() => [
     { title: t('pages.users.columns.username'), dataIndex: 'username', width: 140 },
@@ -70,18 +153,13 @@ export default function UsersPage() {
         ) : (
           <Space>
             <Button size="small" onClick={() => handleEdit(record)}>{t('common.edit')}</Button>
-            <Button size="small" danger>
+            <Button size="small" danger onClick={() => handleDelete(record)}>
               {t('common.delete')}
             </Button>
           </Space>
         )
     }
-  ], [t]);
-
-  const handleEdit = (user: UserRow) => {
-    setEditingUser(user);
-    editForm.setFieldsValue({ username: user.username, realName: user.realName, role: user.role });
-  };
+  ], [currentUser, t]);
 
   return (
     <Card
@@ -89,11 +167,23 @@ export default function UsersPage() {
       title={t('pages.users.title')}
       extra={<Button icon={<PlusOutlined />} onClick={() => setOpen(true)}>{t('common.create')}</Button>}
     >
-      <Table rowKey="id" columns={columns} dataSource={data} pagination={{ pageSize: 10 }} />
+      <Table
+        rowKey="id"
+        columns={columns}
+        dataSource={data}
+        loading={loading}
+        pagination={{
+          current: page,
+          pageSize,
+          total,
+          onChange: (nextPage, nextPageSize) => {
+            void fetchUsers(nextPage, nextPageSize);
+          }
+        }}
+      />
 
-      {/* 新建用户 */}
       <Modal open={open} title={t('pages.users.createUser')} footer={null} onCancel={() => { setOpen(false); form.resetFields(); }} destroyOnClose>
-        <Form form={form} layout="vertical" onFinish={() => { setOpen(false); form.resetFields(); }}>
+        <Form form={form} layout="vertical" onFinish={handleCreate}>
           <Form.Item name="username" label={t('pages.users.form.username')} rules={[{ required: true }]}>
             <Input />
           </Form.Item>
@@ -112,17 +202,13 @@ export default function UsersPage() {
         </Form>
       </Modal>
 
-      {/* 编辑用户 */}
       <Modal open={!!editingUser} title={t('pages.users.editUser')} footer={null} onCancel={() => setEditingUser(null)} destroyOnClose>
-        <Form form={editForm} layout="vertical" onFinish={() => setEditingUser(null)}>
+        <Form form={editForm} layout="vertical" onFinish={handleUpdate}>
           <Form.Item name="username" label={t('pages.users.form.username')} rules={[{ required: true }]}>
-            <Input />
+            <Input disabled />
           </Form.Item>
           <Form.Item name="realName" label={t('pages.users.form.realName')} rules={[{ required: true }]}>
             <Input />
-          </Form.Item>
-          <Form.Item name="password" label={t('pages.users.form.password')}>
-            <Input.Password placeholder={t('pages.users.form.passwordPlaceholder')} />
           </Form.Item>
           <Form.Item name="role" label={t('pages.users.form.role')} rules={[{ required: true }]}>
             <Select options={roleOptions} />

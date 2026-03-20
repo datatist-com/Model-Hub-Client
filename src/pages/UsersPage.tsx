@@ -4,37 +4,24 @@ import { PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { getCurrentUsername } from '../auth/token';
-import { getUserRole, getManageableRoles } from '../auth/roles';
+import { getUserRole, getManageableRoles, getRoleI18nKey } from '../auth/roles';
 import type { Role } from '../auth/roles';
 
 type UserRow = { id: string; username: string; realName: string; role: Role; status: 'active' | 'frozen' };
 
-const ROLE_I18N_MAP: Record<Role, string> = {
-  system_admin: 'systemAdmin',
-  model_engineer: 'modelEngineer',
-  data_engineer: 'dataEngineer',
-  business_operator: 'businessOperator',
-  project_admin: 'projectAdmin',
-  project_member: 'projectMember'
-};
-
 const ROLE_COLOR_MAP: Record<Role, string> = {
-  system_admin: 'red',
-  model_engineer: 'blue',
-  data_engineer: 'purple',
-  business_operator: 'green',
-  project_admin: 'orange',
-  project_member: 'default'
+  model_developer: 'blue',
+  model_operator: 'green',
+  platform_admin: 'red'
 };
 
 const allUsers: UserRow[] = [
-  { id: 'u-001', username: 'admin', realName: '张三', role: 'system_admin', status: 'active' },
-  { id: 'u-002', username: 'alice', realName: '李四', role: 'model_engineer', status: 'active' },
-  { id: 'u-003', username: 'bob', realName: '王五', role: 'data_engineer', status: 'active' },
-  { id: 'u-004', username: 'carol', realName: '赵六', role: 'business_operator', status: 'active' },
-  { id: 'u-005', username: 'dave', realName: '孙七', role: 'project_admin', status: 'active' },
-  { id: 'u-006', username: 'eve', realName: '周八', role: 'project_member', status: 'active' },
-  { id: 'u-007', username: 'frank', realName: '吴九', role: 'project_member', status: 'frozen' }
+  { id: 'u-001', username: 'admin', realName: '张三', role: 'platform_admin', status: 'active' },
+  { id: 'u-002', username: 'alice', realName: '李四', role: 'model_developer', status: 'active' },
+  { id: 'u-003', username: 'bob', realName: '王五', role: 'model_developer', status: 'active' },
+  { id: 'u-004', username: 'carol', realName: '赵六', role: 'model_operator', status: 'active' },
+  { id: 'u-005', username: 'dave', realName: '孙七', role: 'model_operator', status: 'active' },
+  { id: 'u-006', username: 'eve', realName: '周八', role: 'model_developer', status: 'frozen' }
 ];
 
 export default function UsersPage() {
@@ -49,15 +36,14 @@ export default function UsersPage() {
   const manageableRoles = getManageableRoles(currentRole);
 
   const data = useMemo(() => {
-    if (currentRole === 'system_admin') return allUsers;
+    if (currentRole === 'platform_admin') return allUsers;
     return allUsers.filter((u) => manageableRoles.includes(u.role));
   }, [currentRole, manageableRoles]);
 
-  // 系统管理员仅有一个，不可新增
-  const creatableRoles = manageableRoles.filter((r) => r !== 'system_admin');
+  const creatableRoles = manageableRoles;
   const roleOptions = creatableRoles.map((r) => ({
     value: r,
-    label: t(`pages.users.roles.${ROLE_I18N_MAP[r]}`)
+    label: t(`pages.users.roles.${getRoleI18nKey(r)}`)
   }));
 
   const columns = useMemo<ColumnsType<UserRow>>(() => [
@@ -67,7 +53,7 @@ export default function UsersPage() {
       title: t('pages.users.columns.role'),
       dataIndex: 'role',
       width: 160,
-      render: (role: Role) => <Tag color={ROLE_COLOR_MAP[role]}>{t(`pages.users.roles.${ROLE_I18N_MAP[role]}`)}</Tag>
+      render: (role: Role) => <Tag color={ROLE_COLOR_MAP[role]}>{t(`pages.users.roles.${getRoleI18nKey(role)}`)}</Tag>
     },
     {
       title: t('pages.users.columns.status'),
@@ -79,7 +65,7 @@ export default function UsersPage() {
       title: t('pages.users.columns.actions'),
       width: 160,
       render: (_, record) =>
-        record.role === 'system_admin' ? (
+        record.username === currentUser ? (
           <span style={{ color: 'var(--ant-color-text-quaternary)' }}>—</span>
         ) : (
           <Space>

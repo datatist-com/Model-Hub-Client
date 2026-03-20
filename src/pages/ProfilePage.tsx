@@ -11,6 +11,7 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import { getCurrentUsername, getUserUiTheme, setUserLanguage, setUserUiTheme, type UiThemePreference } from '../auth/token';
+import { getUserRole, getRoleI18nKey } from '../auth/roles';
 import { applyUiTheme } from '../theme/uiTheme';
 
 type LoginRecord = {
@@ -156,7 +157,7 @@ export default function ProfilePage() {
                 <Typography.Title level={5} className="profile-identity-name">
                   陆星安
                 </Typography.Title>
-                <Typography.Text className="profile-identity-role">{t('layout.user.roleAdmin')}</Typography.Text>
+                <Typography.Text className="profile-identity-role">{t(`pages.users.roles.${getRoleI18nKey(getUserRole(getCurrentUsername() ?? 'admin'))}`)}</Typography.Text>
               </div>
             </div>
 

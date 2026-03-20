@@ -24,7 +24,7 @@ import {
   getUserUiTheme,
   setUserSessionTabs
 } from '../auth/token';
-import { getUserRole, getMenuKeysForRole } from '../auth/roles';
+import { getUserRole, getMenuKeysForRole, getRoleI18nKey } from '../auth/roles';
 import type { MenuKey } from '../auth/roles';
 import { applyUiTheme } from '../theme/uiTheme';
 import { maskLicenseKey } from '../components/license/licenseUtils';
@@ -391,7 +391,7 @@ export default function AppLayout() {
         label: (
           <div className="app-user-menu-profile">
             <div>陆星安</div>
-            <Typography.Text type="secondary">{t('layout.user.roleAdmin')}</Typography.Text>
+            <Typography.Text type="secondary">{t(`pages.users.roles.${getRoleI18nKey(currentRole)}`)}</Typography.Text>
           </div>
         )
       },

@@ -1,10 +1,4 @@
-export type Role =
-  | 'system_admin'
-  | 'model_engineer'
-  | 'data_engineer'
-  | 'business_operator'
-  | 'project_admin'
-  | 'project_member';
+export type Role = 'model_developer' | 'model_operator' | 'platform_admin';
 
 export type MenuKey =
   | '/dashboard'
@@ -20,50 +14,45 @@ export type MenuKey =
 
 /** 角色 → 可见菜单 */
 const ROLE_MENU_MAP: Record<Role, MenuKey[]> = {
-  system_admin: [
+  model_developer: [
+    '/dashboard', '/data-sources', '/feature-management', '/user-portrait',
+    '/target-management', '/model-management'
+  ],
+  model_operator: [
+    '/dashboard', '/model-management', '/scoring-generation',
+    '/operation-list-output'
+  ],
+  platform_admin: [
     '/dashboard', '/data-sources', '/feature-management', '/user-portrait',
     '/target-management', '/model-management', '/scoring-generation',
     '/operation-list-output', '/users', '/log-viewer'
-  ],
-  model_engineer: [
-    '/dashboard', '/data-sources', '/feature-management', '/user-portrait',
-    '/target-management', '/model-management', '/scoring-generation',
-    '/operation-list-output'
-  ],
-  data_engineer: [
-    '/dashboard', '/data-sources', '/user-portrait', '/target-management',
-    '/scoring-generation', '/operation-list-output'
-  ],
-  business_operator: [
-    '/dashboard', '/scoring-generation', '/operation-list-output'
-  ],
-  project_admin: [
-    '/dashboard', '/data-sources', '/user-portrait', '/target-management',
-    '/scoring-generation', '/operation-list-output', '/users'
-  ],
-  project_member: [
-    '/dashboard', '/scoring-generation', '/operation-list-output'
   ]
 };
 
+/** 角色 → i18n 键名 */
+const ROLE_I18N_KEY_MAP: Record<Role, string> = {
+  model_developer: 'modelDeveloper',
+  model_operator: 'modelOperator',
+  platform_admin: 'platformAdmin'
+};
+
+export function getRoleI18nKey(role: Role): string {
+  return ROLE_I18N_KEY_MAP[role] ?? ROLE_I18N_KEY_MAP.model_operator;
+}
+
 export function getMenuKeysForRole(role: Role): MenuKey[] {
-  return ROLE_MENU_MAP[role] ?? ROLE_MENU_MAP.project_member;
+  return ROLE_MENU_MAP[role] ?? ROLE_MENU_MAP.model_operator;
 }
 
-/** 项目管理员只能管理项目成员 */
-export function canManageRole(currentRole: Role, targetRole: Role): boolean {
-  if (currentRole === 'system_admin') return true;
-  if (currentRole === 'project_admin' && targetRole === 'project_member') return true;
-  return false;
+/** 仅平台管理员可以管理用户 */
+export function canManageRole(currentRole: Role, _targetRole: Role): boolean {
+  return currentRole === 'platform_admin';
 }
 
-/** 用户管理页: 系统管理员看所有, 项目管理员只看项目成员 */
+/** 用户管理页: 仅平台管理员可见所有角色 */
 export function getManageableRoles(role: Role): Role[] {
-  if (role === 'system_admin') {
-    return ['system_admin', 'model_engineer', 'data_engineer', 'business_operator', 'project_admin', 'project_member'];
-  }
-  if (role === 'project_admin') {
-    return ['project_member'];
+  if (role === 'platform_admin') {
+    return ['model_developer', 'model_operator', 'platform_admin'];
   }
   return [];
 }
@@ -77,5 +66,5 @@ export function setUserRole(username: string, role: Role): void {
 export function getUserRole(username: string): Role {
   const v = localStorage.getItem(`${USER_ROLE_PREFIX}${username}`);
   if (v && v in ROLE_MENU_MAP) return v as Role;
-  return 'system_admin';
+  return 'model_operator'; // 最小权限原则
 }

@@ -171,7 +171,7 @@ export default {
       createUser: '新建用户',
       editUser: '编辑用户',
       form: { username: '用户名', realName: '真实姓名', password: '密码', passwordPlaceholder: '留空则不修改密码', role: '角色' },
-      roles: { systemAdmin: '系统管理员', modelEngineer: '建模工程师', dataEngineer: '数据工程师', businessOperator: '业务运营', projectAdmin: '项目管理员', projectMember: '项目成员' }
+      roles: { modelDeveloper: '建模开发者', modelOperator: '模型运营', platformAdmin: '平台管理员' }
     },
     license: { title: '许可证管理' },
     dataSources: {

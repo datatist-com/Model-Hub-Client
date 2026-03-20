@@ -172,7 +172,7 @@ export default {
       createUser: 'Create User',
       editUser: 'Edit User',
       form: { username: 'Username', realName: 'Real Name', password: 'Password', passwordPlaceholder: 'Leave blank to keep current password', role: 'Role' },
-      roles: { systemAdmin: 'System Admin', modelEngineer: 'Model Engineer', dataEngineer: 'Data Engineer', businessOperator: 'Business Operator', projectAdmin: 'Project Admin', projectMember: 'Project Member' }
+      roles: { modelDeveloper: 'Model Developer', modelOperator: 'Model Operator', platformAdmin: 'Platform Admin' }
     },
     license: { title: 'License' },
     dataSources: {

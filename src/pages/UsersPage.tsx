@@ -182,7 +182,7 @@ export default function UsersPage() {
         }}
       />
 
-      <Modal open={open} title={t('pages.users.createUser')} footer={null} onCancel={() => { setOpen(false); form.resetFields(); }} destroyOnClose>
+      <Modal open={open} title={t('pages.users.createUser')} footer={null} onCancel={() => { setOpen(false); form.resetFields(); }} destroyOnHidden>
         <Form form={form} layout="vertical" onFinish={handleCreate}>
           <Form.Item name="username" label={t('pages.users.form.username')} rules={[{ required: true }]}>
             <Input />
@@ -202,7 +202,7 @@ export default function UsersPage() {
         </Form>
       </Modal>
 
-      <Modal open={!!editingUser} title={t('pages.users.editUser')} footer={null} onCancel={() => setEditingUser(null)} destroyOnClose>
+      <Modal open={!!editingUser} title={t('pages.users.editUser')} footer={null} onCancel={() => setEditingUser(null)} destroyOnHidden>
         <Form form={editForm} layout="vertical" onFinish={handleUpdate}>
           <Form.Item name="username" label={t('pages.users.form.username')} rules={[{ required: true }]}>
             <Input disabled />

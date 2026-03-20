@@ -14,6 +14,7 @@ import { getCurrentUsername, getUserUiTheme, setUserLanguage, setUserUiTheme, ty
 import { getUserRole, getRoleI18nKey } from '../auth/roles';
 import { applyUiTheme } from '../theme/uiTheme';
 import { changePassword } from '../api/endpoints';
+import { getApiErrorMessage } from '../api/http';
 
 type LoginRecord = {
   id: string;
@@ -126,7 +127,7 @@ export default function ProfilePage() {
     try {
       await changePassword(currentPassword, newPassword);
     } catch (error) {
-      const msg = error instanceof Error ? error.message : t('layout.user.passwordValidation');
+      const msg = getApiErrorMessage(error, t('layout.user.passwordValidation'));
       message.error(msg);
       return;
     }

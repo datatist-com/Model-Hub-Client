@@ -26,6 +26,7 @@ import LazyLoadGuard from '../components/lazy/LazyLoadGuard';
 import LicenseCenterModalFallback from '../components/license/LicenseCenterModalFallback';
 import { loadLicenseCenterModal } from '../router/preload';
 import { activateLicense, changePassword, getLicenseInfo, logout } from '../api/endpoints';
+import { getApiErrorMessage } from '../api/http';
 
 const LicenseCenterModal = lazy(loadLicenseCenterModal);
 
@@ -313,7 +314,7 @@ export default function AppLayout() {
       setLicenseKeyInput('');
       message.success(t('layout.license.activateSuccess'));
     } catch (error) {
-      const msg = error instanceof Error ? error.message : t('layout.license.validation');
+      const msg = getApiErrorMessage(error, t('layout.license.validation'));
       message.error(msg);
     }
   };
@@ -342,7 +343,7 @@ export default function AppLayout() {
     try {
       await changePassword(currentPassword, newPassword);
     } catch (error) {
-      const msg = error instanceof Error ? error.message : t('layout.user.passwordValidation');
+      const msg = getApiErrorMessage(error, t('layout.user.passwordValidation'));
       message.error(msg);
       return;
     }

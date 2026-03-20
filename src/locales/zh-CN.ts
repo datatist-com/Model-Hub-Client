@@ -92,6 +92,9 @@ export default {
     dynamicImportHint: '页面加载失败，请刷新重试',
     unknownError: '发生了未知错误'
   },
+  errors: {
+    backendUnavailable: '后端服务暂时无法连接，请检查网络或联系管理员。'
+  },
   pages: {
     dashboard: {
       title: '仪表盘',

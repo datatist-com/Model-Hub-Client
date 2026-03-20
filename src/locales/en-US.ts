@@ -93,6 +93,9 @@ export default {
     dynamicImportHint: 'Page failed to load, please refresh',
     unknownError: 'An unknown error occurred'
   },
+  errors: {
+    backendUnavailable: 'Unable to connect to backend services. Please check your network or contact the administrator.'
+  },
   pages: {
     dashboard: {
       title: 'Dashboard',

@@ -12,6 +12,7 @@ import LazyLoadGuard from '../components/lazy/LazyLoadGuard';
 import LicenseCenterModalFallback from '../components/license/LicenseCenterModalFallback';
 import { loadLicenseCenterModal, warmupAuthEntry } from '../router/preload';
 import { activateLicense, getLicenseInfo, login } from '../api/endpoints';
+import { getApiErrorMessage } from '../api/http';
 
 const LicenseCenterModal = lazy(loadLicenseCenterModal);
 
@@ -83,7 +84,7 @@ export default function LoginPage() {
       setLicenseKeyInput('');
       message.success('License activated successfully.');
     } catch (error) {
-      const msg = error instanceof Error ? error.message : 'License activation failed.';
+      const msg = getApiErrorMessage(error, 'License activation failed.');
       message.error(msg);
     }
   };
@@ -183,7 +184,7 @@ export default function LoginPage() {
         navigate('/users', { replace: true });
       }, 280);
     } catch (error) {
-      const msg = error instanceof Error ? error.message : 'Login failed.';
+      const msg = getApiErrorMessage(error, 'Login failed.');
       message.error(msg);
       setIsTransitioning(false);
     }

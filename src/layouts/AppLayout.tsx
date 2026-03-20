@@ -1,16 +1,7 @@
 import { lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  BarChartOutlined,
-  CloudServerOutlined,
   CloseOutlined,
-  DashboardOutlined,
-  FileDoneOutlined,
-  FileSearchOutlined,
-  FlagOutlined,
-  FunctionOutlined,
-  IdcardOutlined,
   MenuOutlined,
-  RobotOutlined,
   TeamOutlined
 } from '@ant-design/icons';
 import { App, Avatar, Input, Layout, Menu, Modal, Space, Typography, Dropdown } from 'antd';
@@ -74,16 +65,7 @@ type SessionTabNavigationState = {
 };
 
 const MENU_ITEMS = [
-  { key: '/dashboard', labelKey: 'menu.dashboard', icon: <DashboardOutlined /> },
-  { key: '/data-sources', labelKey: 'menu.dataSources', icon: <CloudServerOutlined /> },
-  { key: '/feature-management', labelKey: 'menu.featureManagement', icon: <FunctionOutlined /> },
-  { key: '/user-portrait', labelKey: 'menu.userPortrait', icon: <IdcardOutlined /> },
-  { key: '/target-management', labelKey: 'menu.targetManagement', icon: <FlagOutlined /> },
-  { key: '/model-management', labelKey: 'menu.modelManagement', icon: <RobotOutlined /> },
-  { key: '/scoring-generation', labelKey: 'menu.scoringGeneration', icon: <BarChartOutlined /> },
-  { key: '/operation-list-output', labelKey: 'menu.operationListOutput', icon: <FileDoneOutlined /> },
-  { key: '/users', labelKey: 'menu.users', icon: <TeamOutlined /> },
-  { key: '/log-viewer', labelKey: 'menu.logViewer', icon: <FileSearchOutlined /> }
+  { key: '/users', labelKey: 'menu.users', icon: <TeamOutlined /> }
 ];
 
 export default function AppLayout() {

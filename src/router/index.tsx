@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { hasAccessToken } from '../auth/token';
 import ErrorPage from '../pages/ErrorPage';
@@ -47,11 +47,23 @@ const withLoading = (
 );
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
-  return hasAccessToken() ? <>{children}</> : <Navigate to="/login" replace />;
+  const [authed, setAuthed] = useState(() => hasAccessToken());
+
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'accessToken' || e.key === null) {
+        setAuthed(hasAccessToken());
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  return authed ? <>{children}</> : <Navigate to="/login" replace />;
 }
 
 function RedirectIfAuthed({ children }: { children: React.ReactNode }) {
-  return hasAccessToken() ? <Navigate to="/dashboard" replace /> : <>{children}</>;
+  return hasAccessToken() ? <Navigate to="/users" replace /> : <>{children}</>;
 }
 
 export const router = createBrowserRouter([
@@ -61,7 +73,7 @@ export const router = createBrowserRouter([
     element: withLoading(<RequireAuth><AppLayout /></RequireAuth>, 'authenticated workspace', (state) => <AppShellFallback state={state} />),
     errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <Navigate to="/dashboard" replace /> },
+      { index: true, element: <Navigate to="/users" replace /> },
       { path: '/dashboard', element: withLoading(<DashboardPage />, 'dashboard', (state) => <RoutePageFallback state={state} />) },
       { path: '/users', element: withLoading(<UsersPage />, 'users page', (state) => <RoutePageFallback state={state} />) },
       { path: '/profile', element: withLoading(<ProfilePage />, 'profile page', (state) => <RoutePageFallback state={state} />) },

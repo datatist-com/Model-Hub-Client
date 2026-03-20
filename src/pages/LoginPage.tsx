@@ -5,11 +5,13 @@ import { Button, Card, Form, Input, Space, Typography, App } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import i18n from '../i18n';
 import { getUserLanguage, setAccessToken, setCurrentUsername, setUserLanguage } from '../auth/token';
+import { setUserRole } from '../auth/roles';
 import { applyUiTheme } from '../theme/uiTheme';
 import { maskLicenseKey } from '../components/license/licenseUtils';
 import LazyLoadGuard from '../components/lazy/LazyLoadGuard';
 import LicenseCenterModalFallback from '../components/license/LicenseCenterModalFallback';
 import { loadLicenseCenterModal, warmupAuthEntry } from '../router/preload';
+import { activateLicense, getLicenseInfo, login } from '../api/endpoints';
 
 const LicenseCenterModal = lazy(loadLicenseCenterModal);
 
@@ -30,12 +32,7 @@ export default function LoginPage() {
   const [licenseKeyInput, setLicenseKeyInput] = useState('');
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const [licenseInfo, setLicenseInfo] = useState<LicenseInfo | null>({
-    licenseKeyMasked: 'AB12********WXYZ',
-    licensee: '宁波建行',
-    activatedAt: '2026-03-03T09:30:00Z',
-    expiresAt: '2027-03-03T23:59:59Z'
-  });
+  const [licenseInfo, setLicenseInfo] = useState<LicenseInfo | null>(null);
 
   const toIsoNow = () => new Date().toISOString();
   const toIsoPlusOneYear = () => {
@@ -68,21 +65,27 @@ export default function LoginPage() {
 
   const activateActionText = licenseState === 'active' ? 'Update License' : 'Activate License';
 
-  const handleActivateLicense = () => {
+  const handleActivateLicense = async () => {
     const value = licenseKeyInput.trim();
     if (!value) {
       message.warning('Please enter a valid license key.');
       return;
     }
 
-    setLicenseInfo({
-      licenseKeyMasked: maskLicenseKey(value),
-      licensee: '宁波建行',
-      activatedAt: toIsoNow(),
-      expiresAt: toIsoPlusOneYear()
-    });
-    setLicenseKeyInput('');
-    message.success('License activated successfully.');
+    try {
+      const next = await activateLicense(value);
+      setLicenseInfo({
+        licenseKeyMasked: next.licenseKeyMasked || maskLicenseKey(value),
+        licensee: next.licensee || 'N/A',
+        activatedAt: next.activatedAt || toIsoNow(),
+        expiresAt: next.expiresAt || toIsoPlusOneYear()
+      });
+      setLicenseKeyInput('');
+      message.success('License activated successfully.');
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'License activation failed.';
+      message.error(msg);
+    }
   };
 
   useEffect(() => {
@@ -103,6 +106,19 @@ export default function LoginPage() {
       void warmupAuthEntry();
       void loadLicenseCenterModal();
     }, 180);
+
+    void getLicenseInfo()
+      .then((info) => {
+        setLicenseInfo({
+          licenseKeyMasked: info.licenseKeyMasked,
+          licensee: info.licensee,
+          activatedAt: info.activatedAt,
+          expiresAt: info.expiresAt
+        });
+      })
+      .catch(() => {
+        // Keep null state when no license is returned.
+      });
 
     return () => {
       window.clearTimeout(warmupTimer);
@@ -137,7 +153,7 @@ export default function LoginPage() {
     page.style.setProperty('--ry', '0');
   };
 
-  const handleSubmit = (values: { username: string; password: string }) => {
+  const handleSubmit = async (values: { username: string; password: string }) => {
     if (isTransitioning) {
       return;
     }
@@ -148,17 +164,29 @@ export default function LoginPage() {
       return;
     }
 
-    setCurrentUsername(username);
-    const language = getUserLanguage(username) ?? 'zh-CN';
-    setUserLanguage(username, language);
-
     setIsTransitioning(true);
-    setAccessToken('mock-access-token');
-    message.success('Login successful');
-    void warmupAuthEntry();
-    window.setTimeout(() => {
-      navigate('/dashboard', { replace: true });
-    }, 280);
+
+    try {
+      const res = await login(username, values.password);
+      const resolvedUsername = res.user?.username?.trim() || username;
+
+      setCurrentUsername(resolvedUsername);
+      setAccessToken(res.accessToken);
+      setUserRole(resolvedUsername, res.user.role);
+
+      const language = res.user.language ?? getUserLanguage(resolvedUsername) ?? 'zh-CN';
+      setUserLanguage(resolvedUsername, language);
+
+      message.success('Login successful');
+      void warmupAuthEntry();
+      window.setTimeout(() => {
+        navigate('/users', { replace: true });
+      }, 280);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Login failed.';
+      message.error(msg);
+      setIsTransitioning(false);
+    }
   };
 
   return (

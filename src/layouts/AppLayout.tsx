@@ -25,6 +25,7 @@ import KeepAliveOutlet from '../router/KeepAliveOutlet';
 import LazyLoadGuard from '../components/lazy/LazyLoadGuard';
 import LicenseCenterModalFallback from '../components/license/LicenseCenterModalFallback';
 import { loadLicenseCenterModal } from '../router/preload';
+import { activateLicense, changePassword, getLicenseInfo, logout } from '../api/endpoints';
 
 const LicenseCenterModal = lazy(loadLicenseCenterModal);
 
@@ -247,6 +248,19 @@ export default function AppLayout() {
       void loadLicenseCenterModal();
     }, 1200);
 
+    void getLicenseInfo()
+      .then((info) => {
+        setLicenseInfo({
+          licenseKeyMasked: info.licenseKeyMasked,
+          licensee: info.licensee,
+          activatedAt: info.activatedAt,
+          expiresAt: info.expiresAt
+        });
+      })
+      .catch(() => {
+        // Keep existing local values if backend info is unavailable.
+      });
+
     return () => {
       window.clearTimeout(timer);
     };
@@ -280,28 +294,31 @@ export default function AppLayout() {
   const isExpired = new Date(licenseInfo.expiresAt).getTime() < now;
   const licenseState: 'expired' | 'active' = isExpired ? 'expired' : 'active';
 
-  const handleActivateLicense = () => {
+  const handleActivateLicense = async () => {
     const value = licenseKeyInput.trim();
     if (!value) {
       message.warning(t('layout.license.validation'));
       return;
     }
 
-    const activatedAt = new Date();
-    const expiresAt = new Date();
-    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-
-    setLicenseInfo((prev) => ({
-      ...prev,
-      licenseKeyMasked: maskLicenseKey(value),
-      activatedAt: activatedAt.toISOString(),
-      expiresAt: expiresAt.toISOString()
-    }));
-    setLicenseKeyInput('');
-    message.success(t('layout.license.activateSuccess'));
+    try {
+      const info = await activateLicense(value);
+      setLicenseInfo((prev) => ({
+        ...prev,
+        licenseKeyMasked: info.licenseKeyMasked || maskLicenseKey(value),
+        licensee: info.licensee || prev.licensee,
+        activatedAt: info.activatedAt || prev.activatedAt,
+        expiresAt: info.expiresAt || prev.expiresAt
+      }));
+      setLicenseKeyInput('');
+      message.success(t('layout.license.activateSuccess'));
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : t('layout.license.validation');
+      message.error(msg);
+    }
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (!currentPassword.trim()) {
       message.warning(t('layout.user.currentPasswordValidation'));
       return;
@@ -319,6 +336,14 @@ export default function AppLayout() {
 
     if (newPassword !== confirmPassword) {
       message.warning(t('layout.user.passwordMismatch'));
+      return;
+    }
+
+    try {
+      await changePassword(currentPassword, newPassword);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : t('layout.user.passwordValidation');
+      message.error(msg);
       return;
     }
 
@@ -348,7 +373,7 @@ export default function AppLayout() {
     [sessionTabs, t]
   );
 
-  const handleUserMenuClick = useCallback(({ key }: { key: string }) => {
+  const handleUserMenuClick = useCallback(async ({ key }: { key: string }) => {
     if (key === 'profile') {
       navigate('/profile');
       return;
@@ -360,6 +385,11 @@ export default function AppLayout() {
     }
 
     if (key === 'logout') {
+      try {
+        await logout();
+      } catch {
+        // Fall through and clear local session even if backend logout fails.
+      }
       clearAccessToken();
       navigate('/login', { replace: true });
     }

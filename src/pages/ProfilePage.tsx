@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { getCurrentUsername, getUserUiTheme, setUserLanguage, setUserUiTheme, type UiThemePreference } from '../auth/token';
 import { getUserRole, getRoleI18nKey } from '../auth/roles';
 import { applyUiTheme } from '../theme/uiTheme';
+import { changePassword } from '../api/endpoints';
 
 type LoginRecord = {
   id: string;
@@ -101,7 +102,7 @@ export default function ProfilePage() {
     }
   ], [t]);
 
-  const handleSavePassword = () => {
+  const handleSavePassword = async () => {
     if (!currentPassword.trim()) {
       message.warning(t('layout.user.currentPasswordValidation'));
       return;
@@ -119,6 +120,14 @@ export default function ProfilePage() {
 
     if (newPassword !== confirmPassword) {
       message.warning(t('layout.user.passwordMismatch'));
+      return;
+    }
+
+    try {
+      await changePassword(currentPassword, newPassword);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : t('layout.user.passwordValidation');
+      message.error(msg);
       return;
     }
 

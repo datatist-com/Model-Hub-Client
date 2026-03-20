@@ -9,7 +9,7 @@ import type { Role } from '../auth/roles';
 import { createUser, deleteUser, listUsers, updateUser, type UserStatus, type UserView } from '../api/endpoints';
 import { getApiErrorMessage } from '../api/http';
 
-type UserRow = { id: string; username: string; realName: string; role: Role; status: UserStatus };
+type UserRow = { id: string; username: string; realName: string; role: Role; status: UserStatus; createdAt?: string };
 
 const ROLE_COLOR_MAP: Record<Role, string> = {
   model_developer: 'blue',
@@ -39,14 +39,26 @@ export default function UsersPage() {
     username: user.username,
     realName: user.realName || user.username,
     role: user.role,
-    status: user.status
+    status: user.status,
+    createdAt: user.createdAt
   });
 
   const fetchUsers = useCallback(async (nextPage = page, nextPageSize = pageSize) => {
     setLoading(true);
     try {
-      const res = await listUsers({ page: nextPage, pageSize: nextPageSize });
-      setUsers((res.items ?? []).map(mapUser));
+      const res = await listUsers({
+        page: nextPage,
+        pageSize: nextPageSize,
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      });
+      const mapped = (res.items ?? []).map(mapUser);
+      mapped.sort((a, b) => {
+        const aTs = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const bTs = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return bTs - aTs;
+      });
+      setUsers(mapped);
       setTotal(res.total ?? 0);
       setPage(res.page ?? nextPage);
       setPageSize(res.pageSize ?? nextPageSize);

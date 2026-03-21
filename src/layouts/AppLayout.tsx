@@ -13,10 +13,11 @@ import {
   getUserLanguage,
   getUserSessionTabs,
   getUserUiTheme,
+  setCurrentUsername,
   setUserSessionTabs
 } from '../auth/token';
-import { getUserRole, getMenuKeysForRole, getRoleI18nKey } from '../auth/roles';
-import type { MenuKey } from '../auth/roles';
+import { getUserRole, getMenuKeysForRole, getRoleI18nKey, setUserRole } from '../auth/roles';
+import type { MenuKey, Role } from '../auth/roles';
 import { applyUiTheme } from '../theme/uiTheme';
 import { maskLicenseKey } from '../components/license/licenseUtils';
 import { SOURCE_NAME_MAP } from '../constants/mockMaps';
@@ -25,7 +26,7 @@ import KeepAliveOutlet from '../router/KeepAliveOutlet';
 import LazyLoadGuard from '../components/lazy/LazyLoadGuard';
 import LicenseCenterModalFallback from '../components/license/LicenseCenterModalFallback';
 import { loadLicenseCenterModal } from '../router/preload';
-import { activateLicense, changePassword, logout } from '../api/endpoints';
+import { activateLicense, changePassword, getCurrentUser, logout } from '../api/endpoints';
 import { getApiErrorMessage } from '../api/http';
 
 const LicenseCenterModal = lazy(loadLicenseCenterModal);
@@ -33,6 +34,14 @@ const LicenseCenterModal = lazy(loadLicenseCenterModal);
 const { Header, Sider, Content, Footer } = Layout;
 const PROJECT_NAME = 'Datatist Model Hub';
 const KEEP_ALIVE_EXCLUDE: string[] = ['/'];
+
+function getDisplayFirstChar(text: string): string {
+  const trimmed = text.trim();
+  if (!trimmed) {
+    return 'U';
+  }
+  return Array.from(trimmed)[0] ?? 'U';
+}
 
 function computeTabKey(pathname: string, search: string): string {
   const identityParams = TAB_IDENTITY_PARAMS_MAP[pathname] ?? [];
@@ -87,6 +96,7 @@ export default function AppLayout() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [currentUserInfo, setCurrentUserInfo] = useState<{ username: string; realName?: string; role: Role } | null>(null);
   const [licenseInfo, setLicenseInfo] = useState({
     licenseKeyMasked: 'AB12********WXYZ',
     licensee: '宁波建行',
@@ -254,6 +264,24 @@ export default function AppLayout() {
     };
   }, []);
 
+  useEffect(() => {
+    const username = getCurrentUsername() ?? 'admin';
+    void getCurrentUser()
+      .then((user) => {
+        const nextUsername = user.username || username;
+        setCurrentUserInfo({
+          username: nextUsername,
+          realName: user.realName,
+          role: user.role
+        });
+        setCurrentUsername(nextUsername);
+        setUserRole(nextUsername, user.role);
+      })
+      .catch(() => {
+        // Fallback to local cached user data.
+      });
+  }, []);
+
   const handleCloseSessionTab = (key: string) => {
     setKeepAliveEvictKey(key);
     setTimeout(() => setKeepAliveEvictKey(null), 0);
@@ -344,7 +372,10 @@ export default function AppLayout() {
 
   const currentUsername = getCurrentUsername() ?? 'admin';
   const currentRole = getUserRole(currentUsername);
-  const allowedMenuKeys = getMenuKeysForRole(currentRole);
+  const displayUsername = currentUserInfo?.username ?? currentUsername;
+  const displayName = currentUserInfo?.realName?.trim() || displayUsername;
+  const displayRole = currentUserInfo?.role ?? currentRole;
+  const allowedMenuKeys = getMenuKeysForRole(displayRole);
 
   const filteredMenuItems = useMemo(
     () => MENU_ITEMS.filter((item) => allowedMenuKeys.includes(item.key as MenuKey)),
@@ -390,8 +421,8 @@ export default function AppLayout() {
         key: 'profile',
         label: (
           <div className="app-user-menu-profile">
-            <div>陆星安</div>
-            <Typography.Text type="secondary">{t(`pages.users.roles.${getRoleI18nKey(currentRole)}`)}</Typography.Text>
+            <div>{displayName}</div>
+            <Typography.Text type="secondary">{t(`pages.users.roles.${getRoleI18nKey(displayRole)}`)}</Typography.Text>
           </div>
         )
       },
@@ -399,7 +430,7 @@ export default function AppLayout() {
       { key: 'changePassword', label: t('layout.user.changePassword') },
       { key: 'logout', label: t('layout.user.logout'), danger: true }
     ]
-  }), [handleUserMenuClick, t]);
+  }), [displayName, displayRole, handleUserMenuClick, t]);
 
   return (
     <div className="app-root">
@@ -479,7 +510,7 @@ export default function AppLayout() {
                   menu={userDropdownMenu}
                 >
                   <span className="app-user-avatar-trigger">
-                    <Avatar className="app-user-avatar">陆</Avatar>
+                    <Avatar className="app-user-avatar">{getDisplayFirstChar(displayName)}</Avatar>
                   </span>
                 </Dropdown>
               </Space>
